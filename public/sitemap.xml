@@ -83,25 +83,67 @@
   <!-- Blog Posts -->
   <url>
     <loc>https://managekubernetes.com/blog</loc>
-    <lastmod>2024-12-20</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-pods-evicted</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/understanding-pods-completed-state</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-pods-oom-killed</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-pods-error-state</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-pods-pending-state</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-pods-crashloopbackoff</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://managekubernetes.com/blog/troubleshooting-image-pull-errors</loc>
+    <lastmod>2024-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://managekubernetes.com/blog/getting-started-with-kubernetes</loc>
-    <lastmod>2024-12-20</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://managekubernetes.com/blog/kubernetes-best-practices</loc>
-    <lastmod>2024-12-20</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://managekubernetes.com/blog/debugging-kubernetes-applications</loc>
-    <lastmod>2024-12-20</lastmod>
+    <lastmod>2024-12-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

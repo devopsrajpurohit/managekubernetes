@@ -6,6 +6,62 @@ import { trackPageView } from '../utils/analytics.js'
 // Blog posts metadata - in production, this could be fetched from an API or generated from markdown files
 const blogPosts = [
   {
+    slug: 'troubleshooting-pods-evicted',
+    title: 'Troubleshooting Kubernetes Pods in Evicted State',
+    description: 'Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios.',
+    date: '2024-12-20',
+    readTime: '12 min read',
+    category: 'Troubleshooting'
+  },
+  {
+    slug: 'understanding-pods-completed-state',
+    title: 'Understanding Kubernetes Pods in Completed State',
+    description: 'Learn when Completed state is normal vs problematic, and how to handle completed pods for jobs, batch processes, and long-running applications.',
+    date: '2024-12-22',
+    readTime: '9 min read',
+    category: 'Kubernetes Concepts'
+  },
+  {
+    slug: 'troubleshooting-pods-oom-killed',
+    title: 'Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)',
+    description: 'Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies.',
+    date: '2024-12-19',
+    readTime: '11 min read',
+    category: 'Troubleshooting'
+  },
+  {
+    slug: 'troubleshooting-pods-error-state',
+    title: 'Troubleshooting Kubernetes Pods in Error State',
+    description: 'Complete guide to diagnosing and fixing pods in Error state, including application crashes, configuration issues, and exit code handling.',
+    date: '2024-12-21',
+    readTime: '9 min read',
+    category: 'Troubleshooting'
+  },
+  {
+    slug: 'troubleshooting-pods-pending-state',
+    title: 'Troubleshooting Kubernetes Pods Stuck in Pending State',
+    description: 'Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration.',
+    date: '2024-12-18',
+    readTime: '12 min read',
+    category: 'Troubleshooting'
+  },
+  {
+    slug: 'troubleshooting-pods-crashloopbackoff',
+    title: 'Troubleshooting Kubernetes Pods in CrashLoopBackOff State',
+    description: 'Complete guide to diagnosing and fixing pods stuck in CrashLoopBackOff state, including common causes and step-by-step solutions.',
+    date: '2024-12-17',
+    readTime: '10 min read',
+    category: 'Troubleshooting'
+  },
+  {
+    slug: 'troubleshooting-image-pull-errors',
+    title: 'Troubleshooting Kubernetes Image Pull Errors',
+    description: 'Complete guide to fixing ImagePullBackOff and ErrImagePull errors, including authentication, registry access, and network issues.',
+    date: '2024-12-16',
+    readTime: '11 min read',
+    category: 'Troubleshooting'
+  },
+  {
     slug: 'getting-started-with-kubernetes',
     title: 'Getting Started with Kubernetes: A Complete Guide',
     description: 'Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster.',
