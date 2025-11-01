@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="practicesBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdf4" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#dcfce7" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="practicesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#practicesBg)" rx="8"/>
+  
+  <!-- Checklist -->
+  <g transform="translate(200, 100)">
+    <!-- Check items -->
+    <g transform="translate(0, -25)">
+      <rect x="-30" y="-8" width="60" height="16" rx="2" fill="url(#practicesGrad)" opacity="0.2"/>
+      <circle cx="-20" cy="0" r="6" fill="none" stroke="url(#practicesGrad)" stroke-width="2"/>
+      <path d="M-23,-2 L-20,2 L-17,-2" stroke="url(#practicesGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <text x="-10" y="5" font-family="system-ui" font-size="10" fill="#065f46" text-anchor="start">Security</text>
+    </g>
+    <g transform="translate(0, 0)">
+      <rect x="-30" y="-8" width="60" height="16" rx="2" fill="url(#practicesGrad)" opacity="0.2"/>
+      <circle cx="-20" cy="0" r="6" fill="none" stroke="url(#practicesGrad)" stroke-width="2"/>
+      <path d="M-23,-2 L-20,2 L-17,-2" stroke="url(#practicesGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <text x="-10" y="5" font-family="system-ui" font-size="10" fill="#065f46" text-anchor="start">Monitoring</text>
+    </g>
+    <g transform="translate(0, 25)">
+      <rect x="-30" y="-8" width="60" height="16" rx="2" fill="url(#practicesGrad)" opacity="0.2"/>
+      <circle cx="-20" cy="0" r="6" fill="none" stroke="url(#practicesGrad)" stroke-width="2"/>
+      <path d="M-23,-2 L-20,2 L-17,-2" stroke="url(#practicesGrad)" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <text x="-10" y="5" font-family="system-ui" font-size="10" fill="#065f46" text-anchor="start">Resources</text>
+    </g>
+  </g>
+  
+  <!-- Star/quality icon -->
+  <g transform="translate(130, 100)">
+    <circle cx="0" cy="0" r="20" fill="#fff" opacity="0.8"/>
+    <text x="0" y="8" font-family="system-ui" font-size="18" fill="#10b981" text-anchor="middle">⭐</text>
+  </g>
+  
+  <!-- Shield icon -->
+  <g transform="translate(270, 100)">
+    <circle cx="0" cy="0" r="20" fill="#fff" opacity="0.8"/>
+    <text x="0" y="8" font-family="system-ui" font-size="18" fill="#10b981" text-anchor="middle">🛡</text>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="170" font-family="system-ui" font-size="16" font-weight="600" fill="#065f46" text-anchor="middle">Best Practices</text>
+  <text x="200" y="195" font-family="system-ui" font-size="12" fill="#065f46" text-anchor="middle" opacity="0.8">Production-Ready Kubernetes</text>
+</svg>
+

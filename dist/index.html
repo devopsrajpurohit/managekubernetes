@@ -277,9 +277,24 @@
         overflow-x: auto;
       }
       
-      /* Hide all images in markdown content */
       .markdown-content img {
-        display: none !important;
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 2em 0;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+      
+      /* Featured image at top of blog posts */
+      .markdown-content > img:first-of-type {
+        margin-top: 0;
+        margin-bottom: 2em;
+        width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+        padding: 1rem;
       }
       
       /* Responsive table handling */
@@ -437,9 +452,11 @@
         color: rgb(15 23 42);
       }
     </style>
+    <script type="module" crossorigin src="/assets/index-P8oIvxqD.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-D17DJCw4.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-vendor-QmhbnVjH.js">
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

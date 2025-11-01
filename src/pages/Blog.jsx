@@ -160,16 +160,40 @@ export default function Blog() {
                 to={`/blog/${post.slug}`}
                 className="group block rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-lg hover:border-indigo-300"
               >
-                {post.image && (
-                  <div className="w-full h-48 bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden flex items-center justify-center">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
+                <div className="w-full h-48 bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden flex items-center justify-center relative">
+                  <img
+                    src={post.image || '/images/blog-default.svg'}
+                    alt={post.title}
+                    className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => {
+                      // Fallback to default image if specified image fails to load
+                      if (e.target.src !== window.location.origin + '/images/blog-default.svg') {
+                        e.target.src = '/images/blog-default.svg'
+                      } else {
+                        // If default also fails, show placeholder
+                        e.target.style.display = 'none'
+                        if (e.target.nextElementSibling) {
+                          e.target.nextElementSibling.style.display = 'flex'
+                        }
+                      }
+                    }}
+                  />
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center hidden"
+                    style={{ display: 'none' }}
+                  >
+                    <div className="text-center p-6">
+                      <div className="w-24 h-24 mx-auto mb-4 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-12 h-12 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-slate-500 font-medium">Blog Image</p>
+                      <p className="text-xs text-slate-400 mt-1">Image failed to load</p>
+                    </div>
                   </div>
-                )}
+                </div>
                 <div className="p-6">
                   <div className="mb-4">
                     <span className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700">

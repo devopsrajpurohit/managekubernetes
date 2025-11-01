@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="startBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dbeafe" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#bfdbfe" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="startGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#startBg)" rx="8"/>
+  
+  <!-- Kubernetes logo simplified -->
+  <g transform="translate(200, 90)">
+    <!-- K8s wheel -->
+    <circle cx="0" cy="0" r="45" fill="none" stroke="url(#startGrad)" stroke-width="4"/>
+    <path d="M0,-45 L0,45 M-22,-22 L22,22 M22,-22 L-22,22" stroke="url(#startGrad)" stroke-width="3" stroke-linecap="round"/>
+    <!-- Central dot -->
+    <circle cx="0" cy="0" r="8" fill="url(#startGrad)"/>
+  </g>
+  
+  <!-- Arrow pointing right -->
+  <g transform="translate(130, 90)">
+    <path d="M-15,0 L15,0 M10,-5 L15,0 L10,5" stroke="url(#startGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <!-- Rocket/launch icon -->
+  <g transform="translate(270, 90)">
+    <text x="0" y="15" font-family="system-ui" font-size="40" text-anchor="middle">🚀</text>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="170" font-family="system-ui" font-size="16" font-weight="600" fill="#1e40af" text-anchor="middle">Getting Started</text>
+  <text x="200" y="195" font-family="system-ui" font-size="12" fill="#1e40af" text-anchor="middle" opacity="0.8">Your Kubernetes Journey Begins</text>
+</svg>
+

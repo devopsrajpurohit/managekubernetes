@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600">
+  <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="#1e293b"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient></defs>
+  <rect width="100%" height="100%" fill="url(#g)"/>
+  <g fill="#fff" font-family="Inter, Arial, sans-serif" text-anchor="middle">
+    <text x="600" y="290" font-size="64" font-weight="800">Kubernetes Community</text>
+    <text x="600" y="350" font-size="28" opacity="0.85">Day‑1 Basics · Day‑2 Reliability</text>
+  </g>
+</svg>

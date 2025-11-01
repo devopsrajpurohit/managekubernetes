@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="introBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eef2ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ddd6fe" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="wheelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4338ca"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="240" fill="url(#introBg)" rx="8"/>
+  
+  <!-- Main Kubernetes wheel -->
+  <g transform="translate(200, 100)">
+    <!-- Center circle -->
+    <circle cx="0" cy="0" r="35" fill="url(#wheelGrad)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="28" fill="#4f46e5"/>
+    
+    <!-- Outer nodes -->
+    <g>
+      <circle cx="-50" cy="-50" r="18" fill="#6366f1"/>
+      <circle cx="50" cy="-50" r="18" fill="#818cf8"/>
+      <circle cx="-50" cy="50" r="18" fill="#a5b4fc"/>
+      <circle cx="50" cy="50" r="18" fill="#c7d2fe"/>
+    </g>
+    
+    <!-- Connection lines -->
+    <path d="M0,-28 L-50,-50" stroke="#6366f1" stroke-width="2.5" opacity="0.6"/>
+    <path d="M0,-28 L50,-50" stroke="#818cf8" stroke-width="2.5" opacity="0.6"/>
+    <path d="M0,28 L-50,50" stroke="#a5b4fc" stroke-width="2.5" opacity="0.6"/>
+    <path d="M0,28 L50,50" stroke="#c7d2fe" stroke-width="2.5" opacity="0.6"/>
+    <path d="M-42,-42 L42,-42" stroke="#6366f1" stroke-width="2" opacity="0.5"/>
+    <path d="M-42,42 L42,42" stroke="#a5b4fc" stroke-width="2" opacity="0.5"/>
+    
+    <!-- Inner decorative lines -->
+    <path d="M-28,0 L28,0" stroke="white" stroke-width="1.5" opacity="0.3"/>
+    <path d="M0,-28 L0,28" stroke="white" stroke-width="1.5" opacity="0.3"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="185" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#1e293b" text-anchor="middle">Kubernetes</text>
+  <text x="200" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Container Orchestration</text>
+</svg>

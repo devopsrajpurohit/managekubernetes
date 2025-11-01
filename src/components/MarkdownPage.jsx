@@ -4,28 +4,23 @@ import { marked } from 'marked'
 import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Facebook } from 'lucide-react'
 import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
 
-// Configure image renderer to ensure images load properly
-const renderer = {
-  image(href, title, text) {
-    // Ensure relative paths work correctly
-    let imageSrc = href || ''
-    if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('//') && !imageSrc.startsWith('data:')) {
-      // If it's already an absolute path starting with /, keep it
-      if (!imageSrc.startsWith('/')) {
-        imageSrc = `/${imageSrc}`
-      }
-    }
-    return `<img src="${imageSrc}" alt="${text || ''}" title="${title || ''}" loading="lazy" />`
-  }
-}
-
 marked.setOptions({ 
   gfm: true, 
   breaks: true,
   mangle: false,
-  headerIds: false,
-  renderer
+  headerIds: false
 })
+
+// Configure image renderer - skip images in markdown content
+// Create a new renderer instance and override only the image method
+const renderer = new marked.Renderer()
+renderer.image = function(href, title, text) {
+  // Don't render images in markdown viewer - return empty string
+  return ''
+}
+
+// Apply the renderer using marked.use() for v12
+marked.use({ renderer })
 
 // Simple frontmatter parser for browser (replaces gray-matter)
 function parseFrontmatter(text) {
@@ -79,19 +74,54 @@ export default function MarkdownPage({ basePath, kind }) {
   
   // Handle image loading after HTML is set
   useEffect(() => {
-    if (!loading && html) {
-      // Ensure images load properly
-      const images = document.querySelectorAll('.markdown-content img')
-      images.forEach(img => {
-        // Log image source for debugging
-        console.log('Image found:', img.src, img.alt)
-        img.addEventListener('error', (e) => {
-          console.error('Image failed to load:', e.target.src)
+    if (!loading && html && typeof window !== 'undefined') {
+      // Wait for DOM to update
+      setTimeout(() => {
+        // Ensure images load properly
+        const images = document.querySelectorAll('.markdown-content img')
+        console.log('Found', images.length, 'images in markdown content')
+        images.forEach((img, index) => {
+          // Log image source for debugging
+          console.log(`Image ${index + 1}:`, {
+            src: img.src,
+            currentSrc: img.currentSrc,
+            alt: img.alt,
+            complete: img.complete,
+            naturalWidth: img.naturalWidth,
+            naturalHeight: img.naturalHeight
+          })
+          
+          // Fix image source if needed
+          if (img.src && !img.src.startsWith('http') && !img.src.startsWith('data:')) {
+            const srcPath = img.getAttribute('src')
+            if (srcPath && srcPath.startsWith('/images/')) {
+              // Ensure full URL for images
+              const fullUrl = window.location.origin + srcPath
+              if (img.src !== fullUrl) {
+                console.log('Updating image src from', img.src, 'to', fullUrl)
+                img.src = fullUrl
+              }
+            }
+          }
+          
+          img.addEventListener('error', (e) => {
+            console.error('Image failed to load:', {
+              src: e.target.src,
+              currentSrc: e.target.currentSrc,
+              alt: e.target.alt
+            })
+            // Try to reload with base URL
+            const originalSrc = e.target.getAttribute('src')
+            if (originalSrc && originalSrc.startsWith('/')) {
+              e.target.src = window.location.origin + originalSrc
+            }
+          })
+          
+          img.addEventListener('load', () => {
+            console.log('Image loaded successfully:', img.src)
+          })
         })
-        img.addEventListener('load', () => {
-          console.log('Image loaded successfully:', img.src)
-        })
-      })
+      }, 100)
     }
   }, [html, loading])
   
@@ -244,6 +274,8 @@ export default function MarkdownPage({ basePath, kind }) {
         
         // Parse markdown to HTML
         try {
+          console.log('Parsing markdown content, first 200 chars:', parsed.content.substring(0, 200))
+          console.log('Content contains image markdown:', parsed.content.includes('!['))
           const markdownHtml = marked.parse(parsed.content)
           
           // Handle both sync and async cases
@@ -261,7 +293,17 @@ export default function MarkdownPage({ basePath, kind }) {
           } else {
             // Sync version
             console.log('Markdown parsed successfully (sync)')
-            setHtml(String(markdownHtml))
+            const htmlString = String(markdownHtml)
+            console.log('HTML preview (first 500 chars):', htmlString.substring(0, 500))
+            console.log('HTML contains <img tags:', htmlString.includes('<img'))
+            const imgMatches = htmlString.match(/<img[^>]*>/g)
+            if (imgMatches) {
+              console.log('Found img tags in HTML:', imgMatches)
+            } else {
+              console.warn('No <img> tags found in parsed HTML!')
+              console.log('Full HTML:', htmlString)
+            }
+            setHtml(htmlString)
             setLoading(false)
           }
         } catch (error) {
