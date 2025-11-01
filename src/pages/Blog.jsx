@@ -11,7 +11,8 @@ const blogPosts = [
     description: 'Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios.',
     date: '2024-12-20',
     readTime: '12 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-evicted.svg'
   },
   {
     slug: 'understanding-pods-completed-state',
@@ -19,7 +20,8 @@ const blogPosts = [
     description: 'Learn when Completed state is normal vs problematic, and how to handle completed pods for jobs, batch processes, and long-running applications.',
     date: '2024-12-22',
     readTime: '9 min read',
-    category: 'Kubernetes Concepts'
+    category: 'Kubernetes Concepts',
+    image: '/images/blog-completed-state.svg'
   },
   {
     slug: 'troubleshooting-pods-oom-killed',
@@ -27,7 +29,8 @@ const blogPosts = [
     description: 'Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies.',
     date: '2024-12-19',
     readTime: '11 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-oom-killed.svg'
   },
   {
     slug: 'troubleshooting-pods-error-state',
@@ -35,7 +38,8 @@ const blogPosts = [
     description: 'Complete guide to diagnosing and fixing pods in Error state, including application crashes, configuration issues, and exit code handling.',
     date: '2024-12-21',
     readTime: '9 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-error-state.svg'
   },
   {
     slug: 'troubleshooting-pods-pending-state',
@@ -43,7 +47,8 @@ const blogPosts = [
     description: 'Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration.',
     date: '2024-12-18',
     readTime: '12 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-pending-state.svg'
   },
   {
     slug: 'troubleshooting-pods-crashloopbackoff',
@@ -51,7 +56,8 @@ const blogPosts = [
     description: 'Complete guide to diagnosing and fixing pods stuck in CrashLoopBackOff state, including common causes and step-by-step solutions.',
     date: '2024-12-17',
     readTime: '10 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-crashloopbackoff.svg'
   },
   {
     slug: 'troubleshooting-image-pull-errors',
@@ -59,7 +65,8 @@ const blogPosts = [
     description: 'Complete guide to fixing ImagePullBackOff and ErrImagePull errors, including authentication, registry access, and network issues.',
     date: '2024-12-16',
     readTime: '11 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-image-pull.svg'
   },
   {
     slug: 'getting-started-with-kubernetes',
@@ -67,7 +74,8 @@ const blogPosts = [
     description: 'Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster.',
     date: '2024-12-15',
     readTime: '8 min read',
-    category: 'Getting Started'
+    category: 'Getting Started',
+    image: '/images/blog-getting-started.svg'
   },
   {
     slug: 'kubernetes-best-practices',
@@ -75,7 +83,8 @@ const blogPosts = [
     description: 'Essential best practices for running Kubernetes in production environments, including security, resource management, and monitoring.',
     date: '2024-12-10',
     readTime: '12 min read',
-    category: 'Best Practices'
+    category: 'Best Practices',
+    image: '/images/blog-best-practices.svg'
   },
   {
     slug: 'debugging-kubernetes-applications',
@@ -83,7 +92,8 @@ const blogPosts = [
     description: 'A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips.',
     date: '2024-12-05',
     readTime: '10 min read',
-    category: 'Troubleshooting'
+    category: 'Troubleshooting',
+    image: '/images/blog-debugging.svg'
   }
 ]
 
@@ -91,8 +101,13 @@ export default function Blog() {
   const [posts, setPosts] = useState(blogPosts)
 
   useEffect(() => {
-    document.title = 'Blog | Kubernetes Community'
-    trackPageView('/blog', 'Blog | Kubernetes Community')
+    document.title = 'Kubernetes Blog | K8s Tutorials, Guides & Best Practices'
+    // Update meta description
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Explore our Kubernetes blog with in-depth tutorials, troubleshooting guides, and best practices for Kubernetes (K8s) container orchestration, kubectl commands, and production operations.')
+    }
+    trackPageView('/blog', 'Kubernetes Blog | Kubernetes Community')
     
     // Try to fetch blog posts list if available
     // This could be extended to load from an API or index file
@@ -143,27 +158,39 @@ export default function Blog() {
               <Link
                 key={post.slug}
                 to={`/blog/${post.slug}`}
-                className="group block rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg hover:border-indigo-300"
+                className="group block rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-lg hover:border-indigo-300"
               >
-                <div className="mb-4">
-                  <span className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700">
-                    {post.category}
-                  </span>
-                </div>
-                <h2 className="text-xl font-semibold text-slate-900 mb-3 group-hover:text-indigo-700 transition">
-                  {post.title}
-                </h2>
-                <p className="text-slate-600 text-sm mb-4 line-clamp-3">
-                  {post.description}
-                </p>
-                <div className="flex items-center gap-4 text-xs text-slate-500">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                {post.image && (
+                  <div className="w-full h-48 bg-slate-50 overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{post.readTime}</span>
+                )}
+                <div className="p-6">
+                  <div className="mb-4">
+                    <span className="inline-block rounded-full bg-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700">
+                      {post.category}
+                    </span>
+                  </div>
+                  <h2 className="text-xl font-semibold text-slate-900 mb-3 group-hover:text-indigo-700 transition">
+                    {post.title}
+                  </h2>
+                  <p className="text-slate-600 text-sm mb-4 line-clamp-3">
+                    {post.description}
+                  </p>
+                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      <span>{post.readTime}</span>
+                    </div>
                   </div>
                 </div>
               </Link>

@@ -135,20 +135,20 @@ export default function Landing() {
             <div className="text-center lg:text-left">
               <motion.h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight"
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-                Simplify Kubernetes – From Setup to Scale
+                Learn Kubernetes – Free K8s Tutorials from Basics to Production
               </motion.h1>
               <p className="mt-4 text-slate-600 text-lg max-w-2xl lg:mx-0 mx-auto">
-                Learn, deploy, and maintain Kubernetes clusters with ease. Hands‑on guides, visual explainers, and practical Day‑1 to Day‑2 playbooks designed for developers, DevOps engineers, and SREs.
+                Master Kubernetes (K8s) container orchestration with free tutorials. Learn Kubernetes from Day-1 basics to Day-2 production operations. Comprehensive guides covering kubectl, pods, services, deployments, monitoring, and troubleshooting.
               </p>
               <div className="mt-6 text-slate-600 max-w-2xl lg:mx-0 mx-auto">
                 <p className="mb-3">
-                  Whether you're getting started with container orchestration or scaling production workloads, our comprehensive <SafeLink to="/learn/what-is-kubernetes" className="text-indigo-600 hover:underline font-medium">Kubernetes tutorials</SafeLink> cover everything from Kubernetes fundamentals to advanced operational patterns. We break down complex concepts into digestible tutorials with real-world examples and best practices.
+                  Whether you're getting started with Kubernetes container orchestration or scaling production Kubernetes clusters, our comprehensive <SafeLink to="/learn/what-is-kubernetes" className="text-indigo-600 hover:underline font-medium">free Kubernetes tutorials</SafeLink> cover everything from Kubernetes fundamentals to advanced operational patterns. We break down complex Kubernetes concepts into digestible tutorials with real-world examples and Kubernetes best practices.
                 </p>
                 <p className="mb-3">
-                  Our <SafeLink to="/#day1" className="text-indigo-600 hover:underline font-medium">Day-1 Kubernetes guides</SafeLink> help you understand the core architecture, components, and workflows. Learn about <SafeLink to="/learn/pods-nodes-services" className="text-indigo-600 hover:underline">pods and services</SafeLink>, <SafeLink to="/learn/workloads" className="text-indigo-600 hover:underline">deployments</SafeLink>, and the <SafeLink to="/learn/control-plane" className="text-indigo-600 hover:underline">control plane</SafeLink> through clear explanations and hands-on examples. Each guide builds upon the previous one, creating a structured learning path.
+                  Our <SafeLink to="/#day1" className="text-indigo-600 hover:underline font-medium">Day-1 Kubernetes guides</SafeLink> help you understand Kubernetes core architecture, Kubernetes components, and Kubernetes workflows. Learn about <SafeLink to="/learn/pods-nodes-services" className="text-indigo-600 hover:underline">Kubernetes pods and services</SafeLink>, <SafeLink to="/learn/workloads" className="text-indigo-600 hover:underline">Kubernetes deployments</SafeLink>, and the <SafeLink to="/learn/control-plane" className="text-indigo-600 hover:underline">Kubernetes control plane</SafeLink> through clear explanations and hands-on kubectl examples. Each Kubernetes tutorial builds upon the previous one, creating a structured Kubernetes learning path.
                 </p>
                 <p>
-                  <SafeLink to="/#day2" className="text-indigo-600 hover:underline font-medium">Day-2 operations guides</SafeLink> focus on reliability, monitoring, and optimization. Discover how to <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">monitor cluster health</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">configure probes</SafeLink>, <SafeLink to="/ops/smart-alerts" className="text-indigo-600 hover:underline">set up alerting</SafeLink>, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">optimize costs</SafeLink>, and maintain production-ready clusters. These guides are essential for teams running Kubernetes in production environments.
+                  <SafeLink to="/#day2" className="text-indigo-600 hover:underline font-medium">Day-2 Kubernetes operations guides</SafeLink> focus on Kubernetes reliability, Kubernetes monitoring, and Kubernetes optimization. Discover how to <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">monitor Kubernetes cluster health</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">configure Kubernetes probes</SafeLink>, <SafeLink to="/ops/smart-alerts" className="text-indigo-600 hover:underline">set up Kubernetes alerting</SafeLink>, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">optimize Kubernetes costs</SafeLink>, and maintain production-ready Kubernetes clusters. These Kubernetes guides are essential for teams running Kubernetes in production environments.
                 </p>
               </div>
               <div className="mt-8 flex justify-center lg:justify-start gap-3">
@@ -168,14 +168,14 @@ export default function Landing() {
 
       <section id="day1" className="py-20 bg-slate-50 border-y border-slate-200">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-2">Day‑1: Core Concepts</h2>
-          <p className="text-slate-600 mb-6">Understand Kubernetes fundamentals — from pods to networking — with simple, visual lessons.</p>
+          <h2 className="text-3xl font-bold mb-2">Day‑1: Kubernetes Core Concepts & Fundamentals</h2>
+          <p className="text-slate-600 mb-6">Master Kubernetes fundamentals — from Kubernetes pods to Kubernetes networking — with comprehensive Kubernetes tutorials and visual lessons.</p>
           <div className="mb-8 text-slate-700 max-w-3xl">
             <p className="mb-4">
-              Day-1 Kubernetes learning focuses on understanding the foundational concepts and architecture. These <SafeLink to="/learn/core-components" className="text-indigo-600 hover:underline">Kubernetes guides</SafeLink> are designed for developers and engineers who are new to Kubernetes or want to strengthen their understanding of core concepts. Each tutorial covers essential topics with practical examples and clear explanations.
+              Day-1 Kubernetes learning focuses on understanding Kubernetes foundational concepts and Kubernetes architecture. These <SafeLink to="/learn/core-components" className="text-indigo-600 hover:underline">Kubernetes tutorials</SafeLink> are designed for developers and engineers who are new to Kubernetes container orchestration or want to strengthen their understanding of Kubernetes core concepts. Each Kubernetes guide covers essential Kubernetes topics with practical kubectl examples and clear explanations.
             </p>
             <p>
-              Our Day-1 curriculum covers container orchestration basics, <SafeLink to="/learn/core-components" className="text-indigo-600 hover:underline">Kubernetes architecture</SafeLink>, pod and service management, deployment strategies, control plane components, and essential <SafeLink to="/learn/basic-troubleshooting" className="text-indigo-600 hover:underline">troubleshooting commands</SafeLink>. These fundamentals form the foundation for working effectively with Kubernetes in any environment.
+              Our Day-1 Kubernetes curriculum covers Kubernetes container orchestration basics, <SafeLink to="/learn/core-components" className="text-indigo-600 hover:underline">Kubernetes cluster architecture</SafeLink>, Kubernetes pod and service management, Kubernetes deployment strategies, Kubernetes control plane components, and essential <SafeLink to="/learn/basic-troubleshooting" className="text-indigo-600 hover:underline">Kubernetes troubleshooting commands</SafeLink>. These Kubernetes fundamentals form the foundation for working effectively with Kubernetes clusters in any environment.
             </p>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -207,14 +207,14 @@ export default function Landing() {
 
       <section id="day2" className="py-20 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-2">Day‑2: Monitoring & Reliability</h2>
-          <p className="text-slate-600 mb-6">Master probes, metrics, and smart alerts to keep clusters healthy and predictable.</p>
+          <h2 className="text-3xl font-bold mb-2">Day‑2: Kubernetes Monitoring & Production Operations</h2>
+          <p className="text-slate-600 mb-6">Master Kubernetes probes, Kubernetes metrics, and smart Kubernetes alerts to keep Kubernetes clusters healthy and predictable in production.</p>
           <div className="mb-8 text-slate-700 max-w-3xl">
             <p className="mb-4">
-              Day-2 operations are critical for maintaining healthy, reliable Kubernetes clusters in production. These <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">Kubernetes operations guides</SafeLink> focus on operational excellence, monitoring strategies, and reliability patterns that ensure your applications run smoothly at scale. Learn how experienced SRE teams manage Kubernetes infrastructure.
+              Day-2 Kubernetes operations are critical for maintaining healthy, reliable Kubernetes clusters in production. These <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">Kubernetes operations guides</SafeLink> focus on Kubernetes operational excellence, Kubernetes monitoring strategies, and Kubernetes reliability patterns that ensure your Kubernetes applications run smoothly at scale. Learn how experienced Kubernetes SRE teams manage Kubernetes infrastructure.
             </p>
             <p>
-              Our Day-2 operations guides cover <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">cluster health monitoring</SafeLink>, <SafeLink to="/ops/monitor-pods" className="text-indigo-600 hover:underline">pod resource tracking</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">health probe configuration</SafeLink>, intelligent alerting strategies, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">cost optimization</SafeLink>, and comprehensive <SafeLink to="/ops/day2-checklist" className="text-indigo-600 hover:underline">operational checklists</SafeLink>. These practices help teams prevent incidents, reduce costs, and maintain service level objectives (SLOs) in production environments.
+              Our Day-2 Kubernetes operations guides cover <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">Kubernetes cluster health monitoring</SafeLink>, <SafeLink to="/ops/monitor-pods" className="text-indigo-600 hover:underline">Kubernetes pod resource tracking</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">Kubernetes health probe configuration</SafeLink>, intelligent Kubernetes alerting strategies, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">Kubernetes cost optimization</SafeLink>, and comprehensive <SafeLink to="/ops/day2-checklist" className="text-indigo-600 hover:underline">Kubernetes operational checklists</SafeLink>. These Kubernetes practices help teams prevent incidents, reduce Kubernetes costs, and maintain service level objectives (SLOs) in production Kubernetes environments.
             </p>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -285,6 +285,6 @@ export default function Landing() {
           <p className="text-sm text-slate-500">© {new Date().getFullYear()} Kubernetes Community</p>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

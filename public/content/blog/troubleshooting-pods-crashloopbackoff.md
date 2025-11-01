@@ -3,7 +3,10 @@ title: Troubleshooting Kubernetes Pods in CrashLoopBackOff State
 description: Complete guide to diagnosing and fixing pods stuck in CrashLoopBackOff state, including common causes and step-by-step solutions.
 date: 2024-12-17
 category: Troubleshooting
+image: /images/blog-crashloopbackoff.svg
 ---
+
+![Troubleshooting Kubernetes Pods in CrashLoopBackOff State](/images/blog-crashloopbackoff.svg)
 
 # Troubleshooting Kubernetes Pods in CrashLoopBackOff State
 

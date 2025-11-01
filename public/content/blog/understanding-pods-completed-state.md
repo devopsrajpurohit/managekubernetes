@@ -3,7 +3,10 @@ title: Understanding Kubernetes Pods in Completed State
 description: Learn when Completed state is normal vs problematic, and how to handle completed pods for jobs, batch processes, and long-running applications.
 date: 2024-12-22
 category: Kubernetes Concepts
+image: /images/blog-completed-state.svg
 ---
+
+![Understanding Kubernetes Pods in Completed State](/images/blog-completed-state.svg)
 
 # Understanding Kubernetes Pods in Completed State
 

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="pendingBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef3c7" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#fde68a" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="pendingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#pendingBg)" rx="8"/>
+  
+  <!-- Pending pod icon -->
+  <g transform="translate(200, 100)">
+    <circle cx="0" cy="0" r="40" fill="url(#pendingGrad)" opacity="0.9"/>
+    <circle cx="0" cy="0" r="30" fill="#fff" opacity="0.9"/>
+    <text x="0" y="8" font-family="system-ui" font-size="24" font-weight="bold" fill="#f59e0b" text-anchor="middle">⏳</text>
+  </g>
+  
+  <!-- Clock icon -->
+  <g transform="translate(130, 100)">
+    <circle cx="0" cy="0" r="20" fill="#fff" opacity="0.8"/>
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#f59e0b" stroke-width="2"/>
+    <line x1="0" y1="0" x2="0" y2="-8" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+    <line x1="0" y1="0" x2="5" y2="0" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Question mark -->
+  <g transform="translate(270, 100)">
+    <circle cx="0" cy="0" r="20" fill="#fff" opacity="0.8"/>
+    <text x="0" y="8" font-family="system-ui" font-size="20" font-weight="bold" fill="#f59e0b" text-anchor="middle">?</text>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="170" font-family="system-ui" font-size="16" font-weight="600" fill="#92400e" text-anchor="middle">Pod Pending State</text>
+  <text x="200" y="195" font-family="system-ui" font-size="12" fill="#92400e" text-anchor="middle" opacity="0.8">Scheduling Issues & Resource Problems</text>
+</svg>
+

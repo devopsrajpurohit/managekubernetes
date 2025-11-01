@@ -3,7 +3,10 @@ title: Debugging Kubernetes Applications: Common Issues and Solutions
 description: A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips.
 date: 2024-12-05
 category: Troubleshooting
+image: /images/blog-debugging.svg
 ---
+
+![Debugging Kubernetes Applications](/images/blog-debugging.svg)
 
 # Debugging Kubernetes Applications: Common Issues and Solutions
 

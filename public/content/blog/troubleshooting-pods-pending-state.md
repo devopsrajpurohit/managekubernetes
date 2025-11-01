@@ -3,7 +3,10 @@ title: Troubleshooting Kubernetes Pods Stuck in Pending State
 description: Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration.
 date: 2024-12-18
 category: Troubleshooting
+image: /images/blog-pending-state.svg
 ---
+
+![Troubleshooting Kubernetes Pods in Pending State](/images/blog-pending-state.svg)
 
 # Troubleshooting Kubernetes Pods Stuck in Pending State
 

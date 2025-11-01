@@ -3,7 +3,10 @@ title: Troubleshooting Kubernetes Image Pull Errors
 description: Complete guide to fixing ImagePullBackOff and ErrImagePull errors, including authentication, registry access, and network issues.
 date: 2024-12-16
 category: Troubleshooting
+image: /images/blog-image-pull.svg
 ---
+
+![Troubleshooting Kubernetes Image Pull Errors](/images/blog-image-pull.svg)
 
 # Troubleshooting Kubernetes Image Pull Errors
 

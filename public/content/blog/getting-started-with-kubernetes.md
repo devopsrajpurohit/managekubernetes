@@ -3,7 +3,10 @@ title: Getting Started with Kubernetes: A Complete Guide
 description: Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster.
 date: 2024-12-15
 category: Getting Started
+image: /images/blog-getting-started.svg
 ---
+
+![Getting Started with Kubernetes](/images/blog-getting-started.svg)
 
 # Getting Started with Kubernetes: A Complete Guide
 

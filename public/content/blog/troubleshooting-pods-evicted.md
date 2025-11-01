@@ -3,7 +3,10 @@ title: Troubleshooting Kubernetes Pods in Evicted State
 description: Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios.
 date: 2024-12-20
 category: Troubleshooting
+image: /images/blog-evicted.svg
 ---
+
+![Troubleshooting Kubernetes Pods in Evicted State](/images/blog-evicted.svg)
 
 # Troubleshooting Kubernetes Pods in Evicted State
 

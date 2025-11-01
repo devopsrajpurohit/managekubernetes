@@ -3,7 +3,10 @@ title: Kubernetes Best Practices for Production
 description: Essential best practices for running Kubernetes in production environments, including security, resource management, and monitoring.
 date: 2024-12-10
 category: Best Practices
+image: /images/blog-best-practices.svg
 ---
+
+![Kubernetes Best Practices for Production](/images/blog-best-practices.svg)
 
 # Kubernetes Best Practices for Production
 

@@ -293,8 +293,8 @@ export default function MarkdownPage({ basePath, kind }) {
   const categoryPath = kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <main className="min-h-screen bg-white">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Breadcrumb Navigation */}
         <nav className="mb-6 flex items-center gap-2 text-sm text-slate-600" aria-label="Breadcrumb">
           <a href="/" className="hover:text-indigo-700 transition">Home</a>
@@ -372,85 +372,9 @@ export default function MarkdownPage({ basePath, kind }) {
         ) : (
           <>
             <article className="markdown-content max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
-            
-            {/* Related Articles Section for Internal Linking */}
-            {!loading && kind && (
-              <div className="mt-12 pt-8 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Related Guides</h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {kind === 'learn' && (
-                    <>
-                      <a href="/learn/what-is-kubernetes" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">What is Kubernetes?</h4>
-                        <p className="text-sm text-slate-600">Introduction to Kubernetes and container orchestration</p>
-                      </a>
-                      <a href="/learn/core-components" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Core Components</h4>
-                        <p className="text-sm text-slate-600">Understanding the Kubernetes control plane</p>
-                      </a>
-                      <a href="/learn/pods-nodes-services" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Pods & Services</h4>
-                        <p className="text-sm text-slate-600">Networking and pod management basics</p>
-                      </a>
-                      <a href="/learn/basic-troubleshooting" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Troubleshooting Basics</h4>
-                        <p className="text-sm text-slate-600">Essential kubectl commands for debugging</p>
-                      </a>
-                    </>
-                  )}
-                  {kind === 'ops' && (
-                    <>
-                      <a href="/ops/check-cluster-health" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Check Cluster Health</h4>
-                        <p className="text-sm text-slate-600">Monitor node conditions and component status</p>
-                      </a>
-                      <a href="/ops/monitor-pods" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Monitor Pods & Resources</h4>
-                        <p className="text-sm text-slate-600">Track CPU, memory, and resource usage</p>
-                      </a>
-                      <a href="/ops/probes" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Health Probes</h4>
-                        <p className="text-sm text-slate-600">Configure liveness and readiness probes</p>
-                      </a>
-                      <a href="/ops/day2-checklist" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
-                        <h4 className="font-semibold text-slate-800 mb-1">Day-2 Checklist</h4>
-                        <p className="text-sm text-slate-600">Weekly operations checklist</p>
-                      </a>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Citation & Backlink Section */}
-            {!loading && metaData.title && (
-              <div className="mt-8 pt-8 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4">Cite this article</h3>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-slate-600 mb-2">
-                    <strong>MLA Format:</strong>
-                  </p>
-                  <code className="block text-xs text-slate-700 bg-white p-3 rounded border border-slate-200 mb-3 break-all">
-                    "{metaData.title}." <em>Kubernetes Community</em>, {new Date().getFullYear()}, {pageUrl.replace('https://', '').replace('http://', '')}. Accessed {new Date().toLocaleDateString()}.
-                  </code>
-                  <p className="text-sm text-slate-600 mb-2">
-                    <strong>APA Format:</strong>
-                  </p>
-                  <code className="block text-xs text-slate-700 bg-white p-3 rounded border border-slate-200 break-all">
-                    Kubernetes Community. ({new Date().getFullYear()}). <em>{metaData.title}</em>. Retrieved from {pageUrl}
-                  </code>
-                </div>
-                <p className="text-xs text-slate-500">
-                  Link to this page: <a href={pageUrl} className="text-indigo-600 hover:underline break-all">{pageUrl}</a>
-                </p>
-                <p className="text-xs text-slate-500 mt-2">
-                  <strong>Why link to us?</strong> Linking to this guide helps others discover high-quality Kubernetes resources and improves search engine visibility for the community.
-                </p>
-              </div>
-            )}
           </>
         )}
       </div>
-    </div>
+    </main>
   )
 }
