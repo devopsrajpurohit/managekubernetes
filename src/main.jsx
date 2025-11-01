@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import Landing from './pages/Landing.jsx'
+import Blog from './pages/Blog.jsx'
 import MarkdownPage from './components/MarkdownPage.jsx'
 import { trackPageView } from './utils/analytics.js'
 import { setupAnalytics } from './utils/setupAnalytics.js'
@@ -29,6 +30,7 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/learn/:slug" element={<MarkdownPage basePath="/content/learn" kind="learn" />} />
         <Route path="/ops/:slug" element={<MarkdownPage basePath="/content/ops" kind="ops" />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<MarkdownPage basePath="/content/blog" kind="blog" />} />
       </Routes>
     </BrowserRouter>
