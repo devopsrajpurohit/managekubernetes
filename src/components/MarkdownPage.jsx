@@ -4,7 +4,28 @@ import { marked } from 'marked'
 import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Facebook } from 'lucide-react'
 import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
 
-marked.setOptions({ gfm: true, breaks: true })
+// Configure image renderer to ensure images load properly
+const renderer = {
+  image(href, title, text) {
+    // Ensure relative paths work correctly
+    let imageSrc = href || ''
+    if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('//') && !imageSrc.startsWith('data:')) {
+      // If it's already an absolute path starting with /, keep it
+      if (!imageSrc.startsWith('/')) {
+        imageSrc = `/${imageSrc}`
+      }
+    }
+    return `<img src="${imageSrc}" alt="${text || ''}" title="${title || ''}" loading="lazy" />`
+  }
+}
+
+marked.setOptions({ 
+  gfm: true, 
+  breaks: true,
+  mangle: false,
+  headerIds: false,
+  renderer
+})
 
 // Simple frontmatter parser for browser (replaces gray-matter)
 function parseFrontmatter(text) {
@@ -55,6 +76,24 @@ export default function MarkdownPage({ basePath, kind }) {
       trackMarkdownView(slug, kind)
     }
   }, [slug, kind])
+  
+  // Handle image loading after HTML is set
+  useEffect(() => {
+    if (!loading && html) {
+      // Ensure images load properly
+      const images = document.querySelectorAll('.markdown-content img')
+      images.forEach(img => {
+        // Log image source for debugging
+        console.log('Image found:', img.src, img.alt)
+        img.addEventListener('error', (e) => {
+          console.error('Image failed to load:', e.target.src)
+        })
+        img.addEventListener('load', () => {
+          console.log('Image loaded successfully:', img.src)
+        })
+      })
+    }
+  }, [html, loading])
   
   useEffect(() => {
     if (!slug) {
@@ -371,7 +410,10 @@ export default function MarkdownPage({ basePath, kind }) {
           </div>
         ) : (
           <>
-            <article className="markdown-content max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+            <article 
+              className="markdown-content max-w-none" 
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
           </>
         )}
       </div>

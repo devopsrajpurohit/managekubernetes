@@ -161,11 +161,11 @@ export default function Blog() {
                 className="group block rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-lg hover:border-indigo-300"
               >
                 {post.image && (
-                  <div className="w-full h-48 bg-slate-50 overflow-hidden">
+                  <div className="w-full h-48 bg-gradient-to-br from-slate-50 to-slate-100 overflow-hidden flex items-center justify-center">
                     <img
                       src={post.image}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
                   </div>
