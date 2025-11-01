@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Cloud, Server, Cpu, HeartPulse, Users } from 'lucide-react';
 import { Link, useInRouterContext } from 'react-router-dom';
@@ -64,6 +64,33 @@ function SafeLink({ to, children, onClick, 'data-card-title': cardTitle, ...prop
 }
 
 export default function Landing() {
+  // Add BreadcrumbList structured data for better SEO
+  useEffect(() => {
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": typeof window !== 'undefined' ? window.location.origin : "https://example.com"
+        }
+      ]
+    }
+    
+    const schemaScript = document.createElement('script')
+    schemaScript.type = 'application/ld+json'
+    schemaScript.setAttribute('data-schema', 'breadcrumb')
+    schemaScript.textContent = JSON.stringify(breadcrumbSchema)
+    document.head.appendChild(schemaScript)
+    
+    return () => {
+      const existing = document.querySelector('script[data-schema="breadcrumb"]')
+      if (existing) existing.remove()
+    }
+  }, [])
+
   const day1 = [
     { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'What is Kubernetes?', blurb: 'Why teams use it, when not to, and what problems it solves.', to: '/learn/what-is-kubernetes', image: '/images/k8s-intro.svg' },
     { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Core Components', blurb: 'API server, scheduler, controller manager, etcd — the control plane at a glance.', to: '/learn/core-components', image: '/images/k8s-components.svg' },
@@ -111,8 +138,19 @@ export default function Landing() {
                 Simplify Kubernetes – From Setup to Scale
               </motion.h1>
               <p className="mt-4 text-slate-600 text-lg max-w-2xl lg:mx-0 mx-auto">
-                Learn, deploy, and maintain Kubernetes clusters with ease. Hands‑on guides, visual explainers, and practical Day‑1 to Day‑2 playbooks.
+                Learn, deploy, and maintain Kubernetes clusters with ease. Hands‑on guides, visual explainers, and practical Day‑1 to Day‑2 playbooks designed for developers, DevOps engineers, and SREs.
               </p>
+              <div className="mt-6 text-slate-600 max-w-2xl lg:mx-0 mx-auto">
+                <p className="mb-3">
+                  Whether you're getting started with container orchestration or scaling production workloads, our comprehensive guides cover everything from Kubernetes fundamentals to advanced operational patterns. We break down complex concepts into digestible tutorials with real-world examples and best practices.
+                </p>
+                <p className="mb-3">
+                  Our Day-1 guides help you understand the core architecture, components, and workflows of Kubernetes. Learn about pods, services, deployments, and the control plane through clear explanations and hands-on examples. Each guide builds upon the previous one, creating a structured learning path.
+                </p>
+                <p>
+                  Day-2 operations guides focus on reliability, monitoring, and optimization. Discover how to monitor cluster health, configure probes, set up alerting, optimize costs, and maintain production-ready clusters. These guides are essential for teams running Kubernetes in production environments.
+                </p>
+              </div>
               <div className="mt-8 flex justify-center lg:justify-start gap-3">
                 <a href="#day1" className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition shadow-sm">Explore Day‑1</a>
                 <a href="#day2" className="rounded-full border border-slate-300 px-6 py-3 font-semibold hover:bg-slate-50 transition">Explore Day‑2</a>
@@ -131,7 +169,15 @@ export default function Landing() {
       <section id="day1" className="py-20 bg-slate-50 border-y border-slate-200">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-2">Day‑1: Core Concepts</h2>
-          <p className="text-slate-600">Understand Kubernetes fundamentals — from pods to networking — with simple, visual lessons.</p>
+          <p className="text-slate-600 mb-6">Understand Kubernetes fundamentals — from pods to networking — with simple, visual lessons.</p>
+          <div className="mb-8 text-slate-700 max-w-3xl">
+            <p className="mb-4">
+              Day-1 Kubernetes learning focuses on understanding the foundational concepts and architecture. These guides are designed for developers and engineers who are new to Kubernetes or want to strengthen their understanding of core concepts. Each tutorial covers essential topics with practical examples and clear explanations.
+            </p>
+            <p>
+              Our Day-1 curriculum covers container orchestration basics, Kubernetes architecture, pod and service management, deployment strategies, control plane components, and essential troubleshooting commands. These fundamentals form the foundation for working effectively with Kubernetes in any environment.
+            </p>
+          </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {day1.map((card) => (
               <SafeLink 
@@ -162,7 +208,15 @@ export default function Landing() {
       <section id="day2" className="py-20 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-2">Day‑2: Monitoring & Reliability</h2>
-          <p className="text-slate-600">Master probes, metrics, and smart alerts to keep clusters healthy and predictable.</p>
+          <p className="text-slate-600 mb-6">Master probes, metrics, and smart alerts to keep clusters healthy and predictable.</p>
+          <div className="mb-8 text-slate-700 max-w-3xl">
+            <p className="mb-4">
+              Day-2 operations are critical for maintaining healthy, reliable Kubernetes clusters in production. These guides focus on operational excellence, monitoring strategies, and reliability patterns that ensure your applications run smoothly at scale. Learn how experienced SRE teams manage Kubernetes infrastructure.
+            </p>
+            <p>
+              Our Day-2 operations guides cover cluster health monitoring, pod resource tracking, health probe configuration, intelligent alerting strategies, cost optimization techniques, and comprehensive operational checklists. These practices help teams prevent incidents, reduce costs, and maintain service level objectives (SLOs) in production environments.
+            </p>
+          </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {day2.map((card) => (
               <SafeLink 
@@ -191,10 +245,24 @@ export default function Landing() {
       </section>
 
       <section id="community" className="py-20 bg-slate-50 border-t border-slate-200">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <Users className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-          <h2 className="text-3xl font-bold mb-3">Ask the Community</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto mb-8">Share questions, troubleshoot issues, and get real-world advice from Kubernetes engineers and SREs.</p>
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <Users className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
+            <h2 className="text-3xl font-bold mb-3">Join the Kubernetes Community</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto mb-4">Share questions, troubleshoot issues, and get real-world advice from Kubernetes engineers and SREs.</p>
+          </div>
+          <div className="max-w-3xl mx-auto text-slate-700 mb-8">
+            <p className="mb-4">
+              Learning Kubernetes is more effective when you're part of a community. Connect with other engineers who are building, deploying, and maintaining Kubernetes clusters. Share your experiences, ask questions, and contribute your knowledge to help others succeed.
+            </p>
+            <p className="mb-4">
+              Our community provides a space for discussing best practices, troubleshooting common issues, and staying updated with the latest Kubernetes developments. Whether you're working on Day-1 basics or Day-2 operations, there's always something new to learn and share.
+            </p>
+            <p>
+              Join discussions on cluster configuration, deployment strategies, monitoring approaches, and cost optimization. The collective knowledge of the community helps everyone build better, more reliable Kubernetes infrastructure.
+            </p>
+          </div>
+          <div className="text-center">
           <div className="flex flex-wrap justify-center gap-4">
             <a 
               href="https://discord.gg/YOUR_INVITE" 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { marked } from 'marked'
-import { ArrowLeft } from 'lucide-react'
-import { trackMarkdownView } from '../utils/analytics.js'
+import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Facebook } from 'lucide-react'
+import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
 
 marked.setOptions({ gfm: true, breaks: true })
 
@@ -38,9 +38,16 @@ function parseFrontmatter(text) {
 export default function MarkdownPage({ basePath, kind }) {
   const { slug } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [html, setHtml] = useState('<p>Loading…</p>')
   const [loading, setLoading] = useState(true)
   const [metaData, setMetaData] = useState({ title: '', description: '' })
+  const [urlCopied, setUrlCopied] = useState(false)
+  
+  // Get current page URL
+  const pageUrl = typeof window !== 'undefined' 
+    ? window.location.href 
+    : `${location.pathname}`
   
   // Track markdown page view
   useEffect(() => {
@@ -96,6 +103,104 @@ export default function MarkdownPage({ basePath, kind }) {
           if (metaDesc && parsed.data.description) {
             metaDesc.setAttribute('content', parsed.data.description)
           }
+          
+          // Add Article structured data for better SEO and backlinks
+          if (typeof window !== 'undefined' && parsed.data.title) {
+            const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
+            
+            // Article Schema
+            const articleSchema = {
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": parsed.data.title,
+              "description": parsed.data.description || parsed.data.title,
+              "url": window.location.href,
+              "datePublished": new Date().toISOString(),
+              "dateModified": new Date().toISOString(),
+              "author": {
+                "@type": "Organization",
+                "name": "Kubernetes Community"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Kubernetes Community",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": `${window.location.origin}/images/hero.svg`
+                }
+              },
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": window.location.href
+              },
+              "inLanguage": "en-US",
+              "isAccessibleForFree": true,
+              "articleSection": categoryName
+            }
+            
+            // Breadcrumb Schema
+            const breadcrumbSchema = {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": window.location.origin
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": categoryName,
+                  "item": `${window.location.origin}${kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'}`
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": parsed.data.title,
+                  "item": window.location.href
+                }
+              ]
+            }
+            
+            // Remove existing schemas if any
+            const existingArticle = document.querySelector('script[data-schema="article"]')
+            const existingBreadcrumb = document.querySelector('script[data-schema="breadcrumb"]')
+            if (existingArticle) existingArticle.remove()
+            if (existingBreadcrumb) existingBreadcrumb.remove()
+            
+            // Add article schema
+            const articleScript = document.createElement('script')
+            articleScript.type = 'application/ld+json'
+            articleScript.setAttribute('data-schema', 'article')
+            articleScript.textContent = JSON.stringify(articleSchema)
+            document.head.appendChild(articleScript)
+            
+            // Add breadcrumb schema
+            const breadcrumbScript = document.createElement('script')
+            breadcrumbScript.type = 'application/ld+json'
+            breadcrumbScript.setAttribute('data-schema', 'breadcrumb')
+            breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
+            document.head.appendChild(breadcrumbScript)
+            
+            // Update canonical URL
+            let canonical = document.querySelector('link[rel="canonical"]')
+            if (!canonical) {
+              canonical = document.createElement('link')
+              canonical.rel = 'canonical'
+              document.head.appendChild(canonical)
+            }
+            canonical.href = window.location.href
+            
+            // Update Open Graph meta tags
+            const ogTitle = document.querySelector('meta[property="og:title"]')
+            const ogDesc = document.querySelector('meta[property="og:description"]')
+            const ogUrl = document.querySelector('meta[property="og:url"]')
+            if (ogTitle) ogTitle.setAttribute('content', `${parsed.data.title} | Kubernetes Community`)
+            if (ogDesc) ogDesc.setAttribute('content', parsed.data.description || parsed.data.title)
+            if (ogUrl) ogUrl.setAttribute('content', window.location.href)
+          }
         }
         
         // Parse markdown to HTML
@@ -138,22 +243,212 @@ export default function MarkdownPage({ basePath, kind }) {
       })
   }, [slug, basePath])
   
+  const copyToClipboard = () => {
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(pageUrl).then(() => {
+        setUrlCopied(true)
+        trackEvent('link_copied', {
+          event_category: 'engagement',
+          event_label: 'Copy URL',
+          page_url: pageUrl
+        })
+        setTimeout(() => setUrlCopied(false), 2000)
+      })
+    }
+  }
+
+  const shareToTwitter = () => {
+    const text = encodeURIComponent(`${metaData.title || slug} - Kubernetes Community`)
+    const url = encodeURIComponent(pageUrl)
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'noopener,noreferrer')
+    trackEvent('social_share', {
+      event_category: 'engagement',
+      event_label: 'Twitter Share',
+      page_url: pageUrl
+    })
+  }
+
+  const shareToLinkedIn = () => {
+    const url = encodeURIComponent(pageUrl)
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'noopener,noreferrer')
+    trackEvent('social_share', {
+      event_category: 'engagement',
+      event_label: 'LinkedIn Share',
+      page_url: pageUrl
+    })
+  }
+
+  const shareToFacebook = () => {
+    const url = encodeURIComponent(pageUrl)
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'noopener,noreferrer')
+    trackEvent('social_share', {
+      event_category: 'engagement',
+      event_label: 'Facebook Share',
+      page_url: pageUrl
+    })
+  }
+
+  // Breadcrumb navigation for better SEO
+  const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
+  const categoryPath = kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Breadcrumb Navigation */}
+        <nav className="mb-6 flex items-center gap-2 text-sm text-slate-600" aria-label="Breadcrumb">
+          <a href="/" className="hover:text-indigo-700 transition">Home</a>
+          <span>/</span>
+          <a href={categoryPath} className="hover:text-indigo-700 transition">{categoryName}</a>
+          <span>/</span>
+          <span className="text-slate-800 font-medium">{metaData.title || slug}</span>
+        </nav>
+        
         <button
           onClick={() => navigate('/')}
-          className="mb-8 flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-700 transition"
+          className="mb-6 flex items-center gap-2 text-sm text-slate-600 hover:text-indigo-700 transition"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </button>
+        
+        {/* Share & Citation Bar */}
+        {!loading && metaData.title && (
+          <div className="mb-8 flex flex-wrap items-center gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Share2 className="h-4 w-4" />
+              <span className="font-medium">Share this guide:</span>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={shareToTwitter}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition"
+                aria-label="Share on Twitter"
+              >
+                <Twitter className="h-4 w-4" />
+                <span className="hidden sm:inline">Twitter</span>
+              </button>
+              <button
+                onClick={shareToLinkedIn}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition"
+                aria-label="Share on LinkedIn"
+              >
+                <Linkedin className="h-4 w-4" />
+                <span className="hidden sm:inline">LinkedIn</span>
+              </button>
+              <button
+                onClick={shareToFacebook}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition"
+                aria-label="Share on Facebook"
+              >
+                <Facebook className="h-4 w-4" />
+                <span className="hidden sm:inline">Facebook</span>
+              </button>
+              <button
+                onClick={copyToClipboard}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition"
+                aria-label="Copy link"
+              >
+                {urlCopied ? (
+                  <>
+                    <Check className="h-4 w-4 text-green-600" />
+                    <span className="hidden sm:inline text-green-600">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <LinkIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">Copy Link</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center py-20">
             <p className="text-slate-600">Loading…</p>
           </div>
         ) : (
-          <article className="markdown-content max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+          <>
+            <article className="markdown-content max-w-none" dangerouslySetInnerHTML={{ __html: html }} />
+            
+            {/* Related Articles Section for Internal Linking */}
+            {!loading && kind && (
+              <div className="mt-12 pt-8 border-t border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Related Guides</h3>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {kind === 'learn' && (
+                    <>
+                      <a href="/learn/what-is-kubernetes" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">What is Kubernetes?</h4>
+                        <p className="text-sm text-slate-600">Introduction to Kubernetes and container orchestration</p>
+                      </a>
+                      <a href="/learn/core-components" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Core Components</h4>
+                        <p className="text-sm text-slate-600">Understanding the Kubernetes control plane</p>
+                      </a>
+                      <a href="/learn/pods-nodes-services" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Pods & Services</h4>
+                        <p className="text-sm text-slate-600">Networking and pod management basics</p>
+                      </a>
+                      <a href="/learn/basic-troubleshooting" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Troubleshooting Basics</h4>
+                        <p className="text-sm text-slate-600">Essential kubectl commands for debugging</p>
+                      </a>
+                    </>
+                  )}
+                  {kind === 'ops' && (
+                    <>
+                      <a href="/ops/check-cluster-health" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Check Cluster Health</h4>
+                        <p className="text-sm text-slate-600">Monitor node conditions and component status</p>
+                      </a>
+                      <a href="/ops/monitor-pods" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Monitor Pods & Resources</h4>
+                        <p className="text-sm text-slate-600">Track CPU, memory, and resource usage</p>
+                      </a>
+                      <a href="/ops/probes" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Health Probes</h4>
+                        <p className="text-sm text-slate-600">Configure liveness and readiness probes</p>
+                      </a>
+                      <a href="/ops/day2-checklist" className="block p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition">
+                        <h4 className="font-semibold text-slate-800 mb-1">Day-2 Checklist</h4>
+                        <p className="text-sm text-slate-600">Weekly operations checklist</p>
+                      </a>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Citation & Backlink Section */}
+            {!loading && metaData.title && (
+              <div className="mt-8 pt-8 border-t border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Cite this article</h3>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-slate-600 mb-2">
+                    <strong>MLA Format:</strong>
+                  </p>
+                  <code className="block text-xs text-slate-700 bg-white p-3 rounded border border-slate-200 mb-3 break-all">
+                    "{metaData.title}." <em>Kubernetes Community</em>, {new Date().getFullYear()}, {pageUrl.replace('https://', '').replace('http://', '')}. Accessed {new Date().toLocaleDateString()}.
+                  </code>
+                  <p className="text-sm text-slate-600 mb-2">
+                    <strong>APA Format:</strong>
+                  </p>
+                  <code className="block text-xs text-slate-700 bg-white p-3 rounded border border-slate-200 break-all">
+                    Kubernetes Community. ({new Date().getFullYear()}). <em>{metaData.title}</em>. Retrieved from {pageUrl}
+                  </code>
+                </div>
+                <p className="text-xs text-slate-500">
+                  Link to this page: <a href={pageUrl} className="text-indigo-600 hover:underline break-all">{pageUrl}</a>
+                </p>
+                <p className="text-xs text-slate-500 mt-2">
+                  <strong>Why link to us?</strong> Linking to this guide helps others discover high-quality Kubernetes resources and improves search engine visibility for the community.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

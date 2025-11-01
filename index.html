@@ -14,11 +14,11 @@
     <meta name="language" content="English" />
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://example.com/" />
+    <link rel="canonical" href="https://managekubernetes.com/" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://example.com/" />
+    <meta property="og:url" content="https://managekubernetes.com/" />
     <meta property="og:title" content="Kubernetes Tutorials & Guides | Learn K8s Day-1 Basics & Day-2 Operations" />
     <meta property="og:description" content="Comprehensive Kubernetes tutorials covering Day-1 basics and Day-2 operations. Learn Kubernetes with practical guides and hands-on examples." />
     <meta property="og:image" content="/images/hero.svg" />
@@ -28,7 +28,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://example.com/" />
+    <meta property="twitter:url" content="https://managekubernetes.com/" />
     <meta property="twitter:title" content="Kubernetes Tutorials & Guides | Learn K8s Day-1 Basics & Day-2 Operations" />
     <meta property="twitter:description" content="Comprehensive Kubernetes tutorials covering Day-1 basics and Day-2 operations. Learn Kubernetes with practical guides." />
     <meta property="twitter:image" content="/images/hero.svg" />
@@ -36,20 +36,27 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/images/hero.svg" />
     
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Sitemap (helps with indexing and backlinks) -->
+    <!-- Note: Update the URL in sitemap.xml to match your actual domain -->
+    
+    <!-- Structured Data (JSON-LD) for Better SEO and Backlinks -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "EducationalOrganization",
       "name": "Kubernetes Community",
       "description": "Learn Kubernetes with comprehensive tutorials covering Day-1 basics and Day-2 operations",
-      "url": "https://example.com",
-      "logo": "https://example.com/images/hero.svg",
+      "url": "https://managekubernetes.com",
+      "logo": "https://managekubernetes.com/images/hero.svg",
       "sameAs": [],
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Support"
       }
     }
     </script>
@@ -59,12 +66,68 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "Kubernetes Community",
-      "url": "https://example.com",
+      "url": "https://managekubernetes.com",
+      "description": "Comprehensive Kubernetes tutorials and guides for Day-1 basics and Day-2 operations",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://example.com/search?q={search_term_string}",
+        "target": "https://managekubernetes.com/search?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Kubernetes Learning Path",
+      "description": "Complete guide to learning Kubernetes from basics to advanced operations",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "What is Kubernetes?",
+          "url": "https://managekubernetes.com/learn/what-is-kubernetes"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Core Components",
+          "url": "https://managekubernetes.com/learn/core-components"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Pods & Services",
+          "url": "https://managekubernetes.com/learn/pods-nodes-services"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Deployments",
+          "url": "https://managekubernetes.com/learn/workloads"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Control Plane Overview",
+          "url": "https://managekubernetes.com/learn/control-plane"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Troubleshooting Basics",
+          "url": "https://managekubernetes.com/learn/basic-troubleshooting"
+        }
+      ]
     }
     </script>
     <!-- Google Analytics -->
