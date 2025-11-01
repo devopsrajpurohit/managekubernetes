@@ -263,19 +263,20 @@ export default function Landing() {
             </p>
           </div>
           <div className="text-center">
-          <div className="flex flex-wrap justify-center gap-4">
-            <a 
-              href="https://discord.gg/YOUR_INVITE" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition"
-              onClick={() => trackExternalLink('https://discord.gg/YOUR_INVITE', 'Join Discord')}
-            >
-              Join Discord
-            </a>
-            <SafeLink to="/blog" className="rounded-full border border-slate-300 px-6 py-3 font-semibold hover:bg-slate-50 transition">Read the Blog</SafeLink>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a 
+                href="https://discord.gg/YOUR_INVITE" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition"
+                onClick={() => trackExternalLink('https://discord.gg/YOUR_INVITE', 'Join Discord')}
+              >
+                Join Discord
+              </a>
+              <SafeLink to="/blog" className="rounded-full border border-slate-300 px-6 py-3 font-semibold hover:bg-slate-50 transition">Read the Blog</SafeLink>
+            </div>
+            <DiscordWidget />
           </div>
-          <DiscordWidget />
         </div>
       </section>
 
