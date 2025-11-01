@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="planeBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf5ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#f3e8ff" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="kubectlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="apiGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="etcdGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#22d3ee"/>
+    </linearGradient>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="240" fill="url(#planeBg)" rx="8"/>
+  
+  <!-- kubectl -->
+  <g transform="translate(80, 110)">
+    <rect x="-40" y="-30" width="80" height="60" rx="8" fill="url(#kubectlGrad)"/>
+    <text x="0" y="-8" font-family="system-ui" font-size="13" font-weight="700" fill="white" text-anchor="middle">kubectl</text>
+    <rect x="-30" y="5" width="60" height="15" rx="3" fill="white" opacity="0.3"/>
+    <text x="0" y="17" font-family="monospace" font-size="9" fill="white" text-anchor="middle">apply -f</text>
+  </g>
+  
+  <!-- API Server -->
+  <g transform="translate(200, 80)">
+    <circle cx="0" cy="0" r="40" fill="url(#apiGrad2)" filter="url(#glow2)"/>
+    <circle cx="0" cy="0" r="30" fill="#ec4899"/>
+    <text x="0" y="-8" font-family="system-ui" font-size="12" font-weight="700" fill="white" text-anchor="middle">API</text>
+    <text x="0" y="8" font-family="system-ui" font-size="12" font-weight="700" fill="white" text-anchor="middle">Server</text>
+  </g>
+  
+  <!-- etcd -->
+  <g transform="translate(320, 110)">
+    <rect x="-40" y="-30" width="80" height="60" rx="8" fill="url(#etcdGrad2)"/>
+    <rect x="-30" y="-20" width="60" height="40" rx="4" fill="white" opacity="0.2"/>
+    <rect x="-25" y="-15" width="50" height="10" rx="2" fill="white" opacity="0.4"/>
+    <rect x="-25" y="0" width="50" height="10" rx="2" fill="white" opacity="0.4"/>
+    <rect x="-25" y="15" width="50" height="10" rx="2" fill="white" opacity="0.4"/>
+    <text x="0" y="45" font-family="system-ui" font-size="11" font-weight="700" fill="#0891b2" text-anchor="middle">etcd</text>
+  </g>
+  
+  <!-- Flow arrows -->
+  <path d="M120,110 L160,110" stroke="#8b5cf6" stroke-width="3" marker-end="url(#arrowPlane)" opacity="0.8"/>
+  <path d="M240,110 L280,110" stroke="#ec4899" stroke-width="3" marker-end="url(#arrowPlane)" opacity="0.8"/>
+  
+  <!-- Controller and Scheduler (small icons) -->
+  <circle cx="180" cy="160" r="12" fill="#a855f7" opacity="0.6"/>
+  <circle cx="220" cy="160" r="12" fill="#ec4899" opacity="0.6"/>
+  <path d="M180,148 L220,148" stroke="#8b5cf6" stroke-width="2" opacity="0.4"/>
+  
+  <defs>
+    <marker id="arrowPlane" markerWidth="12" markerHeight="12" refX="11" refY="5" orient="auto">
+      <path d="M0,0 L0,10 L11,5 z" fill="#8b5cf6"/>
+    </marker>
+  </defs>
+  
+  <!-- Labels -->
+  <text x="200" y="195" font-family="system-ui" font-size="13" font-weight="600" fill="#7c3aed" text-anchor="middle">Request Flow</text>
+</svg>

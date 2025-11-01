@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="healthBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ecfdf5" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#d1fae5" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="healthyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="pulse">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="240" fill="url(#healthBg)" rx="8"/>
+  
+  <!-- Health check indicators -->
+  <g transform="translate(120, 80)">
+    <circle cx="0" cy="0" r="28" fill="url(#healthyGrad)" filter="url(#pulse)" opacity="0.9"/>
+    <circle cx="0" cy="0" r="20" fill="#10b981"/>
+    <path d="M-8,0 L-3,5 L8,-5" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <g transform="translate(200, 80)">
+    <circle cx="0" cy="0" r="28" fill="url(#healthyGrad)" filter="url(#pulse)" opacity="0.9"/>
+    <circle cx="0" cy="0" r="20" fill="#10b981"/>
+    <path d="M-8,0 L-3,5 L8,-5" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <g transform="translate(280, 80)">
+    <circle cx="0" cy="0" r="28" fill="url(#healthyGrad)" filter="url(#pulse)" opacity="0.9"/>
+    <circle cx="0" cy="0" r="20" fill="#10b981"/>
+    <path d="M-8,0 L-3,5 L8,-5" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+  
+  <!-- Status bar -->
+  <rect x="90" y="145" width="220" height="50" rx="8" fill="url(#healthyGrad)" opacity="0.9"/>
+  <rect x="95" y="150" width="210" height="40" rx="6" fill="white" opacity="0.2"/>
+  
+  <!-- Status indicators -->
+  <circle cx="120" cy="170" r="4" fill="white"/>
+  <circle cx="140" cy="170" r="4" fill="white"/>
+  <circle cx="160" cy="170" r="4" fill="white"/>
+  <circle cx="180" cy="170" r="4" fill="white"/>
+  <circle cx="200" cy="170" r="4" fill="white"/>
+  <circle cx="220" cy="170" r="4" fill="white"/>
+  <circle cx="240" cy="170" r="4" fill="white"/>
+  <circle cx="260" cy="170" r="4" fill="white"/>
+  <circle cx="280" cy="170" r="4" fill="white"/>
+  <circle cx="300" cy="170" r="4" fill="white"/>
+  
+  <text x="200" y="165" font-family="system-ui" font-size="14" font-weight="700" fill="white" text-anchor="middle">All Systems Operational</text>
+  <text x="200" y="210" font-family="system-ui" font-size="12" fill="#059669" text-anchor="middle">Cluster Health: Excellent</text>
+</svg>

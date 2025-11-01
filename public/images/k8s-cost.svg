@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="costBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ecfdf5" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#d1fae5" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="chartGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#costBg)" rx="8"/>
+  
+  <!-- Chart container -->
+  <rect x="70" y="50" width="260" height="120" rx="8" fill="white" stroke="#10b981" stroke-width="2" opacity="0.9"/>
+  
+  <!-- Y-axis labels -->
+  <text x="60" y="65" font-family="system-ui" font-size="9" fill="#64748b" text-anchor="end">$1000</text>
+  <text x="60" y="100" font-family="system-ui" font-size="9" fill="#64748b" text-anchor="end">$750</text>
+  <text x="60" y="135" font-family="system-ui" font-size="9" fill="#64748b" text-anchor="end">$500</text>
+  <text x="60" y="170" font-family="system-ui" font-size="9" fill="#64748b" text-anchor="end">$250</text>
+  
+  <!-- Area under curve -->
+  <path d="M90,170 L130,140 L170,120 L210,110 L250,105 L290,103 L330,102 L330,170 L90,170 Z" 
+        fill="url(#chartGrad2)"/>
+  
+  <!-- Optimized cost line -->
+  <path d="M90,170 L130,140 L170,120 L210,110 L250,105 L290,103 L330,102" 
+        stroke="url(#lineGrad)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Data points -->
+  <circle cx="90" cy="170" r="5" fill="#10b981"/>
+  <circle cx="130" cy="140" r="5" fill="#10b981"/>
+  <circle cx="170" cy="120" r="5" fill="#10b981"/>
+  <circle cx="210" cy="110" r="5" fill="#10b981"/>
+  <circle cx="250" cy="105" r="5" fill="#10b981"/>
+  <circle cx="290" cy="103" r="5" fill="#10b981"/>
+  <circle cx="330" cy="102" r="5" fill="#10b981"/>
+  
+  <!-- Grid lines -->
+  <line x1="85" y1="135" x2="335" y2="135" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="85" y1="150" x2="335" y2="150" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="85" y1="165" x2="335" y2="165" stroke="#e5e7eb" stroke-width="1"/>
+  
+  <!-- Savings indicator -->
+  <rect x="200" y="185" width="140" height="35" rx="6" fill="#10b981" opacity="0.9"/>
+  <text x="270" y="202" font-family="system-ui" font-size="12" font-weight="700" fill="white" text-anchor="middle">Savings: 75%</text>
+  <text x="270" y="215" font-family="system-ui" font-size="10" fill="white" opacity="0.9" text-anchor="middle">Cost Optimized</text>
+  
+  <!-- Arrow showing trend -->
+  <path d="M290,105 L310,100" stroke="#10b981" stroke-width="3" marker-end="url(#arrowCost)" stroke-linecap="round"/>
+  
+  <defs>
+    <marker id="arrowCost" markerWidth="10" markerHeight="10" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L0,8 L9,4 z" fill="#10b981"/>
+    </marker>
+  </defs>
+  
+  <!-- Text label -->
+  <text x="200" y="235" font-family="system-ui" font-size="12" font-weight="600" fill="#059669" text-anchor="middle">Optimization Progress</text>
+</svg>

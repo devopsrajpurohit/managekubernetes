@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Cloud, Server, Cpu, HeartPulse, Users } from 'lucide-react';
 import { Link, useInRouterContext } from 'react-router-dom';
+import { trackCardClick, trackExternalLink } from '../utils/analytics.js';
 
 const GridBG = () => (
   <svg className="absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)]" aria-hidden="true">
@@ -45,29 +46,40 @@ function DiscordWidget({ serverId }) {
   );
 }
 
-function SafeLink({ to, children, ...props }) {
-  const inRouter = (() => { try { return useInRouterContext(); } catch { return false; } })();
-  if (inRouter) return <Link to={to} {...props}>{children}</Link>;
-  return <a href={to} {...props}>{children}</a>;
+function SafeLink({ to, children, onClick, 'data-card-title': cardTitle, ...props }) {
+  const inRouter = useInRouterContext();
+  
+  const handleClick = (e) => {
+    // Track card clicks for internal links
+    if (onClick) onClick(e);
+    
+    // Track card click if card title is provided via data attribute
+    if (cardTitle && inRouter && to.startsWith('/')) {
+      trackCardClick(cardTitle, to);
+    }
+  };
+  
+  if (inRouter) return <Link to={to} {...props} onClick={handleClick}>{children}</Link>;
+  return <a href={to} {...props} onClick={handleClick}>{children}</a>;
 }
 
 export default function Landing() {
   const day1 = [
-    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'What is Kubernetes?', blurb: 'Why teams use it, when not to, and what problems it solves.', to: '/learn/what-is-kubernetes' },
-    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Core Components', blurb: 'API server, scheduler, controller manager, etcd — the control plane at a glance.', to: '/learn/core-components' },
-    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Pods & Services', blurb: 'How containers become pods, get traffic, and stay resilient.', to: '/learn/pods-nodes-services' },
-    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Deployments (the easy way)', blurb: 'Rolling updates & rollbacks with one command — zero theory overload.', to: '/learn/workloads' },
-    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Control Plane Overview', blurb: 'What happens when you run kubectl — the request path explained.', to: '/learn/control-plane' },
-    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'Troubleshooting Basics', blurb: 'Your first 6 commands: get, describe, logs, exec, events, top.', to: '/learn/basic-troubleshooting' },
+    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'What is Kubernetes?', blurb: 'Why teams use it, when not to, and what problems it solves.', to: '/learn/what-is-kubernetes', image: '/images/k8s-intro.svg' },
+    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Core Components', blurb: 'API server, scheduler, controller manager, etcd — the control plane at a glance.', to: '/learn/core-components', image: '/images/k8s-components.svg' },
+    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Pods & Services', blurb: 'How containers become pods, get traffic, and stay resilient.', to: '/learn/pods-nodes-services', image: '/images/k8s-pods.svg' },
+    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Deployments (the easy way)', blurb: 'Rolling updates & rollbacks with one command — zero theory overload.', to: '/learn/workloads', image: '/images/k8s-deployments.svg' },
+    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Control Plane Overview', blurb: 'What happens when you run kubectl — the request path explained.', to: '/learn/control-plane', image: '/images/k8s-control-plane.svg' },
+    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'Troubleshooting Basics', blurb: 'Your first 6 commands: get, describe, logs, exec, events, top.', to: '/learn/basic-troubleshooting', image: '/images/k8s-troubleshooting.svg' },
   ];
 
   const day2 = [
-    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Check Cluster Health', blurb: 'Read node conditions, component status, and kubelet health in minutes.', to: '/ops/check-cluster-health' },
-    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Monitor Pods & Resources', blurb: 'CPU/memory, restarts, throttling — what to watch and why it matters.', to: '/ops/monitor-pods' },
-    { icon: <HeartPulse className="h-6 w-6 text-indigo-600" />, title: 'Readiness & Liveness Probes', blurb: 'Design endpoints & timeouts to avoid flapping and false restarts.', to: '/ops/probes' },
-    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Smart Alerting & Notifications', blurb: 'Turn signals into sensible alerts. Reduce noise, keep actionability.', to: '/ops/smart-alerts' },
-    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'Performance & Cost Insights', blurb: 'Right-size requests/limits, spot waste, and keep latency predictable.', to: '/ops/cost-optimization' },
-    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Day-2 Checklist', blurb: 'Printable weekly checklist for SLOs, backups, and security basics.', to: '/ops/day2-checklist' },
+    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Check Cluster Health', blurb: 'Read node conditions, component status, and kubelet health in minutes.', to: '/ops/check-cluster-health', image: '/images/k8s-health.svg' },
+    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Monitor Pods & Resources', blurb: 'CPU/memory, restarts, throttling — what to watch and why it matters.', to: '/ops/monitor-pods', image: '/images/k8s-monitoring.svg' },
+    { icon: <HeartPulse className="h-6 w-6 text-indigo-600" />, title: 'Readiness & Liveness Probes', blurb: 'Design endpoints & timeouts to avoid flapping and false restarts.', to: '/ops/probes', image: '/images/k8s-probes.svg' },
+    { icon: <Server className="h-6 w-6 text-indigo-600" />, title: 'Smart Alerting & Notifications', blurb: 'Turn signals into sensible alerts. Reduce noise, keep actionability.', to: '/ops/smart-alerts', image: '/images/k8s-alerts.svg' },
+    { icon: <Cpu className="h-6 w-6 text-indigo-600" />, title: 'Performance & Cost Insights', blurb: 'Right-size requests/limits, spot waste, and keep latency predictable.', to: '/ops/cost-optimization', image: '/images/k8s-cost.svg' },
+    { icon: <Cloud className="h-6 w-6 text-indigo-600" />, title: 'Day-2 Checklist', blurb: 'Printable weekly checklist for SLOs, backups, and security basics.', to: '/ops/day2-checklist', image: '/images/k8s-checklist.svg' },
   ];
 
   return (
@@ -91,7 +103,7 @@ export default function Landing() {
 
       <section id="home" className="relative overflow-hidden">
         <GridBG />
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="text-center lg:text-left">
               <motion.h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight"
@@ -117,50 +129,82 @@ export default function Landing() {
       </section>
 
       <section id="day1" className="py-20 bg-slate-50 border-y border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-2">Day‑1: Core Concepts</h2>
           <p className="text-slate-600">Understand Kubernetes fundamentals — from pods to networking — with simple, visual lessons.</p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {day1.map((card) => (
-              <div key={card.title} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg hover:-translate-y-0.5">
-                <SafeLink to={card.to} className="block">
+              <SafeLink 
+                key={card.title} 
+                to={card.to} 
+                data-card-title={card.title}
+                className="group block rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+              >
+                <div className="relative h-40 bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center">
+                  <ImageWithFallback 
+                    alt={`${card.title} illustration`} 
+                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition" 
+                    src={card.image || FALLBACK_SVG} 
+                  />
+                </div>
+                <div className="p-6">
                   <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-indigo-50 p-2 ring-1 ring-inset ring-indigo-100">{card.icon}</div>
                   <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>
                   <p className="text-sm text-slate-600">{card.blurb}</p>
                   <div className="mt-4 text-indigo-700 text-sm font-medium opacity-0 group-hover:opacity-100 transition">Read guide →</div>
-                </SafeLink>
-              </div>
+                </div>
+              </SafeLink>
             ))}
           </div>
         </div>
       </section>
 
       <section id="day2" className="py-20 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-bold mb-2">Day‑2: Monitoring & Reliability</h2>
           <p className="text-slate-600">Master probes, metrics, and smart alerts to keep clusters healthy and predictable.</p>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {day2.map((card) => (
-              <div key={card.title} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-lg hover:-translate-y-0.5">
-                <SafeLink to={card.to} className="block">
+              <SafeLink 
+                key={card.title} 
+                to={card.to} 
+                data-card-title={card.title}
+                className="group block rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm transition hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+              >
+                <div className="relative h-40 bg-gradient-to-br from-indigo-50 to-indigo-100 flex items-center justify-center">
+                  <ImageWithFallback 
+                    alt={`${card.title} illustration`} 
+                    className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition" 
+                    src={card.image || FALLBACK_SVG} 
+                  />
+                </div>
+                <div className="p-6">
                   <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-indigo-50 p-2 ring-1 ring-inset ring-indigo-100">{card.icon}</div>
                   <h3 className="text-lg font-semibold text-slate-800 mb-1">{card.title}</h3>
                   <p className="text-sm text-slate-600">{card.blurb}</p>
                   <div className="mt-4 text-indigo-700 text-sm font-medium opacity-0 group-hover:opacity-100 transition">Read guide →</div>
-                </SafeLink>
-              </div>
+                </div>
+              </SafeLink>
             ))}
           </div>
         </div>
       </section>
 
       <section id="community" className="py-20 bg-slate-50 border-t border-slate-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <Users className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
           <h2 className="text-3xl font-bold mb-3">Ask the Community</h2>
           <p className="text-slate-600 max-w-2xl mx-auto mb-8">Share questions, troubleshoot issues, and get real-world advice from Kubernetes engineers and SREs.</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="https://discord.gg/YOUR_INVITE" target="_blank" rel="noreferrer" className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition">Join Discord</a>
+            <a 
+              href="https://discord.gg/YOUR_INVITE" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition"
+              onClick={() => trackExternalLink('https://discord.gg/YOUR_INVITE', 'Join Discord')}
+            >
+              Join Discord
+            </a>
             <SafeLink to="/blog" className="rounded-full border border-slate-300 px-6 py-3 font-semibold hover:bg-slate-50 transition">Read the Blog</SafeLink>
           </div>
           <DiscordWidget />
@@ -168,7 +212,7 @@ export default function Landing() {
       </section>
 
       <footer className="border-t border-slate-200 py-10 bg-white">
-        <div className="mx-auto max-w-7xl px-4 flex flex-col sm:flex-row items-center justify-between">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
           <p className="text-sm text-slate-500">© {new Date().getFullYear()} Kubernetes Community</p>
         </div>
       </footer>
