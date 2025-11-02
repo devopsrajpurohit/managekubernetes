@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <defs>
+    <linearGradient id="k8sGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#326CE5"/>
+      <stop offset="100%" stop-color="#3D7EE6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="200" cy="200" r="190" fill="url(#k8sGrad1)" opacity="0.1"/>
+  
+  <!-- Kubernetes wheel -->
+  <g transform="translate(200, 200)">
+    <!-- Outer circle -->
+    <circle cx="0" cy="0" r="120" fill="none" stroke="url(#k8sGrad1)" stroke-width="8" opacity="0.9"/>
+    
+    <!-- Inner structure - K8s wheel spokes -->
+    <g stroke="url(#k8sGrad1)" stroke-width="6" stroke-linecap="round" opacity="0.9">
+      <!-- Top -->
+      <path d="M0,-120 L0,120" />
+      <!-- Bottom-Right -->
+      <path d="M104,-60 L-104,60" />
+      <!-- Bottom-Left -->
+      <path d="M-104,-60 L104,60" />
+    </g>
+    
+    <!-- Middle circle -->
+    <circle cx="0" cy="0" r="50" fill="url(#k8sGrad1)" opacity="0.9"/>
+    
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="15" fill="white" opacity="0.95"/>
+  </g>
+  
+  <!-- K8s text -->
+  <text x="200" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="800" fill="#326CE5" text-anchor="middle" opacity="0.9">K8s</text>
+</svg>
+

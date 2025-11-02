@@ -114,9 +114,20 @@ export default function Landing() {
       <header className="sticky top-0 z-30 backdrop-blur bg-white/90 border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            <a href="#home" className="flex items-center gap-2 font-semibold">
-              <Cloud className="h-6 w-6 text-indigo-600" />
-              <span>Kubernetes Community</span>
+            <a href="#home" className="flex items-center gap-3 font-semibold">
+              <img 
+                src="/images/kubernetes-logo.svg" 
+                alt="Kubernetes Logo" 
+                className="h-8 w-8"
+                onError={(e) => {
+                  // Fallback to Cloud icon if logo fails to load
+                  e.target.style.display = 'none'
+                  const fallback = e.target.nextElementSibling
+                  if (fallback) fallback.style.display = 'block'
+                }}
+              />
+              <Cloud className="h-6 w-6 text-indigo-600 hidden" />
+              <span className="text-lg">Kubernetes Community</span>
             </a>
             <nav className="hidden md:flex gap-6 text-sm font-medium">
               <a href="#day1" className="hover:text-indigo-700">Day‑1 Basics</a>
@@ -145,10 +156,10 @@ export default function Landing() {
                   Whether you're getting started with Kubernetes container orchestration or scaling production Kubernetes clusters, our comprehensive <SafeLink to="/learn/what-is-kubernetes" className="text-indigo-600 hover:underline font-medium">free Kubernetes tutorials</SafeLink> cover everything from Kubernetes fundamentals to advanced operational patterns. We break down complex Kubernetes concepts into digestible tutorials with real-world examples and Kubernetes best practices.
                 </p>
                 <p className="mb-3">
-                  Our <SafeLink to="/#day1" className="text-indigo-600 hover:underline font-medium">Day-1 Kubernetes guides</SafeLink> help you understand Kubernetes core architecture, Kubernetes components, and Kubernetes workflows. Learn about <SafeLink to="/learn/pods-nodes-services" className="text-indigo-600 hover:underline">Kubernetes pods and services</SafeLink>, <SafeLink to="/learn/workloads" className="text-indigo-600 hover:underline">Kubernetes deployments</SafeLink>, and the <SafeLink to="/learn/control-plane" className="text-indigo-600 hover:underline">Kubernetes control plane</SafeLink> through clear explanations and hands-on kubectl examples. Each Kubernetes tutorial builds upon the previous one, creating a structured Kubernetes learning path.
+                  Our <a href="#day1" className="text-indigo-600 hover:underline font-medium">Day-1 Kubernetes guides</a> help you understand Kubernetes core architecture, Kubernetes components, and Kubernetes workflows. Learn about <SafeLink to="/learn/pods-nodes-services" className="text-indigo-600 hover:underline">Kubernetes pods and services</SafeLink>, <SafeLink to="/learn/workloads" className="text-indigo-600 hover:underline">Kubernetes deployments</SafeLink>, and the <SafeLink to="/learn/control-plane" className="text-indigo-600 hover:underline">Kubernetes control plane</SafeLink> through clear explanations and hands-on kubectl examples. Each Kubernetes tutorial builds upon the previous one, creating a structured Kubernetes learning path.
                 </p>
                 <p>
-                  <SafeLink to="/#day2" className="text-indigo-600 hover:underline font-medium">Day-2 Kubernetes operations guides</SafeLink> focus on Kubernetes reliability, Kubernetes monitoring, and Kubernetes optimization. Discover how to <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">monitor Kubernetes cluster health</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">configure Kubernetes probes</SafeLink>, <SafeLink to="/ops/smart-alerts" className="text-indigo-600 hover:underline">set up Kubernetes alerting</SafeLink>, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">optimize Kubernetes costs</SafeLink>, and maintain production-ready Kubernetes clusters. These Kubernetes guides are essential for teams running Kubernetes in production environments.
+                  <a href="#day2" className="text-indigo-600 hover:underline font-medium">Day-2 Kubernetes operations guides</a> focus on Kubernetes reliability, Kubernetes monitoring, and Kubernetes optimization. Discover how to <SafeLink to="/ops/check-cluster-health" className="text-indigo-600 hover:underline">monitor Kubernetes cluster health</SafeLink>, <SafeLink to="/ops/probes" className="text-indigo-600 hover:underline">configure Kubernetes probes</SafeLink>, <SafeLink to="/ops/smart-alerts" className="text-indigo-600 hover:underline">set up Kubernetes alerting</SafeLink>, <SafeLink to="/ops/cost-optimization" className="text-indigo-600 hover:underline">optimize Kubernetes costs</SafeLink>, and maintain production-ready Kubernetes clusters. These Kubernetes guides are essential for teams running Kubernetes in production environments.
                 </p>
               </div>
               <div className="mt-8 flex justify-center lg:justify-start gap-3">
@@ -265,13 +276,13 @@ export default function Landing() {
           <div className="text-center">
             <div className="flex flex-wrap justify-center gap-4">
               <a 
-                href="https://discord.gg/YOUR_INVITE" 
+                href="https://kubernetes.io/community/" 
                 target="_blank" 
-                rel="noreferrer" 
+                rel="noopener noreferrer" 
                 className="rounded-full bg-indigo-600 px-6 py-3 text-white font-semibold hover:bg-indigo-700 transition"
-                onClick={() => trackExternalLink('https://discord.gg/YOUR_INVITE', 'Join Discord')}
+                onClick={() => trackExternalLink('https://kubernetes.io/community/', 'Join Kubernetes Community')}
               >
-                Join Discord
+                Join Kubernetes Community
               </a>
               <SafeLink to="/blog" className="rounded-full border border-slate-300 px-6 py-3 font-semibold hover:bg-slate-50 transition">Read the Blog</SafeLink>
             </div>
