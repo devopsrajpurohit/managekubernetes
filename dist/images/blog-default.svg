@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="defaultBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f9ff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#e0f2fe" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="defaultGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#defaultBg)" rx="8"/>
+  
+  <!-- Kubernetes logo simplified -->
+  <g transform="translate(200, 90)">
+    <!-- K8s wheel -->
+    <circle cx="0" cy="0" r="50" fill="none" stroke="url(#defaultGrad)" stroke-width="4" opacity="0.6"/>
+    <path d="M0,-50 L0,50 M-25,-25 L25,25 M25,-25 L-25,25" stroke="url(#defaultGrad)" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <!-- Central dot -->
+    <circle cx="0" cy="0" r="10" fill="url(#defaultGrad)" opacity="0.8"/>
+    <!-- K8s text -->
+    <text x="0" y="75" font-family="system-ui" font-size="32" font-weight="bold" fill="#3b82f6" text-anchor="middle" opacity="0.7">K8s</text>
+  </g>
+  
+  <!-- Blog/document icon -->
+  <g transform="translate(130, 90)">
+    <rect x="-20" y="-25" width="40" height="50" rx="4" fill="#fff" opacity="0.6"/>
+    <path d="M-15,-15 L-15,15 L15,15 L15,-15 Z" stroke="url(#defaultGrad)" stroke-width="2.5" fill="none" opacity="0.6"/>
+    <line x1="-15" y1="-5" x2="5" y2="-5" stroke="url(#defaultGrad)" stroke-width="2" opacity="0.6"/>
+    <line x1="-15" y1="0" x2="10" y2="0" stroke="url(#defaultGrad)" stroke-width="2" opacity="0.6"/>
+    <line x1="-15" y1="5" x2="5" y2="5" stroke="url(#defaultGrad)" stroke-width="2" opacity="0.6"/>
+  </g>
+  
+  <!-- Arrow pointing right -->
+  <g transform="translate(270, 90)">
+    <path d="M-10,0 L10,0 M5,-5 L10,0 L5,5" stroke="url(#defaultGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="200" y="180" font-family="system-ui" font-size="14" font-weight="600" fill="#1e40af" text-anchor="middle" opacity="0.7">Kubernetes Blog</text>
+  <text x="200" y="200" font-family="system-ui" font-size="11" fill="#1e40af" text-anchor="middle" opacity="0.6">Default Blog Image</text>
+</svg>
+

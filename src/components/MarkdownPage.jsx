@@ -12,15 +12,15 @@ marked.setOptions({
 })
 
 // Configure image renderer - skip images in markdown content
-// Create a new renderer instance and override only the image method
-const renderer = new marked.Renderer()
-renderer.image = function(href, title, text) {
-  // Don't render images in markdown viewer - return empty string
-  return ''
-}
-
-// Apply the renderer using marked.use() for v12
-marked.use({ renderer })
+// Use marked.use() to extend the renderer and only override the image method
+marked.use({
+  renderer: {
+    image(href, title, text) {
+      // Don't render images in markdown viewer - return empty string
+      return ''
+    }
+  }
+})
 
 // Simple frontmatter parser for browser (replaces gray-matter)
 function parseFrontmatter(text) {
