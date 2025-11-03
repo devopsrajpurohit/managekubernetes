@@ -1,15 +1,9 @@
 /**
  * Google Analytics tracking utilities
- * 
- * Setup:
- * 1. Create a .env file with: VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
- * 2. Or set window.GA_MEASUREMENT_ID in index.html
+ * Google Analytics is configured in index.html
  */
 
-// Get GA Measurement ID from environment or window variable
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 
-                         (typeof window !== 'undefined' ? window.GA_MEASUREMENT_ID : null) || 
-                         null;
+const GA_MEASUREMENT_ID = 'G-8WJJP1EZDK';
 
 /**
  * Track page view
@@ -17,14 +11,6 @@ const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID ||
  * @param {string} title - Optional page title
  */
 export const trackPageView = (path, title = null) => {
-  if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'GA_MEASUREMENT_ID') {
-    // Only log in development
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] Page view:', path, title);
-    }
-    return;
-  }
-
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('config', GA_MEASUREMENT_ID, {
       page_path: path,
@@ -39,13 +25,6 @@ export const trackPageView = (path, title = null) => {
  * @param {object} eventParams - Event parameters
  */
 export const trackEvent = (eventName, eventParams = {}) => {
-  if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === 'GA_MEASUREMENT_ID') {
-    if (import.meta.env.DEV) {
-      console.log('[Analytics] Event:', eventName, eventParams);
-    }
-    return;
-  }
-
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('event', eventName, eventParams);
   }

@@ -219,38 +219,13 @@
     }
     </script>
     
-    <!-- Google Analytics -->
-    <!-- 
-      To enable Google Analytics:
-      1. Create a .env file with: VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-      2. Or uncomment and set window.GA_MEASUREMENT_ID below with your actual ID:
-         window.GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
-      3. The script will only load if a valid ID is provided
-    -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8WJJP1EZDK"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      
-      // Set your Google Analytics Measurement ID here (or via .env file)
-      // Uncomment the line below and replace with your actual GA ID:
-      // window.GA_MEASUREMENT_ID = 'G-XXXXXXXXXX';
-      
-      // Get GA Measurement ID from window variable
-      const gaMeasurementId = window.GA_MEASUREMENT_ID || null;
-      
-      if (gaMeasurementId && gaMeasurementId !== 'GA_MEASUREMENT_ID' && gaMeasurementId.length > 0) {
-        // Load GA script only if we have a valid ID
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = `https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`;
-        document.head.appendChild(script);
-        
-        // Configure GA
-        gtag('config', gaMeasurementId, {
-          page_path: window.location.pathname,
-        });
-      }
+      gtag('config', 'G-8WJJP1EZDK');
       
       // Make gtag available globally for React Router tracking
       window.gtag = gtag;
