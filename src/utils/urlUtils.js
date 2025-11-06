@@ -32,15 +32,21 @@ export function normalizeCanonicalUrl(url) {
  * Always returns www version regardless of how the page is accessed
  */
 export function getCanonicalUrl() {
-  if (typeof window === 'undefined') {
+  try {
+    if (typeof window === 'undefined' || !window.location) {
+      return 'https://www.managekubernetes.com'
+    }
+    
+    // Always use www version, even if accessed via non-www
+    const pathname = window.location.pathname || '/'
+    const baseUrl = 'https://www.managekubernetes.com'
+    
+    // Return normalized URL with www
+    return baseUrl + pathname
+  } catch (error) {
+    // Fallback if anything goes wrong
+    console.warn('Error getting canonical URL:', error)
     return 'https://www.managekubernetes.com'
   }
-  
-  // Always use www version, even if accessed via non-www
-  const pathname = window.location.pathname
-  const baseUrl = 'https://www.managekubernetes.com'
-  
-  // Return normalized URL with www
-  return baseUrl + pathname
 }
 

@@ -108,18 +108,22 @@ export default function Blog() {
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Explore our Kubernetes blog with in-depth tutorials, troubleshooting guides, and best practices for Kubernetes (K8s) container orchestration, kubectl commands, and production operations.')
     }
-    // Update canonical URL - normalized to www
-    const cleanUrl = getCanonicalUrl()
-    let canonical = document.querySelector('link[rel="canonical"]')
-    if (!canonical) {
-      canonical = document.createElement('link')
-      canonical.rel = 'canonical'
-      document.head.appendChild(canonical)
+    try {
+      // Update canonical URL - normalized to www
+      const cleanUrl = getCanonicalUrl()
+      let canonical = document.querySelector('link[rel="canonical"]')
+      if (!canonical) {
+        canonical = document.createElement('link')
+        canonical.rel = 'canonical'
+        document.head.appendChild(canonical)
+      }
+      canonical.href = cleanUrl
+      // Update Open Graph URL (also normalized to www)
+      const ogUrl = document.querySelector('meta[property="og:url"]')
+      if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+    } catch (error) {
+      console.error('Error in Blog useEffect:', error)
     }
-    canonical.href = cleanUrl
-    // Update Open Graph URL (also normalized to www)
-    const ogUrl = document.querySelector('meta[property="og:url"]')
-    if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     trackPageView('/blog', 'Kubernetes Blog | Kubernetes Community')
     
     // Try to fetch blog posts list if available

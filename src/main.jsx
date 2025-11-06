@@ -16,22 +16,26 @@ function PageTracker() {
   const location = useLocation()
 
   useEffect(() => {
-    // Update canonical URL immediately on route change (normalized to www)
-    const cleanUrl = getCanonicalUrl()
-    let canonical = document.querySelector('link[rel="canonical"]')
-    if (!canonical) {
-      canonical = document.createElement('link')
-      canonical.rel = 'canonical'
-      document.head.appendChild(canonical)
+    try {
+      // Update canonical URL immediately on route change (normalized to www)
+      const cleanUrl = getCanonicalUrl()
+      let canonical = document.querySelector('link[rel="canonical"]')
+      if (!canonical) {
+        canonical = document.createElement('link')
+        canonical.rel = 'canonical'
+        document.head.appendChild(canonical)
+      }
+      canonical.href = cleanUrl
+      
+      // Update Open Graph URL (also normalized to www)
+      const ogUrl = document.querySelector('meta[property="og:url"]')
+      if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+      
+      // Track page view on route change
+      trackPageView(location.pathname + location.search, document.title)
+    } catch (error) {
+      console.error('Error in PageTracker:', error)
     }
-    canonical.href = cleanUrl
-    
-    // Update Open Graph URL (also normalized to www)
-    const ogUrl = document.querySelector('meta[property="og:url"]')
-    if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
-    
-    // Track page view on route change
-    trackPageView(location.pathname + location.search, document.title)
   }, [location])
 
   return null

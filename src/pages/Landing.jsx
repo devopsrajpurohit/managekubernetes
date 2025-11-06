@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Cloud, Server, Cpu, HeartPulse, Users } from 'lucide-react';
 import { Link, useInRouterContext } from 'react-router-dom';
 import { trackCardClick, trackExternalLink } from '../utils/analytics.js';
+import { getCanonicalUrl } from '../utils/urlUtils.js';
 
 const GridBG = () => (
   <svg className="absolute inset-0 -z-10 h-full w-full [mask-image:radial-gradient(ellipse_at_center,white,transparent_70%)]" aria-hidden="true">
@@ -66,18 +67,22 @@ function SafeLink({ to, children, onClick, 'data-card-title': cardTitle, ...prop
 export default function Landing() {
   // Add BreadcrumbList structured data for better SEO and update canonical URL
   useEffect(() => {
-    // Update canonical URL - normalized to www
-    const cleanUrl = getCanonicalUrl()
-    let canonical = document.querySelector('link[rel="canonical"]')
-    if (!canonical) {
-      canonical = document.createElement('link')
-      canonical.rel = 'canonical'
-      document.head.appendChild(canonical)
+    try {
+      // Update canonical URL - normalized to www
+      const cleanUrl = getCanonicalUrl()
+      let canonical = document.querySelector('link[rel="canonical"]')
+      if (!canonical) {
+        canonical = document.createElement('link')
+        canonical.rel = 'canonical'
+        document.head.appendChild(canonical)
+      }
+      canonical.href = cleanUrl
+      // Update Open Graph URL (also normalized to www)
+      const ogUrl = document.querySelector('meta[property="og:url"]')
+      if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+    } catch (error) {
+      console.error('Error in Landing useEffect:', error)
     }
-    canonical.href = cleanUrl
-    // Update Open Graph URL (also normalized to www)
-    const ogUrl = document.querySelector('meta[property="og:url"]')
-    if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     
     const breadcrumbSchema = {
       "@context": "https://schema.org",

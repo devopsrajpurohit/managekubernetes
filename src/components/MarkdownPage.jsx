@@ -26,21 +26,25 @@ export default function MarkdownPage({ basePath, kind }) {
     }
     
     // Set canonical URL immediately when component mounts - normalized to www
-    if (typeof window !== 'undefined') {
-      const cleanUrl = getCanonicalUrl()
-      let canonical = document.querySelector('link[rel="canonical"]')
-      if (!canonical) {
-        canonical = document.createElement('link')
-        canonical.rel = 'canonical'
-        document.head.appendChild(canonical)
-      }
-      // Always set to normalized www URL
-      canonical.href = cleanUrl
-      
-      // Verify it's set correctly (defensive check)
-      if (canonical.href && !canonical.href.includes('://www.')) {
+    try {
+      if (typeof window !== 'undefined' && window.location) {
+        const cleanUrl = getCanonicalUrl()
+        let canonical = document.querySelector('link[rel="canonical"]')
+        if (!canonical) {
+          canonical = document.createElement('link')
+          canonical.rel = 'canonical'
+          document.head.appendChild(canonical)
+        }
+        // Always set to normalized www URL
         canonical.href = cleanUrl
+        
+        // Verify it's set correctly (defensive check)
+        if (canonical.href && !canonical.href.includes('://www.')) {
+          canonical.href = cleanUrl
+        }
       }
+    } catch (error) {
+      console.error('Error setting canonical URL:', error)
     }
   }, [slug, kind])
   
