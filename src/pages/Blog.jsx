@@ -103,10 +103,10 @@ export default function Blog() {
 
   useEffect(() => {
     document.title = 'Kubernetes Blog | K8s Tutorials, Guides & Best Practices'
-    // Update meta description
+    // Update meta description - optimized to 150-160 chars
     const metaDesc = document.querySelector('meta[name="description"]')
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Explore our Kubernetes blog with in-depth tutorials, troubleshooting guides, and best practices for Kubernetes (K8s) container orchestration, kubectl commands, and production operations.')
+      metaDesc.setAttribute('content', 'Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.')
     }
     try {
       // Update canonical URL - normalized to www
@@ -130,6 +130,87 @@ export default function Blog() {
       // Update Open Graph URL (also normalized to www)
       const ogUrl = document.querySelector('meta[property="og:url"]')
       if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+      
+      // Add Google Search Console verification meta tag if not present
+      let gscVerification = document.querySelector('meta[name="google-site-verification"]')
+      if (!gscVerification) {
+        // Get verification code from environment variable or use placeholder
+        const verificationCode = import.meta.env.VITE_GOOGLE_SEARCH_CONSOLE_VERIFICATION || 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE'
+        if (verificationCode && verificationCode !== 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE') {
+          gscVerification = document.createElement('meta')
+          gscVerification.name = 'google-site-verification'
+          gscVerification.content = verificationCode
+          document.head.appendChild(gscVerification)
+        }
+      }
+      
+      // Add WebPage schema
+      const webpageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Kubernetes Blog | K8s Tutorials, Guides & Best Practices",
+        "description": "Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.",
+        "url": cleanUrl,
+        "datePublished": "2024-11-06T00:00:00Z",
+        "dateModified": "2024-11-06T00:00:00Z",
+        "dateCreated": "2024-11-06T00:00:00Z",
+        "author": {
+          "@type": "Organization",
+          "name": "Kubernetes Community"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Kubernetes Community",
+          "logo": {
+            "@type": "ImageObject",
+            "url": `${cleanUrl.replace(/\/$/, '')}/images/hero.svg`,
+            "width": 1200,
+            "height": 630
+          }
+        },
+        "inLanguage": "en-US",
+        "isPartOf": {
+          "@type": "WebSite",
+          "name": "Kubernetes Community",
+          "url": cleanUrl.replace(/\/blog.*$/, '')
+        }
+      }
+      
+      // Remove existing WebPage schema if any
+      const existingWebPage = document.querySelector('script[data-schema="webpage"]')
+      if (existingWebPage) existingWebPage.remove()
+      
+      // Add WebPage schema
+      const webpageScript = document.createElement('script')
+      webpageScript.type = 'application/ld+json'
+      webpageScript.setAttribute('data-schema', 'webpage')
+      webpageScript.textContent = JSON.stringify(webpageSchema)
+      document.head.appendChild(webpageScript)
+      
+      // Update Open Graph and Twitter meta descriptions
+      const updateOrCreateMeta = (property, content) => {
+        let meta = document.querySelector(`meta[property="${property}"]`)
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('property', property)
+          document.head.appendChild(meta)
+        }
+        meta.setAttribute('content', content)
+      }
+      
+      const updateOrCreateTwitterMeta = (name, content) => {
+        let meta = document.querySelector(`meta[name="${name}"]`)
+        if (!meta) {
+          meta = document.createElement('meta')
+          meta.setAttribute('name', name)
+          document.head.appendChild(meta)
+        }
+        meta.setAttribute('content', content)
+      }
+      
+      const ogDesc = 'Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.'
+      updateOrCreateMeta('og:description', ogDesc)
+      updateOrCreateTwitterMeta('twitter:description', ogDesc)
     } catch (error) {
       console.error('Error in Blog useEffect:', error)
     }

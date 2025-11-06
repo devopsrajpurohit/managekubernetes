@@ -46,10 +46,20 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
   // Escape HTML in meta tags
   const escapeHtml = (str) => String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
   const escapeJson = (str) => String(str || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r')
+  // Optimize description to 150-160 characters
+  const optimizeDescription = (desc) => {
+    if (!desc || desc.length <= 160) return desc
+    // Truncate at word boundary
+    const truncated = desc.substring(0, 157)
+    const lastSpace = truncated.lastIndexOf(' ')
+    return lastSpace > 0 ? truncated.substring(0, lastSpace) + '...' : truncated + '...'
+  }
+  
+  const optimizedDesc = optimizeDescription(description || title)
   const safeTitle = escapeHtml(title)
-  const safeDescription = escapeHtml(description || title)
+  const safeDescription = escapeHtml(optimizedDesc)
   const safeTitleJson = escapeJson(title)
-  const safeDescJson = escapeJson(description || title)
+  const safeDescJson = escapeJson(optimizedDesc)
   
   // Determine category URL
   const categoryUrl = route.includes('/blog') ? `${baseUrl}/blog` : 
@@ -64,6 +74,9 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
     <title>${safeTitle} | Kubernetes Community</title>
     <meta name="description" content="${safeDescription}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <!-- Google Search Console Verification -->
+    <!-- Replace YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE with your actual verification code from Google Search Console -->
+    <meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />
     <link rel="canonical" href="${url}" />
     <meta property="og:title" content="${safeTitle} | Kubernetes Community" />
     <meta property="og:description" content="${safeDescription}" />
@@ -78,8 +91,8 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
       "headline": "${safeTitle}",
       "description": "${safeDescription}",
       "url": "${url}",
-      "datePublished": "${new Date().toISOString()}",
-      "dateModified": "${new Date().toISOString()}",
+      "datePublished": "2024-11-06T00:00:00Z",
+      "dateModified": "2024-11-06T00:00:00Z",
       "author": {
         "@type": "Organization",
         "name": "Kubernetes Community"
@@ -99,6 +112,38 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
       "inLanguage": "en-US",
       "isAccessibleForFree": true,
       "articleSection": "${categoryName}"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "${safeTitleJson}",
+      "description": "${safeDescJson}",
+      "url": "${url}",
+      "datePublished": "2024-11-06T00:00:00Z",
+      "dateModified": "2024-11-06T00:00:00Z",
+      "dateCreated": "2024-11-06T00:00:00Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.managekubernetes.com/images/hero.svg",
+          "width": 1200,
+          "height": 630
+        }
+      },
+      "inLanguage": "en-US",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Kubernetes Community",
+        "url": "${baseUrl}"
+      }
     }
     </script>
     <script type="application/ld+json">

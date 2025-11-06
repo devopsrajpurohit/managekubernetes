@@ -89,6 +89,19 @@ export default function Landing() {
       // Update Open Graph URL (also normalized to www)
       const ogUrl = document.querySelector('meta[property="og:url"]')
       if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+      
+      // Add Google Search Console verification meta tag if not present
+      let gscVerification = document.querySelector('meta[name="google-site-verification"]')
+      if (!gscVerification) {
+        // Get verification code from environment variable or use placeholder
+        const verificationCode = import.meta.env.VITE_GOOGLE_SEARCH_CONSOLE_VERIFICATION || 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE'
+        if (verificationCode && verificationCode !== 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE') {
+          gscVerification = document.createElement('meta')
+          gscVerification.name = 'google-site-verification'
+          gscVerification.content = verificationCode
+          document.head.appendChild(gscVerification)
+        }
+      }
     } catch (error) {
       console.error('Error in Landing useEffect:', error)
     }

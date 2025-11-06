@@ -284,6 +284,19 @@ export default function MarkdownPage({ basePath, kind }) {
           : 'kubernetes, k8s, kubernetes operations, kubernetes monitoring, kubernetes production, container orchestration'
         metaKeywords.setAttribute('content', keywords)
         
+        // Add Google Search Console verification meta tag if not present
+        let gscVerification = document.querySelector('meta[name="google-site-verification"]')
+        if (!gscVerification) {
+          // Get verification code from environment variable or use placeholder
+          const verificationCode = import.meta.env.VITE_GOOGLE_SEARCH_CONSOLE_VERIFICATION || 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE'
+          if (verificationCode && verificationCode !== 'YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE') {
+            gscVerification = document.createElement('meta')
+            gscVerification.name = 'google-site-verification'
+            gscVerification.content = verificationCode
+            document.head.appendChild(gscVerification)
+          }
+        }
+        
         // Add Article structured data for better SEO
         if (typeof window !== 'undefined' && title) {
           const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
@@ -295,8 +308,8 @@ export default function MarkdownPage({ basePath, kind }) {
             "headline": title,
             "description": description || title,
             "url": window.location.origin + window.location.pathname,
-            "datePublished": new Date().toISOString(),
-            "dateModified": new Date().toISOString(),
+            "datePublished": "2024-11-06T00:00:00Z",
+            "dateModified": "2024-11-06T00:00:00Z",
             "author": {
               "@type": "Organization",
               "name": "Kubernetes Community"
@@ -344,11 +357,45 @@ export default function MarkdownPage({ basePath, kind }) {
             ]
           }
           
+          // WebPage Schema
+          const webpageSchema = {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": title,
+            "description": description || title,
+            "url": window.location.origin + window.location.pathname,
+            "datePublished": "2024-11-06T00:00:00Z",
+            "dateModified": "2024-11-06T00:00:00Z",
+            "dateCreated": "2024-11-06T00:00:00Z",
+            "author": {
+              "@type": "Organization",
+              "name": "Kubernetes Community"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Kubernetes Community",
+              "logo": {
+                "@type": "ImageObject",
+                "url": `${window.location.origin}/images/hero.svg`,
+                "width": 1200,
+                "height": 630
+              }
+            },
+            "inLanguage": "en-US",
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "Kubernetes Community",
+              "url": window.location.origin
+            }
+          }
+          
           // Remove existing schemas if any
           const existingArticle = document.querySelector('script[data-schema="article"]')
           const existingBreadcrumb = document.querySelector('script[data-schema="breadcrumb"]')
+          const existingWebPage = document.querySelector('script[data-schema="webpage"]')
           if (existingArticle) existingArticle.remove()
           if (existingBreadcrumb) existingBreadcrumb.remove()
+          if (existingWebPage) existingWebPage.remove()
           
           // Add article schema
           const articleScript = document.createElement('script')
@@ -363,6 +410,13 @@ export default function MarkdownPage({ basePath, kind }) {
           breadcrumbScript.setAttribute('data-schema', 'breadcrumb')
           breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
           document.head.appendChild(breadcrumbScript)
+          
+          // Add WebPage schema
+          const webpageScript = document.createElement('script')
+          webpageScript.type = 'application/ld+json'
+          webpageScript.setAttribute('data-schema', 'webpage')
+          webpageScript.textContent = JSON.stringify(webpageSchema)
+          document.head.appendChild(webpageScript)
           
           // Update canonical URL - normalized to www
           // Always use normalized www URL, even if pre-rendered HTML has it
