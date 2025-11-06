@@ -60,9 +60,9 @@ export default function MarkdownPage({ basePath, kind }) {
   const [metaData, setMetaData] = useState({ title: '', description: '' })
   const [urlCopied, setUrlCopied] = useState(false)
   
-  // Get current page URL
+  // Get current page URL - use clean URL without query params or hash
   const pageUrl = typeof window !== 'undefined' 
-    ? window.location.href 
+    ? window.location.origin + window.location.pathname
     : `${location.pathname}`
   
   // Track markdown page view
@@ -183,7 +183,7 @@ export default function MarkdownPage({ basePath, kind }) {
               "@type": "Article",
               "headline": parsed.data.title,
               "description": parsed.data.description || parsed.data.title,
-              "url": window.location.href,
+              "url": window.location.origin + window.location.pathname,
               "datePublished": new Date().toISOString(),
               "dateModified": new Date().toISOString(),
               "author": {
@@ -200,7 +200,7 @@ export default function MarkdownPage({ basePath, kind }) {
               },
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": window.location.href
+                "@id": window.location.origin + window.location.pathname
               },
               "inLanguage": "en-US",
               "isAccessibleForFree": true,
@@ -228,7 +228,7 @@ export default function MarkdownPage({ basePath, kind }) {
                   "@type": "ListItem",
                   "position": 3,
                   "name": parsed.data.title,
-                  "item": window.location.href
+                  "item": window.location.origin + window.location.pathname
                 }
               ]
             }
@@ -253,14 +253,15 @@ export default function MarkdownPage({ basePath, kind }) {
             breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
             document.head.appendChild(breadcrumbScript)
             
-            // Update canonical URL
+            // Update canonical URL - use clean URL without query params or hash
+            const cleanUrl = window.location.origin + window.location.pathname
             let canonical = document.querySelector('link[rel="canonical"]')
             if (!canonical) {
               canonical = document.createElement('link')
               canonical.rel = 'canonical'
               document.head.appendChild(canonical)
             }
-            canonical.href = window.location.href
+            canonical.href = cleanUrl
             
             // Update Open Graph meta tags
             const ogTitle = document.querySelector('meta[property="og:title"]')
@@ -268,7 +269,7 @@ export default function MarkdownPage({ basePath, kind }) {
             const ogUrl = document.querySelector('meta[property="og:url"]')
             if (ogTitle) ogTitle.setAttribute('content', `${parsed.data.title} | Kubernetes Community`)
             if (ogDesc) ogDesc.setAttribute('content', parsed.data.description || parsed.data.title)
-            if (ogUrl) ogUrl.setAttribute('content', window.location.href)
+            if (ogUrl) ogUrl.setAttribute('content', window.location.origin + window.location.pathname)
           }
         }
         
@@ -452,10 +453,45 @@ export default function MarkdownPage({ basePath, kind }) {
           </div>
         ) : (
           <>
+            {metaData.title && (
+              <h1 className="text-4xl font-bold text-slate-900 mb-6">{metaData.title}</h1>
+            )}
             <article 
               className="markdown-content max-w-none" 
               dangerouslySetInnerHTML={{ __html: html }}
             />
+            
+            {/* Footer with internal links for SEO */}
+            <footer className="mt-12 pt-8 border-t border-slate-200">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+                <div>
+                  <h3 className="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+                  <ul className="space-y-2 text-slate-600">
+                    <li><a href="/learn/what-is-kubernetes" className="hover:text-indigo-700">What is Kubernetes?</a></li>
+                    <li><a href="/learn/core-components" className="hover:text-indigo-700">Core Components</a></li>
+                    <li><a href="/learn/pods-nodes-services" className="hover:text-indigo-700">Pods & Services</a></li>
+                    <li><a href="/learn/workloads" className="hover:text-indigo-700">Deployments</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+                  <ul className="space-y-2 text-slate-600">
+                    <li><a href="/ops/check-cluster-health" className="hover:text-indigo-700">Check Cluster Health</a></li>
+                    <li><a href="/ops/monitor-pods" className="hover:text-indigo-700">Monitor Pods</a></li>
+                    <li><a href="/ops/probes" className="hover:text-indigo-700">Probes</a></li>
+                    <li><a href="/ops/smart-alerts" className="hover:text-indigo-700">Smart Alerts</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900 mb-3">Resources</h3>
+                  <ul className="space-y-2 text-slate-600">
+                    <li><a href="/" className="hover:text-indigo-700">Home</a></li>
+                    <li><a href="/blog" className="hover:text-indigo-700">Blog</a></li>
+                    <li><a href="/sitemap.xml" className="hover:text-indigo-700">Sitemap</a></li>
+                  </ul>
+                </div>
+              </div>
+            </footer>
           </>
         )}
       </div>

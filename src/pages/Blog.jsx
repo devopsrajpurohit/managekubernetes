@@ -107,6 +107,18 @@ export default function Blog() {
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Explore our Kubernetes blog with in-depth tutorials, troubleshooting guides, and best practices for Kubernetes (K8s) container orchestration, kubectl commands, and production operations.')
     }
+    // Update canonical URL - use clean URL without query params or hash
+    const cleanUrl = window.location.origin + window.location.pathname
+    let canonical = document.querySelector('link[rel="canonical"]')
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.rel = 'canonical'
+      document.head.appendChild(canonical)
+    }
+    canonical.href = cleanUrl
+    // Update Open Graph URL
+    const ogUrl = document.querySelector('meta[property="og:url"]')
+    if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     trackPageView('/blog', 'Kubernetes Blog | Kubernetes Community')
     
     // Try to fetch blog posts list if available
@@ -241,6 +253,43 @@ export default function Blog() {
             </Link>
           </div>
         </div>
+        
+        {/* Footer with internal links for SEO */}
+        <footer className="mt-12 pt-8 border-t border-slate-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link to="/learn/what-is-kubernetes" className="hover:text-indigo-700">What is Kubernetes?</Link></li>
+                <li><Link to="/learn/core-components" className="hover:text-indigo-700">Core Components</Link></li>
+                <li><Link to="/learn/pods-nodes-services" className="hover:text-indigo-700">Pods & Services</Link></li>
+                <li><Link to="/learn/workloads" className="hover:text-indigo-700">Deployments</Link></li>
+                <li><Link to="/learn/control-plane" className="hover:text-indigo-700">Control Plane</Link></li>
+                <li><Link to="/learn/basic-troubleshooting" className="hover:text-indigo-700">Troubleshooting Basics</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link to="/ops/check-cluster-health" className="hover:text-indigo-700">Check Cluster Health</Link></li>
+                <li><Link to="/ops/monitor-pods" className="hover:text-indigo-700">Monitor Pods</Link></li>
+                <li><Link to="/ops/probes" className="hover:text-indigo-700">Probes</Link></li>
+                <li><Link to="/ops/smart-alerts" className="hover:text-indigo-700">Smart Alerts</Link></li>
+                <li><Link to="/ops/cost-optimization" className="hover:text-indigo-700">Cost Optimization</Link></li>
+                <li><Link to="/ops/day2-checklist" className="hover:text-indigo-700">Day-2 Checklist</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul className="space-y-2 text-slate-600">
+                <li><Link to="/" className="hover:text-indigo-700">Home</Link></li>
+                <li><Link to="/blog" className="hover:text-indigo-700">Blog</Link></li>
+                <li><a href="/sitemap.xml" className="hover:text-indigo-700">Sitemap</a></li>
+                <li><a href="/robots.txt" className="hover:text-indigo-700">Robots.txt</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   )

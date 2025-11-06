@@ -64,8 +64,21 @@ function SafeLink({ to, children, onClick, 'data-card-title': cardTitle, ...prop
 }
 
 export default function Landing() {
-  // Add BreadcrumbList structured data for better SEO
+  // Add BreadcrumbList structured data for better SEO and update canonical URL
   useEffect(() => {
+    // Update canonical URL - use clean URL without query params or hash
+    const cleanUrl = window.location.origin + window.location.pathname
+    let canonical = document.querySelector('link[rel="canonical"]')
+    if (!canonical) {
+      canonical = document.createElement('link')
+      canonical.rel = 'canonical'
+      document.head.appendChild(canonical)
+    }
+    canonical.href = cleanUrl
+    // Update Open Graph URL
+    const ogUrl = document.querySelector('meta[property="og:url"]')
+    if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+    
     const breadcrumbSchema = {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
@@ -74,7 +87,7 @@ export default function Landing() {
           "@type": "ListItem",
           "position": 1,
           "name": "Home",
-          "item": typeof window !== 'undefined' ? window.location.origin : "https://example.com"
+          "item": typeof window !== 'undefined' ? window.location.origin : "https://managekubernetes.com"
         }
       ]
     }
@@ -291,9 +304,51 @@ export default function Landing() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 py-10 bg-white">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
-          <p className="text-sm text-slate-500">© {new Date().getFullYear()} Kubernetes Community</p>
+      <footer className="border-t border-slate-200 py-12 bg-white">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-4">Day-1 Basics</h3>
+              <ul className="space-y-2 text-sm">
+                <li><SafeLink to="/learn/what-is-kubernetes" className="text-slate-600 hover:text-indigo-700">What is Kubernetes?</SafeLink></li>
+                <li><SafeLink to="/learn/core-components" className="text-slate-600 hover:text-indigo-700">Core Components</SafeLink></li>
+                <li><SafeLink to="/learn/pods-nodes-services" className="text-slate-600 hover:text-indigo-700">Pods & Services</SafeLink></li>
+                <li><SafeLink to="/learn/workloads" className="text-slate-600 hover:text-indigo-700">Deployments</SafeLink></li>
+                <li><SafeLink to="/learn/control-plane" className="text-slate-600 hover:text-indigo-700">Control Plane</SafeLink></li>
+                <li><SafeLink to="/learn/basic-troubleshooting" className="text-slate-600 hover:text-indigo-700">Troubleshooting Basics</SafeLink></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-4">Day-2 Operations</h3>
+              <ul className="space-y-2 text-sm">
+                <li><SafeLink to="/ops/check-cluster-health" className="text-slate-600 hover:text-indigo-700">Check Cluster Health</SafeLink></li>
+                <li><SafeLink to="/ops/monitor-pods" className="text-slate-600 hover:text-indigo-700">Monitor Pods</SafeLink></li>
+                <li><SafeLink to="/ops/probes" className="text-slate-600 hover:text-indigo-700">Probes</SafeLink></li>
+                <li><SafeLink to="/ops/smart-alerts" className="text-slate-600 hover:text-indigo-700">Smart Alerts</SafeLink></li>
+                <li><SafeLink to="/ops/cost-optimization" className="text-slate-600 hover:text-indigo-700">Cost Optimization</SafeLink></li>
+                <li><SafeLink to="/ops/day2-checklist" className="text-slate-600 hover:text-indigo-700">Day-2 Checklist</SafeLink></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-4">Resources</h3>
+              <ul className="space-y-2 text-sm">
+                <li><SafeLink to="/blog" className="text-slate-600 hover:text-indigo-700">Blog</SafeLink></li>
+                <li><SafeLink to="/blog/troubleshooting-pods-evicted" className="text-slate-600 hover:text-indigo-700">Pods Evicted</SafeLink></li>
+                <li><SafeLink to="/blog/troubleshooting-pods-oom-killed" className="text-slate-600 hover:text-indigo-700">OOM Killed</SafeLink></li>
+                <li><SafeLink to="/blog/troubleshooting-pods-error-state" className="text-slate-600 hover:text-indigo-700">Error State</SafeLink></li>
+                <li><SafeLink to="/blog/troubleshooting-pods-pending-state" className="text-slate-600 hover:text-indigo-700">Pending State</SafeLink></li>
+                <li><SafeLink to="/blog/troubleshooting-pods-crashloopbackoff" className="text-slate-600 hover:text-indigo-700">CrashLoopBackOff</SafeLink></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-slate-200 pt-8 flex flex-col sm:flex-row items-center justify-between">
+            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Kubernetes Community</p>
+            <div className="mt-4 sm:mt-0 text-sm text-slate-500">
+              <a href="/sitemap.xml" className="hover:text-indigo-700">Sitemap</a>
+              <span className="mx-2">•</span>
+              <a href="/robots.txt" className="hover:text-indigo-700">Robots.txt</a>
+            </div>
+          </div>
         </div>
       </footer>
     </main>
