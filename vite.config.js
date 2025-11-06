@@ -15,8 +15,16 @@ export default defineConfig({
     terserOptions: {
       compress: {
         drop_console: false,
+        passes: 2,
+      },
+      format: {
+        comments: false,
+      },
+      mangle: {
+        safari10: true,
       },
     },
+    cssMinify: true,
     rollupOptions: {
       output: {
         manualChunks: {
