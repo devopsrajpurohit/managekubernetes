@@ -38,7 +38,6 @@ export function getCanonicalUrl() {
   
   // Always use www version, even if accessed via non-www
   const pathname = window.location.pathname
-  const protocol = window.location.protocol
   const baseUrl = 'https://www.managekubernetes.com'
   
   // Return normalized URL with www
