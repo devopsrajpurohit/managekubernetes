@@ -20,24 +20,67 @@
     <!-- Canonical URL - Set initially, updated dynamically by JavaScript for each page -->
     <link rel="canonical" href="https://www.managekubernetes.com/" />
     <script>
-      // Set canonical URL immediately before React loads to prevent override
+      // Set canonical URL immediately before React loads and watch for changes
       (function() {
-        try {
-          var pathname = window.location.pathname;
-          var canonicalUrl = 'https://www.managekubernetes.com' + pathname;
+        function setCanonicalUrl() {
+          try {
+            var pathname = window.location.pathname || '/';
+            var canonicalUrl = 'https://www.managekubernetes.com' + pathname;
+            var canonical = document.querySelector('link[rel="canonical"]');
+            if (canonical) {
+              // Force set with both methods
+              canonical.setAttribute('href', canonicalUrl);
+              canonical.href = canonicalUrl;
+            } else {
+              canonical = document.createElement('link');
+              canonical.rel = 'canonical';
+              canonical.href = canonicalUrl;
+              canonical.setAttribute('href', canonicalUrl);
+              document.head.appendChild(canonical);
+            }
+            return canonicalUrl;
+          } catch(e) {
+            console.warn('Error setting canonical URL:', e);
+            return null;
+          }
+        }
+        
+        // Set immediately
+        setCanonicalUrl();
+        
+        // Watch for any changes to canonical URL and fix them
+        var observer = new MutationObserver(function(mutations) {
           var canonical = document.querySelector('link[rel="canonical"]');
           if (canonical) {
-            canonical.setAttribute('href', canonicalUrl);
-            canonical.href = canonicalUrl;
-          } else {
-            canonical = document.createElement('link');
-            canonical.rel = 'canonical';
-            canonical.href = canonicalUrl;
-            document.head.appendChild(canonical);
+            var href = canonical.getAttribute('href') || canonical.href;
+            if (href && !href.includes('://www.')) {
+              console.log('Canonical URL changed to non-www, fixing...', href);
+              setCanonicalUrl();
+            }
           }
-        } catch(e) {
-          console.warn('Error setting initial canonical URL:', e);
+        });
+        
+        // Observe changes to the canonical link
+        var canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) {
+          observer.observe(canonical, { attributes: true, attributeFilter: ['href'] });
         }
+        
+        // Also observe head for new canonical links
+        if (document.head) {
+          observer.observe(document.head, { childList: true, subtree: true });
+        }
+        
+        // Re-check periodically as a safety net
+        setInterval(function() {
+          var canonical = document.querySelector('link[rel="canonical"]');
+          if (canonical) {
+            var href = canonical.getAttribute('href') || canonical.href;
+            if (href && !href.includes('://www.')) {
+              setCanonicalUrl();
+            }
+          }
+        }, 1000);
       })();
     </script>
     

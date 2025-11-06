@@ -30,6 +30,7 @@ export function normalizeCanonicalUrl(url) {
 /**
  * Get the current page's canonical URL (normalized, with www)
  * Always returns www version regardless of how the page is accessed
+ * This is the SINGLE SOURCE OF TRUTH for canonical URLs
  */
 export function getCanonicalUrl() {
   try {
@@ -38,11 +39,20 @@ export function getCanonicalUrl() {
     }
     
     // Always use www version, even if accessed via non-www
+    // NEVER use window.location.origin - always hardcode www
     const pathname = window.location.pathname || '/'
     const baseUrl = 'https://www.managekubernetes.com'
     
-    // Return normalized URL with www
-    return baseUrl + pathname
+    // Return normalized URL with www - this is ALWAYS www
+    const canonicalUrl = baseUrl + pathname
+    
+    // Double-check it has www (defensive)
+    if (!canonicalUrl.includes('://www.')) {
+      console.error('ERROR: Generated canonical URL missing www!', canonicalUrl)
+      return baseUrl + pathname // Force www
+    }
+    
+    return canonicalUrl
   } catch (error) {
     // Fallback if anything goes wrong
     console.warn('Error getting canonical URL:', error)

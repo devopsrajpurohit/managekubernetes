@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/prerender.js",
+    "build": "vite build && node scripts/prerender.js && node vercel-build-check.js",
     "preview": "vite preview",
     "dev:html": "npm run build && vite preview",
     "test:canonical": "node test-canonical.js",
