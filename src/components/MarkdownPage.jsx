@@ -25,16 +25,16 @@ export default function MarkdownPage({ basePath, kind }) {
       trackMarkdownView(slug, kind)
     }
     
-    // Set canonical URL immediately when component mounts - match actual URL
+    // Set canonical URL immediately when component mounts - normalized to www
     if (typeof window !== 'undefined') {
-      const currentUrl = window.location.origin + window.location.pathname
+      const cleanUrl = getCanonicalUrl()
       let canonical = document.querySelector('link[rel="canonical"]')
       if (!canonical) {
         canonical = document.createElement('link')
         canonical.rel = 'canonical'
         document.head.appendChild(canonical)
       }
-      canonical.href = currentUrl
+      canonical.href = cleanUrl
     }
   }, [slug, kind])
   
@@ -350,28 +350,31 @@ export default function MarkdownPage({ basePath, kind }) {
           breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
           document.head.appendChild(breadcrumbScript)
           
-          // Update canonical URL - match actual URL to fix SEO audit issue
-          const currentUrl = window.location.origin + window.location.pathname
+          // Update canonical URL - normalized to www
+          const cleanUrl = getCanonicalUrl()
           let canonical = document.querySelector('link[rel="canonical"]')
           if (!canonical) {
             canonical = document.createElement('link')
             canonical.rel = 'canonical'
             document.head.appendChild(canonical)
           }
-          canonical.href = currentUrl
+          canonical.href = cleanUrl
           
           // Get image URL for OG and Twitter - use from frontmatter or fallback
+          // Use www version for consistency
+          const urlObj = new URL(cleanUrl)
+          const baseUrl = `${urlObj.protocol}//${urlObj.hostname}`
           let imageUrl
           if (image && image.trim()) {
             // If image path doesn't start with http, make it absolute
             imageUrl = image.startsWith('http') 
               ? image 
-              : `${window.location.origin}${image.startsWith('/') ? image : '/' + image}`
+              : `${baseUrl}${image.startsWith('/') ? image : '/' + image}`
           } else if (kind === 'blog') {
             // Try to infer from slug
-            imageUrl = `${window.location.origin}/images/blog-${slug}.svg`
+            imageUrl = `${baseUrl}/images/blog-${slug}.svg`
           } else {
-            imageUrl = `${window.location.origin}/images/hero.svg`
+            imageUrl = `${baseUrl}/images/hero.svg`
           }
           
           // Update or create Open Graph meta tags
@@ -394,7 +397,7 @@ export default function MarkdownPage({ basePath, kind }) {
             ? (description || title).substring(0, 197) + '...' 
             : (description || title)
           updateOrCreateMeta('og:description', ogDescText)
-          updateOrCreateMeta('og:url', currentUrl)
+          updateOrCreateMeta('og:url', cleanUrl)
           updateOrCreateMeta('og:type', 'article')
           updateOrCreateMeta('og:image', imageUrl)
           updateOrCreateMeta('og:image:secure_url', imageUrl)
@@ -415,7 +418,7 @@ export default function MarkdownPage({ basePath, kind }) {
           }
           
           updateOrCreateTwitterMeta('twitter:card', 'summary_large_image')
-          updateOrCreateTwitterMeta('twitter:url', currentUrl)
+          updateOrCreateTwitterMeta('twitter:url', cleanUrl)
           
           // Shorten title for Twitter (max 70 chars)
           const twitterTitleText = title.length > 65 ? title.substring(0, 62) + '...' : title

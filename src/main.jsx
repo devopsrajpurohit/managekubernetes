@@ -16,7 +16,7 @@ function PageTracker() {
   const location = useLocation()
 
   useEffect(() => {
-    // Update canonical URL immediately on route change (normalized to non-www)
+    // Update canonical URL immediately on route change (normalized to www)
     const cleanUrl = getCanonicalUrl()
     let canonical = document.querySelector('link[rel="canonical"]')
     if (!canonical) {
@@ -26,7 +26,7 @@ function PageTracker() {
     }
     canonical.href = cleanUrl
     
-    // Update Open Graph URL (also normalized)
+    // Update Open Graph URL (also normalized to www)
     const ogUrl = document.querySelector('meta[property="og:url"]')
     if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     

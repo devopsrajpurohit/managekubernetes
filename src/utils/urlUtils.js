@@ -1,5 +1,5 @@
 /**
- * Normalize URL to always use non-www version for consistency
+ * Normalize URL to always use www version for consistency
  * This ensures canonical URLs are consistent regardless of how users access the site
  */
 export function normalizeCanonicalUrl(url) {
@@ -8,27 +8,31 @@ export function normalizeCanonicalUrl(url) {
   try {
     const urlObj = new URL(url)
     
-    // Remove www. from hostname
-    if (urlObj.hostname.startsWith('www.')) {
-      urlObj.hostname = urlObj.hostname.replace(/^www\./, '')
+    // Add www. to hostname if not present
+    if (!urlObj.hostname.startsWith('www.')) {
+      urlObj.hostname = 'www.' + urlObj.hostname
     }
     
     // Return normalized URL without query params or hash
     return `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`
   } catch (e) {
     // If URL parsing fails, try simple string replacement
-    return url.replace(/^https?:\/\/(www\.)?/, (match, www) => {
-      return match.replace('www.', '')
-    }).split('?')[0].split('#')[0]
+    const hasWww = url.includes('://www.')
+    if (!hasWww) {
+      return url.replace(/^https?:\/\//, (match) => {
+        return match + 'www.'
+      }).split('?')[0].split('#')[0]
+    }
+    return url.split('?')[0].split('#')[0]
   }
 }
 
 /**
- * Get the current page's canonical URL (normalized, non-www)
+ * Get the current page's canonical URL (normalized, with www)
  */
 export function getCanonicalUrl() {
   if (typeof window === 'undefined') {
-    return 'https://managekubernetes.com'
+    return 'https://www.managekubernetes.com'
   }
   
   const currentUrl = window.location.origin + window.location.pathname

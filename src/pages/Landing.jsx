@@ -66,7 +66,7 @@ function SafeLink({ to, children, onClick, 'data-card-title': cardTitle, ...prop
 export default function Landing() {
   // Add BreadcrumbList structured data for better SEO and update canonical URL
   useEffect(() => {
-    // Update canonical URL - normalized to non-www
+    // Update canonical URL - normalized to www
     const cleanUrl = getCanonicalUrl()
     let canonical = document.querySelector('link[rel="canonical"]')
     if (!canonical) {
@@ -75,7 +75,7 @@ export default function Landing() {
       document.head.appendChild(canonical)
     }
     canonical.href = cleanUrl
-    // Update Open Graph URL (also normalized)
+    // Update Open Graph URL (also normalized to www)
     const ogUrl = document.querySelector('meta[property="og:url"]')
     if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     
