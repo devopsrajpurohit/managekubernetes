@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kubernetes Best Practices for Production | Kubernetes Community</title>
+    <meta name="description" content="Essential best practices for running Kubernetes in production environments, including security, resource management, and monitoring." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/kubernetes-best-practices" />
+    <meta property="og:title" content="Kubernetes Best Practices for Production | Kubernetes Community" />
+    <meta property="og:description" content="Essential best practices for running Kubernetes in production environments, including security, resource management, and monitoring." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/kubernetes-best-practices" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Kubernetes Best Practices for Production",
+      "description": "Essential best practices for running Kubernetes in production environments, including security, resource management, and monitoring.",
+      "url": "https://managekubernetes.com/blog/kubernetes-best-practices",
+      "datePublished": "2025-11-06T09:00:53.583Z",
+      "dateModified": "2025-11-06T09:00:53.583Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/kubernetes-best-practices"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Kubernetes Best Practices for Production",
+          "item": "https://managekubernetes.com/blog/kubernetes-best-practices"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Kubernetes Best Practices for Production</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Kubernetes Best Practices for Production</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-best-practices.svg" alt="Kubernetes Best Practices for Production"></p>
+<h1>Kubernetes Best Practices for Production</h1>
+<p>Running Kubernetes in production requires careful attention to security, resource management, monitoring, and operational excellence. This guide covers essential best practices to ensure your cluster runs smoothly and securely.</p>
+<h2>Resource Management</h2>
+<h3>Set Resource Requests and Limits</h3>
+<p>Always specify resource requests and limits for your containers:</p>
+<pre><code class="language-yaml">resources:
+  requests:
+    memory: &quot;256Mi&quot;
+    cpu: &quot;250m&quot;
+  limits:
+    memory: &quot;512Mi&quot;
+    cpu: &quot;500m&quot;
+</code></pre>
+<p><strong>Why it matters</strong>: </p>
+<ul>
+<li>Prevents resource contention</li>
+<li>Enables better scheduling decisions</li>
+<li>Protects against resource exhaustion</li>
+</ul>
+<h3>Use Resource Quotas</h3>
+<p>Implement resource quotas at the namespace level to prevent any single application from consuming all cluster resources:</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: compute-quota
+spec:
+  hard:
+    requests.cpu: &quot;4&quot;
+    requests.memory: 8Gi
+    limits.cpu: &quot;8&quot;
+    limits.memory: 16Gi
+</code></pre>
+<h2>Security Best Practices</h2>
+<h3>Use Non-Root Users</h3>
+<p>Run containers as non-root users whenever possible:</p>
+<pre><code class="language-yaml">securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+</code></pre>
+<h3>Enable RBAC</h3>
+<p>Implement Role-Based Access Control (RBAC) to limit who can perform what actions:</p>
+<pre><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [&quot;&quot;]
+  resources: [&quot;pods&quot;]
+  verbs: [&quot;get&quot;, &quot;list&quot;]
+</code></pre>
+<h3>Scan Container Images</h3>
+<p>Regularly scan your container images for vulnerabilities:</p>
+<pre><code class="language-bash">trivy image myapp:latest
+</code></pre>
+<h2>Monitoring and Observability</h2>
+<h3>Implement Health Checks</h3>
+<p>Use liveness and readiness probes to ensure your applications are healthy:</p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+</code></pre>
+<h3>Set Up Monitoring</h3>
+<p>Deploy monitoring tools like Prometheus and Grafana to track cluster and application metrics. For more details, see our guide on <a href="/ops/monitor-pods">Monitor Pods &amp; Resources</a>.</p>
+<h3>Configure Alerting</h3>
+<p>Set up intelligent alerts for critical issues. Learn more in our <a href="/ops/smart-alerts">Smart Alerting guide</a>.</p>
+<h2>Network Policies</h2>
+<p>Implement network policies to control traffic between pods:</p>
+<pre><code class="language-yaml">apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+</code></pre>
+<h2>Backup and Disaster Recovery</h2>
+<h3>Regular Backups</h3>
+<ul>
+<li>Backup etcd regularly (control plane data)</li>
+<li>Use Velero for application-level backups</li>
+<li>Test restore procedures regularly</li>
+</ul>
+<h3>Version Control</h3>
+<p>Store all Kubernetes manifests in version control and use GitOps practices for deployment.</p>
+<h2>Cost Optimization</h2>
+<p>Optimize your cluster costs by:</p>
+<ul>
+<li>Right-sizing your resources</li>
+<li>Using spot instances for non-critical workloads</li>
+<li>Implementing auto-scaling</li>
+<li>Regularly reviewing unused resources</li>
+</ul>
+<p>See our <a href="/ops/cost-optimization">Cost Optimization guide</a> for detailed strategies.</p>
+<h2>Conclusion</h2>
+<p>Following these best practices will help you run Kubernetes safely and efficiently in production. Start with resource management and security, then gradually implement monitoring and cost optimization strategies.</p>
+<p>For more operational guidance, check out our <a href="/ops/check-cluster-health">Day-2 Operations guides</a>.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

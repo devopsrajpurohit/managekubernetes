@@ -6,7 +6,23 @@
   "framework": "vite",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/blog/:slug",
+      "destination": "/blog/:slug/index.html"
+    },
+    {
+      "source": "/learn/:slug",
+      "destination": "/learn/:slug/index.html"
+    },
+    {
+      "source": "/ops/:slug",
+      "destination": "/ops/:slug/index.html"
+    },
+    {
+      "source": "/blog",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/",
       "destination": "/index.html"
     }
   ],

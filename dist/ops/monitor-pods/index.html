@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monitor Pods &amp; Resources | Kubernetes Community</title>
+    <meta name="description" content="CPU/memory, restarts, throttling — what to watch and why it matters." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/monitor-pods" />
+    <meta property="og:title" content="Monitor Pods &amp; Resources | Kubernetes Community" />
+    <meta property="og:description" content="CPU/memory, restarts, throttling — what to watch and why it matters." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/monitor-pods" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Monitor Pods &amp; Resources",
+      "description": "CPU/memory, restarts, throttling — what to watch and why it matters.",
+      "url": "https://managekubernetes.com/ops/monitor-pods",
+      "datePublished": "2025-11-06T09:00:53.620Z",
+      "dateModified": "2025-11-06T09:00:53.620Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/monitor-pods"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Monitor Pods & Resources",
+          "item": "https://managekubernetes.com/ops/monitor-pods"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Monitor Pods & Resources</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Monitor Pods &amp; Resources</h1>
+        <article class="markdown-content max-w-none"><h1>Monitor Pods &amp; Resources</h1>
+<p>Monitoring your pods is essential for maintaining application reliability. Understanding what to watch and why helps you catch issues early and optimize resource usage.</p>
+<h2>What to Monitor</h2>
+<h3>1. Resource Usage (CPU &amp; Memory)</h3>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li>Prevents resource exhaustion</li>
+<li>Identifies memory leaks</li>
+<li>Ensures proper resource allocation</li>
+<li>Detects performance bottlenecks</li>
+</ul>
+<p><strong>How to check:</strong></p>
+<pre><code class="language-bash"># Current resource usage
+kubectl top pods
+
+# Per namespace
+kubectl top pods -n production
+
+# All namespaces
+kubectl top pods --all-namespaces
+
+# Sorted by CPU
+kubectl top pods --sort-by=cpu
+
+# Sorted by memory
+kubectl top pods --sort-by=memory
+
+# Specific pod
+kubectl top pod &lt;pod-name&gt;
+</code></pre>
+<p><strong>What to look for:</strong></p>
+<ul>
+<li>Pods using close to their limits</li>
+<li>Pods with consistently high CPU (potential infinite loops)</li>
+<li>Memory usage trending upward (possible leaks)</li>
+<li>Pods with zero resource usage (might be idle)</li>
+</ul>
+<h3>2. Restart Count</h3>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li>Indicates application instability</li>
+<li>Shows if health checks are failing</li>
+<li>Highlights configuration issues</li>
+<li>Reveals resource constraint problems</li>
+</ul>
+<p><strong>How to check:</strong></p>
+<pre><code class="language-bash"># Pods with restarts
+kubectl get pods
+
+# Filter pods with restarts
+kubectl get pods --all-namespaces | awk &#39;$4&gt;0 {print}&#39;
+
+# Watch restarts in real-time
+kubectl get pods -w
+
+# Describe to see restart reason
+kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<p><strong>What to look for:</strong></p>
+<ul>
+<li>Restart count increasing (investigate immediately)</li>
+<li>Recent restarts (check events and logs)</li>
+<li>CrashLoopBackOff status</li>
+<li>RestartLoopOff status</li>
+</ul>
+<p><strong>Common causes:</strong></p>
+<ul>
+<li>Application crashes</li>
+<li>Failed liveness probes</li>
+<li>Out of memory (OOMKilled)</li>
+<li>Configuration errors</li>
+<li>Missing dependencies</li>
+</ul>
+<h3>3. Container State</h3>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li>Shows current pod health</li>
+<li>Identifies stuck containers</li>
+<li>Reveals startup issues</li>
+<li>Highlights readiness problems</li>
+</ul>
+<p><strong>How to check:</strong></p>
+<pre><code class="language-bash"># Get pod status
+kubectl get pods
+
+# Detailed state information
+kubectl get pods -o jsonpath=&#39;{range .items[*]}{.metadata.name}{&quot;\t&quot;}{.status.containerStatuses[*].state}{&quot;\n&quot;}{end}&#39;
+
+# Describe for detailed state
+kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<p><strong>States to watch:</strong></p>
+<ul>
+<li><strong>Running</strong>: Normal operation</li>
+<li><strong>Waiting</strong>: Container waiting to start (check reason)</li>
+<li><strong>Terminated</strong>: Container stopped (check exit code)</li>
+<li><strong>CrashLoopBackOff</strong>: Container repeatedly crashing</li>
+<li><strong>ImagePullBackOff</strong>: Can&#39;t pull container image</li>
+<li><strong>ErrImagePull</strong>: Image pull failed</li>
+</ul>
+<h3>4. CPU Throttling</h3>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li>Indicates CPU limits are too low</li>
+<li>Causes application slowdowns</li>
+<li>Leads to poor user experience</li>
+<li>Shows resource planning issues</li>
+</ul>
+<p><strong>How to check:</strong></p>
+<pre><code class="language-bash"># Check if metrics-server shows throttling (advanced)
+# Requires prometheus or similar
+
+# Check CPU limits
+kubectl describe pod &lt;pod-name&gt; | grep -A 2 &quot;Limits&quot;
+
+# Compare requests vs limits
+kubectl get pod &lt;pod-name&gt; -o jsonpath=&#39;{.spec.containers[*].resources}&#39;
+</code></pre>
+<p><strong>What to look for:</strong></p>
+<ul>
+<li>Pods with CPU usage at limit (being throttled)</li>
+<li>High latency during high CPU usage</li>
+<li>Application timeouts</li>
+<li>Request/limit mismatches</li>
+</ul>
+<p><strong>Signs of throttling:</strong></p>
+<ul>
+<li>CPU usage hitting the limit</li>
+<li>Slow response times under load</li>
+<li>Requests timing out</li>
+</ul>
+<h3>5. Memory Pressure</h3>
+<p><strong>Why it matters:</strong></p>
+<ul>
+<li>Can cause OOMKilled errors</li>
+<li>Leads to pod evictions</li>
+<li>Causes application instability</li>
+<li>Affects overall cluster health</li>
+</ul>
+<p><strong>How to check:</strong></p>
+<pre><code class="language-bash"># Memory usage
+kubectl top pods --sort-by=memory
+
+# Memory requests and limits
+kubectl describe pod &lt;pod-name&gt; | grep -A 5 &quot;Requests\|Limits&quot;
+
+# Check for OOMKilled
+kubectl get pod &lt;pod-name&gt; -o jsonpath=&#39;{.status.containerStatuses[*].lastState.terminated.reason}&#39;
+</code></pre>
+<p><strong>What to look for:</strong></p>
+<ul>
+<li>Memory usage approaching limits</li>
+<li>OOMKilled in events</li>
+<li>Pods being evicted</li>
+<li>Memory spikes</li>
+</ul>
+<h2>Monitoring Commands Cheat Sheet</h2>
+<h3>Basic Monitoring</h3>
+<pre><code class="language-bash"># All pods with resource usage
+kubectl top pods --all-namespaces
+
+# Pods by status
+kubectl get pods --all-namespaces --field-selector=status.phase=Running
+kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+kubectl get pods --all-namespaces --field-selector=status.phase=Failed
+
+# Watch pods in real-time
+kubectl get pods -w --all-namespaces
+</code></pre>
+<h3>Detailed Analysis</h3>
+<pre><code class="language-bash"># Pod with restarts
+kubectl get pods --all-namespaces -o wide | grep -v &quot;0/&quot;
+
+# Pods in CrashLoopBackOff
+kubectl get pods --all-namespaces | grep CrashLoopBackOff
+
+# Pods not ready
+kubectl get pods --all-namespaces --field-selector=status.phase!=Running,status.phase!=Succeeded
+
+# Resource requests vs usage
+kubectl top pods --all-namespaces &amp;&amp; kubectl get pods --all-namespaces -o json | jq &#39;.items[] | {name: .metadata.name, requests: .spec.containers[].resources.requests, limits: .spec.containers[].resources.limits}&#39;
+</code></pre>
+<h3>Event Monitoring</h3>
+<pre><code class="language-bash"># Recent events
+kubectl get events --all-namespaces --sort-by=&#39;.lastTimestamp&#39; | tail -20
+
+# Events for specific pod
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt;
+
+# Warning events only
+kubectl get events --all-namespaces --field-selector type=Warning
+</code></pre>
+<h2>Setting Up Resource Requests and Limits</h2>
+<h3>Why They Matter</h3>
+<p><strong>Requests:</strong></p>
+<ul>
+<li>Reserve resources for the pod</li>
+<li>Used by scheduler to place pods</li>
+<li>Guaranteed minimum resources</li>
+</ul>
+<p><strong>Limits:</strong></p>
+<ul>
+<li>Maximum resources pod can use</li>
+<li>Prevents one pod from consuming all resources</li>
+<li>Triggers throttling/OOMKilled when exceeded</li>
+</ul>
+<h3>Example Configuration</h3>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+spec:
+  containers:
+  - name: app
+    image: my-app:latest
+    resources:
+      requests:
+        memory: &quot;128Mi&quot;
+        cpu: &quot;100m&quot;
+      limits:
+        memory: &quot;256Mi&quot;
+        cpu: &quot;200m&quot;
+</code></pre>
+<h3>Right-Sizing Resources</h3>
+<p><strong>Process:</strong></p>
+<ol>
+<li>Deploy without limits initially</li>
+<li>Monitor actual usage over time</li>
+<li>Set requests to average usage</li>
+<li>Set limits to peak usage + buffer (20-30%)</li>
+<li>Monitor and adjust</li>
+</ol>
+<pre><code class="language-bash"># Monitor current usage
+kubectl top pods --containers
+
+# Check what&#39;s currently set
+kubectl describe pod &lt;pod-name&gt; | grep -A 4 &quot;Requests\|Limits&quot;
+</code></pre>
+<h2>Identifying Common Issues</h2>
+<h3>High Restart Count</h3>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt; --previous
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt;
+</code></pre>
+<p><strong>Common causes:</strong></p>
+<ul>
+<li>Liveness probe too aggressive</li>
+<li>Application crash on startup</li>
+<li>Out of memory</li>
+<li>Missing configuration</li>
+</ul>
+<h3>CPU Throttling</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Slow response times</li>
+<li>Timeouts under load</li>
+<li>High latency</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-yaml">resources:
+  limits:
+    cpu: &quot;500m&quot;  # Increase limit
+</code></pre>
+<h3>Memory Leaks</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Memory usage gradually increasing</li>
+<li>Pods eventually OOMKilled</li>
+<li>Restarts don&#39;t help</li>
+</ul>
+<p><strong>Investigation:</strong></p>
+<pre><code class="language-bash"># Monitor memory over time
+watch -n 5 &#39;kubectl top pod &lt;pod-name&gt;&#39;
+
+# Check for memory leaks in application logs
+kubectl logs &lt;pod-name&gt; | grep -i memory
+</code></pre>
+<h3>Resource Starvation</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Pods in Pending state</li>
+<li>&quot;Insufficient cpu&quot; or &quot;Insufficient memory&quot; events</li>
+<li>Pods can&#39;t be scheduled</li>
+</ul>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl describe node &lt;node-name&gt;
+kubectl top nodes
+kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+</code></pre>
+<h2>Best Practices</h2>
+<h3>1. Always Set Resource Limits</h3>
+<pre><code class="language-yaml">resources:
+  requests:
+    memory: &quot;64Mi&quot;
+    cpu: &quot;100m&quot;
+  limits:
+    memory: &quot;128Mi&quot;
+    cpu: &quot;200m&quot;
+</code></pre>
+<h3>2. Monitor Continuously</h3>
+<p>Set up alerts for:</p>
+<ul>
+<li>Restart count &gt; 3 in 5 minutes</li>
+<li>CPU usage &gt; 80% of limit</li>
+<li>Memory usage &gt; 90% of limit</li>
+<li>Pods not ready for &gt; 5 minutes</li>
+</ul>
+<h3>3. Use HorizontalPodAutoscaler</h3>
+<pre><code class="language-yaml">apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+</code></pre>
+<h3>4. Regular Review</h3>
+<ul>
+<li>Weekly resource usage review</li>
+<li>Monthly right-sizing exercise</li>
+<li>Quarterly capacity planning</li>
+</ul>
+<h2>Monitoring Tools</h2>
+<h3>Built-in (kubectl)</h3>
+<ul>
+<li><code>kubectl top</code>: Basic resource usage</li>
+<li><code>kubectl get pods</code>: Status and restarts</li>
+<li><code>kubectl describe</code>: Detailed information</li>
+<li><code>kubectl logs</code>: Application logs</li>
+<li><code>kubectl get events</code>: Cluster events</li>
+</ul>
+<h3>Recommended Tools</h3>
+<ol>
+<li><strong>Prometheus + Grafana</strong>: Metrics and dashboards</li>
+<li><strong>Datadog</strong>: Full observability platform</li>
+<li><strong>New Relic</strong>: APM and infrastructure monitoring</li>
+<li><strong>kubectl-cost</strong>: Cost analysis</li>
+</ol>
+<h2>Key Metrics Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Why Watch</th>
+<th>What to Do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>CPU Usage</strong></td>
+<td>Throttling, performance</td>
+<td>Increase limits if hitting ceiling</td>
+</tr>
+<tr>
+<td><strong>Memory Usage</strong></td>
+<td>OOMKilled, evictions</td>
+<td>Investigate leaks, adjust limits</td>
+</tr>
+<tr>
+<td><strong>Restart Count</strong></td>
+<td>Stability issues</td>
+<td>Check logs, fix root cause</td>
+</tr>
+<tr>
+<td><strong>Container State</strong></td>
+<td>Health status</td>
+<td>Investigate non-running states</td>
+</tr>
+<tr>
+<td><strong>Resource Limits</strong></td>
+<td>Capacity planning</td>
+<td>Right-size based on usage</td>
+</tr>
+</tbody></table>
+<h2>Quick Health Check Script</h2>
+<pre><code class="language-bash">#!/bin/bash
+
+echo &quot;=== Resource Usage ===&quot;
+kubectl top pods --all-namespaces 2&gt;/dev/null || echo &quot;metrics-server not available&quot;
+
+echo -e &quot;\n=== Pods with Restarts ===&quot;
+kubectl get pods --all-namespaces | awk &#39;NR==1 || $4&gt;0&#39;
+
+echo -e &quot;\n=== Problem Pods ===&quot;
+kubectl get pods --all-namespaces | grep -E &quot;CrashLoopBackOff|Error|ImagePullBackOff&quot;
+
+echo -e &quot;\n=== Pending Pods ===&quot;
+kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+</code></pre>
+<p>Monitoring pods proactively helps you maintain reliable applications and catch issues before they impact users!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deployments (the easy way) | Kubernetes Community</title>
+    <meta name="description" content="Rolling updates &amp; rollbacks with one command — zero theory overload." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/workloads" />
+    <meta property="og:title" content="Deployments (the easy way) | Kubernetes Community" />
+    <meta property="og:description" content="Rolling updates &amp; rollbacks with one command — zero theory overload." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/workloads" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Deployments (the easy way)",
+      "description": "Rolling updates &amp; rollbacks with one command — zero theory overload.",
+      "url": "https://managekubernetes.com/learn/workloads",
+      "datePublished": "2025-11-06T09:00:53.611Z",
+      "dateModified": "2025-11-06T09:00:53.611Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/workloads"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Deployments (the easy way)",
+          "item": "https://managekubernetes.com/learn/workloads"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Deployments (the easy way)</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Deployments (the easy way)</h1>
+        <article class="markdown-content max-w-none"><h1>Deployments: The Easy Way</h1>
+<p>Deployments are the most common way to run applications in Kubernetes. They manage replica sets and provide declarative updates, rolling updates, and rollbacks with minimal effort.</p>
+<h2>What is a Deployment?</h2>
+<p>A <strong>Deployment</strong> manages a set of identical pods (replicas) and provides:</p>
+<ul>
+<li>Declarative updates (change the YAML, apply it)</li>
+<li>Rolling updates (zero-downtime updates)</li>
+<li>Rollbacks (revert to previous version)</li>
+<li>Scaling (increase/decrease replicas)</li>
+</ul>
+<h2>Creating Your First Deployment</h2>
+<h3>Simple Approach</h3>
+<pre><code class="language-bash">kubectl create deployment my-app --image=nginx:1.21 --replicas=3
+</code></pre>
+<p>This single command:</p>
+<ul>
+<li>Creates a Deployment named <code>my-app</code></li>
+<li>Sets the image to <code>nginx:1.21</code></li>
+<li>Creates 3 replicas (pods)</li>
+<li>Sets up a ReplicaSet to manage them</li>
+</ul>
+<h3>Using YAML</h3>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+</code></pre>
+<p>Apply it:</p>
+<pre><code class="language-bash">kubectl apply -f deployment.yaml
+</code></pre>
+<h2>Rolling Updates: Zero Downtime</h2>
+<h3>Update the Image</h3>
+<p><strong>Method 1: Command Line</strong></p>
+<pre><code class="language-bash">kubectl set image deployment/my-app nginx=nginx:1.22
+</code></pre>
+<p><strong>Method 2: Edit the Deployment</strong></p>
+<pre><code class="language-bash">kubectl edit deployment my-app
+# Change the image version in the editor
+</code></pre>
+<p><strong>Method 3: Update YAML</strong></p>
+<pre><code class="language-yaml"># Change image in your YAML file
+image: nginx:1.22
+</code></pre>
+<pre><code class="language-bash">kubectl apply -f deployment.yaml
+</code></pre>
+<h3>What Happens During Rolling Update</h3>
+<ol>
+<li><strong>New ReplicaSet Created</strong>: Kubernetes creates a new ReplicaSet with the new image</li>
+<li><strong>Gradual Replacement</strong>: Old pods are terminated as new ones become ready</li>
+<li><strong>Zero Downtime</strong>: Traffic continues to flow to old pods until new ones are ready</li>
+<li><strong>Automatic Scaling</strong>: You can control how many new pods are created simultaneously</li>
+</ol>
+<h3>Control Rolling Update Speed</h3>
+<pre><code class="language-yaml">spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # Max pods that can be created over desired count
+      maxUnavailable: 0  # Max pods that can be unavailable
+  replicas: 3
+</code></pre>
+<h2>Rollbacks: Revert to Previous Version</h2>
+<h3>Check Deployment History</h3>
+<pre><code class="language-bash">kubectl rollout history deployment/my-app
+</code></pre>
+<h3>View Specific Revision</h3>
+<pre><code class="language-bash">kubectl rollout history deployment/my-app --revision=2
+</code></pre>
+<h3>Rollback to Previous Version</h3>
+<pre><code class="language-bash"># Rollback to immediately previous version
+kubectl rollout undo deployment/my-app
+
+# Rollback to specific revision
+kubectl rollout undo deployment/my-app --to-revision=2
+</code></pre>
+<h3>Rollback Status</h3>
+<pre><code class="language-bash">kubectl rollout status deployment/my-app
+</code></pre>
+<h2>Scaling: Change Replica Count</h2>
+<h3>Scale Up</h3>
+<pre><code class="language-bash">kubectl scale deployment/my-app --replicas=5
+</code></pre>
+<p>Or update the YAML:</p>
+<pre><code class="language-yaml">spec:
+  replicas: 5
+</code></pre>
+<pre><code class="language-bash">kubectl apply -f deployment.yaml
+</code></pre>
+<h3>Scale Down</h3>
+<pre><code class="language-bash">kubectl scale deployment/my-app --replicas=1
+</code></pre>
+<h3>Auto-scaling (HPA)</h3>
+<pre><code class="language-bash"># Create horizontal pod autoscaler
+kubectl autoscale deployment my-app --cpu-percent=70 --min=2 --max=10
+</code></pre>
+<h2>Common Commands</h2>
+<pre><code class="language-bash"># Get deployments
+kubectl get deployments
+
+# Describe deployment
+kubectl describe deployment my-app
+
+# View rollout status
+kubectl rollout status deployment/my-app
+
+# Pause rollout (make multiple changes before applying)
+kubectl rollout pause deployment/my-app
+
+# Resume rollout
+kubectl rollout resume deployment/my-app
+
+# Restart deployment (recreates all pods)
+kubectl rollout restart deployment/my-app
+
+# View pods managed by deployment
+kubectl get pods -l app=my-app
+</code></pre>
+<h2>Best Practices</h2>
+<h3>1. Use Labels Consistently</h3>
+<pre><code class="language-yaml">metadata:
+  labels:
+    app: my-app
+    version: v1
+    env: production
+</code></pre>
+<h3>2. Set Resource Limits</h3>
+<pre><code class="language-yaml">containers:
+- name: nginx
+  resources:
+    requests:
+      memory: &quot;64Mi&quot;
+      cpu: &quot;250m&quot;
+    limits:
+      memory: &quot;128Mi&quot;
+      cpu: &quot;500m&quot;
+</code></pre>
+<h3>3. Configure Health Checks</h3>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 80
+  initialDelaySeconds: 30
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 80
+  initialDelaySeconds: 5
+</code></pre>
+<h3>4. Use Specific Image Tags</h3>
+<pre><code class="language-yaml"># Avoid &#39;latest&#39; in production
+image: nginx:1.21.6  # Specific version
+</code></pre>
+<h2>Real-World Example</h2>
+<p>Complete deployment with all features:</p>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: web-app
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+        version: v1.0
+    spec:
+      containers:
+      - name: web
+        image: myapp:v1.0
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: &quot;128Mi&quot;
+            cpu: &quot;100m&quot;
+          limits:
+            memory: &quot;256Mi&quot;
+            cpu: &quot;200m&quot;
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+</code></pre>
+<h2>Troubleshooting</h2>
+<p><strong>Pods not starting:</strong></p>
+<pre><code class="language-bash">kubectl describe deployment my-app
+kubectl logs deployment/my-app
+</code></pre>
+<p><strong>Rollout stuck:</strong></p>
+<pre><code class="language-bash">kubectl rollout undo deployment/my-app
+</code></pre>
+<p><strong>Check rollout history:</strong></p>
+<pre><code class="language-bash">kubectl rollout history deployment/my-app
+</code></pre>
+<p>That&#39;s it! Deployments make managing applications in Kubernetes straightforward. You can update, scale, and rollback with simple commands - no complex theory needed.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

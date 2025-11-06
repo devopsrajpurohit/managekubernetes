@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Troubleshooting Kubernetes Pods in Evicted State | Kubernetes Community</title>
+    <meta name="description" content="Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/troubleshooting-pods-evicted" />
+    <meta property="og:title" content="Troubleshooting Kubernetes Pods in Evicted State | Kubernetes Community" />
+    <meta property="og:description" content="Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/troubleshooting-pods-evicted" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Troubleshooting Kubernetes Pods in Evicted State",
+      "description": "Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios.",
+      "url": "https://managekubernetes.com/blog/troubleshooting-pods-evicted",
+      "datePublished": "2025-11-06T09:00:53.590Z",
+      "dateModified": "2025-11-06T09:00:53.590Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/troubleshooting-pods-evicted"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Troubleshooting Kubernetes Pods in Evicted State",
+          "item": "https://managekubernetes.com/blog/troubleshooting-pods-evicted"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Troubleshooting Kubernetes Pods in Evicted State</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Troubleshooting Kubernetes Pods in Evicted State</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-evicted.svg" alt="Troubleshooting Kubernetes Pods in Evicted State"></p>
+<h1>Troubleshooting Kubernetes Pods in Evicted State</h1>
+<p>A pod in the <strong>Evicted</strong> state means that the Kubernetes node forcibly terminated and removed the pod from the node. This occurs when the node faces resource pressure, usually due to low memory, disk space, or node-level problems. The kubelet evicts pods to free up resources for system stability.</p>
+<p>Unlike CrashLoopBackOff or Error states, evicted pods cannot restart automatically. You&#39;ll need to recreate them manually or rely on a higher-level controller (Deployment, ReplicaSet, DaemonSet) to restore them.</p>
+<p>You can identify this state using:</p>
+<pre><code class="language-bash">kubectl get pods
+
+NAME              READY   STATUS    RESTARTS   AGE
+api-pod           0/1     Evicted   0          10m
+</code></pre>
+<h2>Impact of Evicted State</h2>
+<p>When a pod is evicted, it is terminated permanently on that node.</p>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>The pod and its data (if not backed by persistent storage) are lost</li>
+<li>The application may experience downtime until the controller reschedules a new pod</li>
+<li>Jobs or batch workloads may fail if not retried automatically</li>
+<li>Critical services running without redundancy may become unavailable</li>
+</ul>
+<p><strong>Bottom line</strong>: An evicted pod means the node was under stress, so Kubernetes decided to remove workloads to protect system health.</p>
+<h2>Common Causes and Solutions</h2>
+<h3>1. Memory Pressure</h3>
+<p><strong>Symptom</strong>: Node ran out of memory; kubelet evicted low-priority pods to reclaim resources.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -i &quot;evicted\|memory&quot;
+kubectl top nodes
+kubectl get nodes -o custom-columns=NAME:.metadata.name,MEMORY:.status.capacity.memory
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Free up node memory by removing unnecessary pods</li>
+<li>Increase memory limits for pods that need more</li>
+<li>Add more nodes to the cluster</li>
+<li>Increase node memory capacity</li>
+<li>Adjust eviction thresholds in kubelet configuration</li>
+</ul>
+<h3>2. Disk Pressure</h3>
+<p><strong>Symptom</strong>: Disk usage exceeded thresholds (configured in <code>--eviction-hard</code> settings).</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -i &quot;disk\|evicted&quot;
+kubectl get nodes -o jsonpath=&#39;{.items[*].status.conditions[?(@.type==&quot;DiskPressure&quot;)]}&#39;
+df -h  # On the node
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Clean up unused container images: <code>docker system prune -a</code> or <code>crictl rmi --prune</code></li>
+<li>Remove old logs and temporary files</li>
+<li>Increase disk space on nodes</li>
+<li>Clean up unused PersistentVolumes</li>
+<li>Adjust eviction thresholds</li>
+<li>Use image garbage collection policies</li>
+</ul>
+<h3>3. CPU or Ephemeral Storage Pressure</h3>
+<p><strong>Symptom</strong>: Node experienced high CPU or ephemeral storage usage.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl top nodes
+kubectl describe node &lt;node-name&gt; | grep -i &quot;pressure&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Scale down resource-intensive pods</li>
+<li>Distribute workloads across more nodes</li>
+<li>Increase node resources</li>
+<li>Implement resource quotas to prevent resource exhaustion</li>
+</ul>
+<h3>4. Node Maintenance</h3>
+<p><strong>Symptom</strong>: Admin used <code>kubectl drain</code> or <code>kubectl cordon</code> for upgrades or maintenance.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl get nodes
+kubectl describe node &lt;node-name&gt; | grep -i &quot;cordon\|drain\|unschedulable&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Wait for maintenance to complete</li>
+<li>Uncordon node: <code>kubectl uncordon &lt;node-name&gt;</code></li>
+<li>Pods should be rescheduled automatically by controllers</li>
+<li>Plan maintenance during low-traffic periods</li>
+</ul>
+<h3>5. Pod Priority Preemption</h3>
+<p><strong>Symptom</strong>: Higher-priority workloads preempted the pod.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl get pod &lt;pod-name&gt; -o jsonpath=&#39;{.spec.priority}&#39;
+kubectl get priorityclass
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase pod priority if it&#39;s critical</li>
+<li>Create PriorityClass with appropriate priority value</li>
+<li>Ensure critical pods have higher priority than non-critical ones</li>
+</ul>
+<h3>6. Volume Issues</h3>
+<p><strong>Symptom</strong>: Pod&#39;s volume ran out of space.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -A 10 &quot;Volumes:&quot;
+kubectl get pvc
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase PersistentVolume size</li>
+<li>Clean up data in volumes</li>
+<li>Use volume expansion feature</li>
+<li>Monitor volume usage proactively</li>
+</ul>
+<h2>Step-by-Step Troubleshooting</h2>
+<h3>Step 1: Check Eviction Reason</h3>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+# Look for:
+# Reason:       Evicted
+# Message:     The node was low on resource: memory
+</code></pre>
+<h3>Step 2: Check Node Resources</h3>
+<pre><code class="language-bash">kubectl top nodes
+kubectl describe node &lt;node-name&gt;
+# Check for pressure conditions (MemoryPressure, DiskPressure)
+</code></pre>
+<h3>Step 3: Check Node Events</h3>
+<pre><code class="language-bash">kubectl get events --field-selector involvedObject.name=&lt;node-name&gt; --sort-by=&#39;.lastTimestamp&#39;
+</code></pre>
+<h3>Step 4: Verify Controller Will Recreate</h3>
+<pre><code class="language-bash">kubectl get deployment,replicaset -o wide
+# Deployment/ReplicaSet will recreate the pod
+</code></pre>
+<h3>Step 5: Clean Up Evicted Pods</h3>
+<pre><code class="language-bash"># List all evicted pods
+kubectl get pods --all-namespaces --field-selector=status.phase=Failed
+
+# Delete evicted pods (controllers will recreate)
+kubectl delete pod &lt;evicted-pod-name&gt;
+</code></pre>
+<h2>Quick Fixes</h2>
+<h3>Immediate Actions</h3>
+<ol>
+<li><p><strong>Delete evicted pod</strong> (controller will recreate):</p>
+<pre><code class="language-bash">kubectl delete pod &lt;evicted-pod-name&gt;
+</code></pre>
+</li>
+<li><p><strong>Clean up node resources</strong>:</p>
+<pre><code class="language-bash"># On the node
+docker system prune -a  # For Docker
+crictl rmi --prune      # For containerd
+</code></pre>
+</li>
+<li><p><strong>Add more nodes</strong>: Quickly scale cluster to reduce resource pressure</p>
+</li>
+<li><p><strong>Increase node resources</strong>: Upgrade node instance types if using cloud</p>
+</li>
+</ol>
+<h3>Long-term Solutions</h3>
+<ol>
+<li><p><strong>Configure eviction thresholds</strong>:</p>
+<pre><code class="language-yaml"># kubelet config
+evictionHard:
+  memory.available: &quot;500Mi&quot;
+  nodefs.available: &quot;10%&quot;
+  imagefs.available: &quot;15%&quot;
+</code></pre>
+</li>
+<li><p><strong>Implement resource requests and limits</strong>:</p>
+<pre><code class="language-yaml">resources:
+  requests:
+    memory: &quot;256Mi&quot;
+    cpu: &quot;250m&quot;
+  limits:
+    memory: &quot;512Mi&quot;
+    cpu: &quot;500m&quot;
+</code></pre>
+</li>
+<li><p><strong>Use pod priority classes</strong>:</p>
+<pre><code class="language-yaml">apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000
+</code></pre>
+</li>
+<li><p><strong>Monitor and alert</strong>: Set up monitoring for node resource usage</p>
+</li>
+</ol>
+<h2>Preventing Pod Evictions</h2>
+<ol>
+<li><strong>Right-size resources</strong>: Set appropriate requests and limits</li>
+<li><strong>Monitor cluster capacity</strong>: Track resource usage trends</li>
+<li><strong>Implement horizontal autoscaling</strong>: Scale pods before resource exhaustion</li>
+<li><strong>Use resource quotas</strong>: Prevent any namespace from consuming all resources</li>
+<li><strong>Regular cleanup</strong>: Clean unused images, volumes, and logs</li>
+<li><strong>Capacity planning</strong>: Add nodes before reaching capacity</li>
+<li><strong>Use pod disruption budgets</strong>: Protect critical pods from eviction</li>
+</ol>
+<h2>Eviction Policies</h2>
+<h3>Soft Eviction</h3>
+<p>Gradually evict pods with grace period:</p>
+<pre><code class="language-yaml">evictionSoft:
+  memory.available: &quot;1Gi&quot;
+evictionSoftGracePeriod:
+  memory.available: &quot;30s&quot;
+</code></pre>
+<h3>Hard Eviction</h3>
+<p>Immediate eviction when threshold reached:</p>
+<pre><code class="language-yaml">evictionHard:
+  memory.available: &quot;500Mi&quot;
+  nodefs.available: &quot;10%&quot;
+</code></pre>
+<h2>Related Resources</h2>
+<ul>
+<li><a href="/ops/check-cluster-health">Check Cluster Health</a></li>
+<li><a href="/ops/monitor-pods">Monitor Pods &amp; Resources</a></li>
+<li><a href="/blog/troubleshooting-pods-pending-state">Troubleshooting Pending Pods</a></li>
+<li><a href="/blog/troubleshooting-pods-oom-killed">Troubleshooting OOM Killed Pods</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>Pod evictions are typically caused by node resource pressure (memory, disk, CPU). Once a pod is evicted, it needs to be recreated by its controller. Focus on preventing evictions by monitoring node resources, right-sizing pods, and maintaining adequate cluster capacity.</p>
+<p>Remember: Evicted pods are permanently removed from the node and must be recreated. Always have controllers (Deployments, ReplicaSets) managing your pods for automatic recovery.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Troubleshooting Basics | Kubernetes Community</title>
+    <meta name="description" content="Your first 6 commands: get, describe, logs, exec, events, top." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/basic-troubleshooting" />
+    <meta property="og:title" content="Troubleshooting Basics | Kubernetes Community" />
+    <meta property="og:description" content="Your first 6 commands: get, describe, logs, exec, events, top." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/basic-troubleshooting" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Troubleshooting Basics",
+      "description": "Your first 6 commands: get, describe, logs, exec, events, top.",
+      "url": "https://managekubernetes.com/learn/basic-troubleshooting",
+      "datePublished": "2025-11-06T09:00:53.596Z",
+      "dateModified": "2025-11-06T09:00:53.596Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/basic-troubleshooting"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Troubleshooting Basics",
+          "item": "https://managekubernetes.com/learn/basic-troubleshooting"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Troubleshooting Basics</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Troubleshooting Basics</h1>
+        <article class="markdown-content max-w-none"><h1>Troubleshooting Basics</h1>
+<p>When something goes wrong in Kubernetes, these six essential commands will help you diagnose and fix issues quickly. Master these, and you&#39;ll be able to troubleshoot most problems.</p>
+<h2>1. kubectl get - See What&#39;s Running</h2>
+<p><strong>Purpose</strong>: List and view resources in your cluster.</p>
+<h3>Basic Usage</h3>
+<pre><code class="language-bash"># Get all pods
+kubectl get pods
+
+# Get pods in a specific namespace
+kubectl get pods -n production
+
+# Get pods with more details
+kubectl get pods -o wide
+
+# Watch pods in real-time
+kubectl get pods -w
+
+# Get all resources
+kubectl get all
+
+# Get deployments
+kubectl get deployments
+
+# Get services
+kubectl get services
+</code></pre>
+<h3>Advanced Options</h3>
+<pre><code class="language-bash"># Show labels
+kubectl get pods --show-labels
+
+# Filter by label
+kubectl get pods -l app=my-app
+
+# Custom output format
+kubectl get pods -o yaml
+kubectl get pods -o json
+
+# Sort by age
+kubectl get pods --sort-by=.metadata.creationTimestamp
+</code></pre>
+<p><strong>What to Look For:</strong></p>
+<ul>
+<li>Pod status: <code>Running</code>, <code>Pending</code>, <code>CrashLoopBackOff</code>, <code>Error</code></li>
+<li>Number of replicas: Are all expected pods running?</li>
+<li>Age: Have pods been restarting recently?</li>
+<li>Node: Which nodes are pods running on?</li>
+</ul>
+<h2>2. kubectl describe - Deep Dive into Resources</h2>
+<p><strong>Purpose</strong>: Get detailed information about a resource, including events and state.</p>
+<h3>Usage</h3>
+<pre><code class="language-bash"># Describe a pod
+kubectl describe pod &lt;pod-name&gt;
+
+# Describe a deployment
+kubectl describe deployment &lt;deployment-name&gt;
+
+# Describe a node
+kubectl describe node &lt;node-name&gt;
+
+# Describe all pods
+kubectl describe pods
+</code></pre>
+<h3>What You&#39;ll See</h3>
+<ul>
+<li><strong>Events</strong>: Recent events that affected the resource</li>
+<li><strong>Conditions</strong>: Current state conditions</li>
+<li><strong>Labels/Annotations</strong>: Metadata</li>
+<li><strong>Resource Requests/Limits</strong>: CPU and memory configuration</li>
+<li><strong>Volume Mounts</strong>: Storage configuration</li>
+<li><strong>Container States</strong>: Running, waiting, terminated states</li>
+</ul>
+<h3>Example Output to Watch For</h3>
+<pre><code>Events:
+  Warning  FailedScheduling  pod has unbound immediate PersistentVolumeClaims
+  Warning  FailedMount      Unable to attach or mount volumes
+  Normal   Pulling          pulling image &quot;nginx:1.21&quot;
+  Normal   Pulled           Successfully pulled image &quot;nginx:1.21&quot;
+</code></pre>
+<p><strong>Key Sections:</strong></p>
+<ul>
+<li><strong>Status</strong>: Overall resource state</li>
+<li><strong>Conditions</strong>: Detailed state breakdown</li>
+<li><strong>Events</strong>: Chronological list of what happened</li>
+</ul>
+<h2>3. kubectl logs - See What Applications Are Saying</h2>
+<p><strong>Purpose</strong>: View container logs to see what your application is doing.</p>
+<h3>Basic Usage</h3>
+<pre><code class="language-bash"># Get logs from a pod
+kubectl logs &lt;pod-name&gt;
+
+# Get logs from a specific container in a pod
+kubectl logs &lt;pod-name&gt; -c &lt;container-name&gt;
+
+# Follow logs (like tail -f)
+kubectl logs -f &lt;pod-name&gt;
+
+# Get logs from previous container instance
+kubectl logs &lt;pod-name&gt; --previous
+
+# Get logs from all pods with a label
+kubectl logs -l app=my-app
+
+# Get last 100 lines
+kubectl logs &lt;pod-name&gt; --tail=100
+
+# Get logs from last 10 minutes
+kubectl logs &lt;pod-name&gt; --since=10m
+</code></pre>
+<h3>Advanced Options</h3>
+<pre><code class="language-bash"># Get logs with timestamps
+kubectl logs &lt;pod-name&gt; --timestamps
+
+# Get logs from all containers
+kubectl logs &lt;pod-name&gt; --all-containers=true
+
+# Follow logs from deployment
+kubectl logs -f deployment/&lt;deployment-name&gt;
+</code></pre>
+<p><strong>What to Look For:</strong></p>
+<ul>
+<li>Error messages</li>
+<li>Application startup logs</li>
+<li>Health check endpoints being hit</li>
+<li>Database connection attempts</li>
+<li>Authentication failures</li>
+</ul>
+<p><strong>Common Patterns:</strong></p>
+<ul>
+<li><code>Connection refused</code>: Service isn&#39;t running or wrong port</li>
+<li><code>404 Not Found</code>: Wrong endpoint or routing issue</li>
+<li><code>503 Service Unavailable</code>: Application not ready</li>
+<li><code>Timeout</code>: Network or dependency issue</li>
+</ul>
+<h2>4. kubectl exec - Execute Commands in Containers</h2>
+<p><strong>Purpose</strong>: Run commands inside running containers for debugging.</p>
+<h3>Basic Usage</h3>
+<pre><code class="language-bash"># Execute command in pod
+kubectl exec &lt;pod-name&gt; -- ls -la
+
+# Interactive shell
+kubectl exec -it &lt;pod-name&gt; -- /bin/bash
+
+# Execute in specific container
+kubectl exec -it &lt;pod-name&gt; -c &lt;container-name&gt; -- /bin/sh
+
+# Execute multiple commands
+kubectl exec &lt;pod-name&gt; -- sh -c &quot;env | grep DB&quot;
+</code></pre>
+<h3>Common Debugging Tasks</h3>
+<pre><code class="language-bash"># Check environment variables
+kubectl exec &lt;pod-name&gt; -- env
+
+# Check file system
+kubectl exec &lt;pod-name&gt; -- ls -la /app
+
+# Check network connectivity
+kubectl exec &lt;pod-name&gt; -- curl http://localhost:8080/health
+
+# Check DNS resolution
+kubectl exec &lt;pod-name&gt; -- nslookup my-service
+
+# View process list
+kubectl exec &lt;pod-name&gt; -- ps aux
+
+# Check disk space
+kubectl exec &lt;pod-name&gt; -- df -h
+</code></pre>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>Application is running but behaving strangely</li>
+<li>Need to check configuration files</li>
+<li>Test connectivity from inside the pod</li>
+<li>Verify environment variables</li>
+<li>Debug file permission issues</li>
+</ul>
+<h2>5. kubectl get events - See What&#39;s Happening</h2>
+<p><strong>Purpose</strong>: View events across the cluster to understand what&#39;s happening.</p>
+<h3>Usage</h3>
+<pre><code class="language-bash"># Get all events
+kubectl get events
+
+# Watch events in real-time
+kubectl get events -w
+
+# Get events in specific namespace
+kubectl get events -n production
+
+# Sort by time (most recent first)
+kubectl get events --sort-by=&#39;.lastTimestamp&#39;
+
+# Filter by involved object
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt;
+</code></pre>
+<h3>Understanding Event Types</h3>
+<p><strong>Normal Events:</strong></p>
+<ul>
+<li><code>SuccessfulCreate</code>: Pod/ReplicaSet created</li>
+<li><code>Pulled</code>: Image pulled successfully</li>
+<li><code>Started</code>: Container started</li>
+<li><code>Scheduled</code>: Pod assigned to node</li>
+</ul>
+<p><strong>Warning Events:</strong></p>
+<ul>
+<li><code>FailedScheduling</code>: Pod couldn&#39;t be scheduled</li>
+<li><code>FailedMount</code>: Volume mount failed</li>
+<li><code>Failed</code>: Container failed to start</li>
+<li><code>BackOff</code>: Container restarting (CrashLoopBackOff)</li>
+<li><code>Unhealthy</code>: Health check failed</li>
+</ul>
+<p><strong>Example Events:</strong></p>
+<pre><code>LAST SEEN   TYPE     REASON      OBJECT          MESSAGE
+10m         Normal   Scheduled   pod/my-app      Successfully assigned default/my-app to node-1
+10m         Normal   Pulling     pod/my-app      Pulling image &quot;nginx:1.21&quot;
+9m          Normal   Pulled      pod/my-app      Successfully pulled image &quot;nginx:1.21&quot;
+9m          Normal   Created     pod/my-app      Created container nginx
+9m          Normal   Started     pod/my-app      Started container nginx
+2m          Warning  Unhealthy   pod/my-app      Liveness probe failed
+</code></pre>
+<h2>6. kubectl top - Monitor Resource Usage</h2>
+<p><strong>Purpose</strong>: See CPU and memory usage for nodes and pods.</p>
+<h3>Prerequisites</h3>
+<p>Requires metrics-server installed:</p>
+<pre><code class="language-bash"># Check if metrics-server is running
+kubectl get pods -n kube-system | grep metrics-server
+
+# Install metrics-server (if not installed)
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+</code></pre>
+<h3>Usage</h3>
+<pre><code class="language-bash"># View node resource usage
+kubectl top nodes
+
+# View pod resource usage
+kubectl top pods
+
+# View pods in namespace
+kubectl top pods -n production
+
+# View specific pod
+kubectl top pod &lt;pod-name&gt;
+
+# View pods sorted by CPU
+kubectl top pods --sort-by=cpu
+
+# View pods sorted by memory
+kubectl top pods --sort-by=memory
+</code></pre>
+<h3>Example Output</h3>
+<pre><code>NAME       CPU(cores)   MEMORY(bytes)
+pod-1      100m         128Mi
+pod-2      50m          64Mi
+</code></pre>
+<p><strong>What to Look For:</strong></p>
+<ul>
+<li><strong>High CPU</strong>: Application might be doing heavy computation</li>
+<li><strong>High Memory</strong>: Possible memory leak or insufficient limits</li>
+<li><strong>Consistent usage</strong>: Normal operation</li>
+<li><strong>Spikes</strong>: Sudden load or issues</li>
+</ul>
+<h2>Troubleshooting Workflow</h2>
+<h3>Step 1: Quick Health Check</h3>
+<pre><code class="language-bash">kubectl get pods
+kubectl get events --sort-by=&#39;.lastTimestamp&#39; | tail -20
+</code></pre>
+<h3>Step 2: Inspect Problematic Resources</h3>
+<pre><code class="language-bash">kubectl describe pod &lt;problem-pod&gt;
+</code></pre>
+<h3>Step 3: Check Logs</h3>
+<pre><code class="language-bash">kubectl logs &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt; --previous  # If container restarted
+</code></pre>
+<h3>Step 4: Debug Inside Container (if needed)</h3>
+<pre><code class="language-bash">kubectl exec -it &lt;pod-name&gt; -- /bin/bash
+</code></pre>
+<h3>Step 5: Check Resource Usage</h3>
+<pre><code class="language-bash">kubectl top pod &lt;pod-name&gt;
+kubectl top nodes
+</code></pre>
+<h2>Common Issues and Solutions</h2>
+<h3>Pod in Pending State</h3>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+# Look for: FailedScheduling, resource constraints
+</code></pre>
+<h3>Pod in CrashLoopBackOff</h3>
+<pre><code class="language-bash">kubectl logs &lt;pod-name&gt; --previous
+kubectl describe pod &lt;pod-name&gt;
+# Look for: application errors, configuration issues
+</code></pre>
+<h3>Pod Running but Not Responding</h3>
+<pre><code class="language-bash">kubectl exec -it &lt;pod-name&gt; -- curl http://localhost:8080/health
+kubectl logs &lt;pod-name&gt;
+</code></pre>
+<h3>High Resource Usage</h3>
+<pre><code class="language-bash">kubectl top pod &lt;pod-name&gt;
+kubectl describe pod &lt;pod-name&gt;  # Check limits
+</code></pre>
+<h2>Quick Reference Card</h2>
+<pre><code class="language-bash"># 1. See what&#39;s running
+kubectl get pods -o wide
+
+# 2. Get details
+kubectl describe pod &lt;pod-name&gt;
+
+# 3. View logs
+kubectl logs &lt;pod-name&gt; -f
+
+# 4. Execute in container
+kubectl exec -it &lt;pod-name&gt; -- /bin/bash
+
+# 5. Check events
+kubectl get events --sort-by=&#39;.lastTimestamp&#39;
+
+# 6. Monitor resources
+kubectl top pods
+</code></pre>
+<p>Master these six commands, and you&#39;ll be able to diagnose and fix most Kubernetes issues!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

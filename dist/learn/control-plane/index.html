@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Control Plane Overview | Kubernetes Community</title>
+    <meta name="description" content="What happens when you run kubectl — the request path explained." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/control-plane" />
+    <meta property="og:title" content="Control Plane Overview | Kubernetes Community" />
+    <meta property="og:description" content="What happens when you run kubectl — the request path explained." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/control-plane" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Control Plane Overview",
+      "description": "What happens when you run kubectl — the request path explained.",
+      "url": "https://managekubernetes.com/learn/control-plane",
+      "datePublished": "2025-11-06T09:00:53.607Z",
+      "dateModified": "2025-11-06T09:00:53.607Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/control-plane"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Control Plane Overview",
+          "item": "https://managekubernetes.com/learn/control-plane"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Control Plane Overview</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Control Plane Overview</h1>
+        <article class="markdown-content max-w-none"><h1>Control Plane Overview</h1>
+<p>When you run <code>kubectl</code>, a complex series of interactions happens behind the scenes. Understanding this flow helps you debug issues and understand how Kubernetes orchestrates your applications.</p>
+<h2>What Happens When You Run kubectl</h2>
+<p>Let&#39;s trace a simple command: <code>kubectl create deployment nginx --image=nginx:1.21</code></p>
+<h3>Step 1: kubectl Processes the Command</h3>
+<pre><code class="language-bash">kubectl create deployment nginx --image=nginx:1.21
+</code></pre>
+<p><strong>What kubectl does:</strong></p>
+<ol>
+<li>Parses the command and flags</li>
+<li>Constructs an API request (HTTP POST to <code>/apis/apps/v1/namespaces/default/deployments</code>)</li>
+<li>Reads your kubeconfig file for authentication</li>
+<li>Sends the request to the API Server</li>
+</ol>
+<h3>Step 2: Request Reaches API Server</h3>
+<p>The <strong>API Server</strong> is the central hub for all Kubernetes operations.</p>
+<p><strong>What happens:</strong></p>
+<ol>
+<li><strong>Authentication</strong>: Verifies who you are (certificate, token, or basic auth)</li>
+<li><strong>Authorization</strong>: Checks if you have permission to create deployments (RBAC)</li>
+<li><strong>Admission Control</strong>: Validates and potentially mutates the request (ValidatingAdmissionWebhooks, MutatingAdmissionWebhooks)</li>
+<li><strong>Schema Validation</strong>: Ensures the object structure is correct</li>
+</ol>
+<p><strong>If validation fails:</strong></p>
+<ul>
+<li>Request is rejected with an error message</li>
+<li>You see the error in <code>kubectl</code> output</li>
+</ul>
+<p><strong>If validation succeeds:</strong></p>
+<ul>
+<li>Object is stored in etcd</li>
+<li>API Server returns success response to kubectl</li>
+</ul>
+<h3>Step 3: etcd Stores the State</h3>
+<p><strong>etcd</strong> is the source of truth for all cluster data.</p>
+<ul>
+<li>The Deployment object is written to etcd</li>
+<li>etcd notifies watchers (controllers) about the change</li>
+<li>The change is persistent and survives API Server restarts</li>
+</ul>
+<h3>Step 4: Controllers React</h3>
+<p>Multiple controllers watch for changes via the API Server:</p>
+<h4>Deployment Controller</h4>
+<ol>
+<li>Notices the new Deployment object</li>
+<li>Creates a ReplicaSet to manage pod replicas</li>
+<li>Sets desired replica count based on Deployment spec</li>
+</ol>
+<h4>ReplicaSet Controller</h4>
+<ol>
+<li>Notices the new ReplicaSet</li>
+<li>Compares desired replicas vs actual pod count</li>
+<li>Creates Pod objects (but they&#39;re not scheduled yet)</li>
+</ol>
+<p><strong>Pod objects at this stage:</strong></p>
+<ul>
+<li>Have no <code>nodeName</code> assigned</li>
+<li>Status: <code>Pending</code></li>
+<li>Waiting for scheduler</li>
+</ul>
+<h3>Step 5: Scheduler Assigns Pods to Nodes</h3>
+<p>The <strong>Scheduler</strong> watches for pods without a node assignment.</p>
+<p><strong>Scheduling Process:</strong></p>
+<ol>
+<li><p><strong>Filtering Phase:</strong></p>
+<ul>
+<li>Check if node has enough resources (CPU, memory)</li>
+<li>Check node selector matches</li>
+<li>Check taints/tolerations</li>
+<li>Check pod affinity/anti-affinity rules</li>
+</ul>
+</li>
+<li><p><strong>Scoring Phase:</strong></p>
+<ul>
+<li>Score remaining nodes based on:<ul>
+<li>Resource availability</li>
+<li>Affinity preferences</li>
+<li>Spread constraints (distribute pods across nodes/zones)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Binding:</strong></p>
+<ul>
+<li>Selects highest-scoring node</li>
+<li>Updates pod with <code>nodeName: &lt;selected-node&gt;</code></li>
+<li>Writes binding to API Server</li>
+</ul>
+</li>
+</ol>
+<h3>Step 6: kubelet Creates Containers</h3>
+<p>The <strong>kubelet</strong> on the assigned node:</p>
+<ol>
+<li><p><strong>Watches API Server</strong> for pods assigned to its node</p>
+</li>
+<li><p><strong>Pulls Container Image</strong> from the registry</p>
+</li>
+<li><p><strong>Creates Pod Runtime Environment:</strong></p>
+<ul>
+<li>Sets up network namespace</li>
+<li>Mounts volumes</li>
+<li>Creates container runtime specification</li>
+</ul>
+</li>
+<li><p><strong>Starts Containers</strong> using container runtime (containerd, CRI-O, etc.)</p>
+</li>
+<li><p><strong>Reports Status</strong> back to API Server:</p>
+<ul>
+<li>Pod phase: <code>Running</code></li>
+<li>Container statuses</li>
+<li>Resource usage</li>
+</ul>
+</li>
+</ol>
+<h3>Step 7: kube-proxy Updates Networking</h3>
+<p><strong>kube-proxy</strong> on each node:</p>
+<ol>
+<li>Watches for Service and Endpoint changes</li>
+<li>Updates iptables/IPVS rules</li>
+<li>Enables service discovery and load balancing</li>
+</ol>
+<h2>Visual Flow Diagram</h2>
+<pre><code>┌─────────┐
+│ kubectl │
+└────┬────┘
+     │ HTTP POST /apis/apps/v1/deployments
+     ▼
+┌──────────────────┐
+│   API Server     │ ◄─── Authentication
+│                  │ ◄─── Authorization  
+│                  │ ◄─── Validation
+└────┬─────────────┘
+     │ Write to etcd
+     ▼
+┌─────────┐
+│  etcd   │ ◄─── Persistent storage
+└────┬────┘
+     │ Notify watchers
+     ▼
+┌─────────────────────┐
+│ Deployment Controller│ ──► Creates ReplicaSet
+└─────────────────────┘
+     │
+     ▼
+┌──────────────────┐
+│ ReplicaSet       │ ──► Creates Pods (no node)
+│ Controller       │
+└──────────────────┘
+     │
+     ▼
+┌──────────────┐
+│  Scheduler   │ ──► Assigns Pod to Node
+└──────────────┘
+     │
+     ▼
+┌─────────┐
+│ kubelet │ ──► Creates containers
+└─────────┘
+     │
+     ▼
+┌──────────┐
+│ Pod      │ ──► Running
+│ Running  │
+└──────────┘
+</code></pre>
+<h2>Request Types</h2>
+<h3>Write Operations (Create, Update, Delete)</h3>
+<pre><code>kubectl → API Server → etcd → Controllers → Nodes
+</code></pre>
+<h3>Read Operations (Get, List, Watch)</h3>
+<pre><code>kubectl ← API Server ← etcd
+</code></pre>
+<p>Reads are fast because they come directly from etcd via the API Server.</p>
+<h3>Watch Operations</h3>
+<pre><code>kubectl ← API Server ← etcd (continuous updates)
+</code></pre>
+<p><code>kubectl get pods -w</code> establishes a long-lived connection for real-time updates.</p>
+<h2>Common kubectl Commands and Their Paths</h2>
+<h3><code>kubectl get pods</code></h3>
+<ol>
+<li>kubectl sends GET request to API Server</li>
+<li>API Server queries etcd</li>
+<li>Returns list of pods</li>
+<li>kubectl formats and displays</li>
+</ol>
+<h3><code>kubectl logs &lt;pod&gt;</code></h3>
+<ol>
+<li>kubectl requests logs from API Server</li>
+<li>API Server forwards request to kubelet on pod&#39;s node</li>
+<li>kubelet reads logs from container runtime</li>
+<li>Returns logs through API Server to kubectl</li>
+</ol>
+<h3><code>kubectl exec -it &lt;pod&gt; -- /bin/bash</code></h3>
+<ol>
+<li>kubectl establishes exec connection</li>
+<li>API Server proxies connection to kubelet</li>
+<li>kubelet executes command in container</li>
+<li>Streams stdin/stdout back</li>
+</ol>
+<h3><code>kubectl apply -f file.yaml</code></h3>
+<ol>
+<li>kubectl reads and parses YAML</li>
+<li>Converts to API objects</li>
+<li>Sends to API Server (POST/PATCH)</li>
+<li>Same flow as create/update above</li>
+</ol>
+<h2>Debugging the Request Path</h2>
+<h3>See API Requests</h3>
+<pre><code class="language-bash"># Verbose output shows API calls
+kubectl get pods -v=8
+</code></pre>
+<h3>Check API Server Logs</h3>
+<pre><code class="language-bash"># View API Server logs (requires access)
+kubectl logs -n kube-system kube-apiserver-&lt;node&gt;
+</code></pre>
+<h3>Verify Objects in etcd</h3>
+<pre><code class="language-bash"># Requires etcdctl access
+etcdctl get /registry/deployments/default/nginx
+</code></pre>
+<h3>Watch Events</h3>
+<pre><code class="language-bash"># See events as they happen
+kubectl get events --watch
+
+# View events for a specific resource
+kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Everything goes through API Server</strong> - It&#39;s the single entry point</li>
+<li><strong>etcd is the source of truth</strong> - All state is stored there</li>
+<li><strong>Controllers react to changes</strong> - They continuously reconcile state</li>
+<li><strong>Scheduler assigns pods</strong> - Based on resource and policy constraints</li>
+<li><strong>kubelet runs containers</strong> - It&#39;s the bridge between API Server and containers</li>
+<li><strong>Operations are eventually consistent</strong> - Changes propagate through the system</li>
+</ol>
+<p>Understanding this flow helps you:</p>
+<ul>
+<li>Debug why pods aren&#39;t starting</li>
+<li>Understand why resources aren&#39;t updating</li>
+<li>Know where to look when things go wrong</li>
+<li>Design applications that work well with Kubernetes</li>
+</ul>
+<p>This is the foundation of how Kubernetes orchestrates your applications!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

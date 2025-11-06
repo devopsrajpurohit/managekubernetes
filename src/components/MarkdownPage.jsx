@@ -1,55 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { marked } from 'marked'
 import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Facebook } from 'lucide-react'
 import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
-
-marked.setOptions({ 
-  gfm: true, 
-  breaks: true,
-  mangle: false,
-  headerIds: false
-})
-
-// Configure image renderer - skip images in markdown content
-// Use marked.use() to extend the renderer and only override the image method
-marked.use({
-  renderer: {
-    image(href, title, text) {
-      // Don't render images in markdown viewer - return empty string
-      return ''
-    }
-  }
-})
-
-// Simple frontmatter parser for browser (replaces gray-matter)
-function parseFrontmatter(text) {
-  const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/
-  const match = text.match(frontMatterRegex)
-  
-  if (match) {
-    const frontmatter = match[1]
-    const content = match[2]
-    
-    // Simple YAML parser for basic key-value pairs
-    const data = {}
-    frontmatter.split('\n').forEach(line => {
-      const colonIndex = line.indexOf(':')
-      if (colonIndex > 0) {
-        const key = line.substring(0, colonIndex).trim()
-        const value = line.substring(colonIndex + 1).trim()
-        if (key && value) {
-          data[key] = value.replace(/^["']|["']$/g, '') // Remove quotes
-        }
-      }
-    })
-    
-    return { data, content }
-  }
-  
-  // No frontmatter, return entire text as content
-  return { data: {}, content: text }
-}
 
 export default function MarkdownPage({ basePath, kind }) {
   const { slug } = useParams()
@@ -59,16 +11,29 @@ export default function MarkdownPage({ basePath, kind }) {
   const [loading, setLoading] = useState(true)
   const [metaData, setMetaData] = useState({ title: '', description: '' })
   const [urlCopied, setUrlCopied] = useState(false)
+  const [error, setError] = useState(null)
   
   // Get current page URL - use clean URL without query params or hash
   const pageUrl = typeof window !== 'undefined' 
     ? window.location.origin + window.location.pathname
     : `${location.pathname}`
   
-  // Track markdown page view
+  // Track markdown page view and set canonical URL immediately
   useEffect(() => {
     if (slug && kind) {
       trackMarkdownView(slug, kind)
+    }
+    
+    // Set canonical URL immediately when component mounts
+    if (typeof window !== 'undefined') {
+      const cleanUrl = window.location.origin + window.location.pathname
+      let canonical = document.querySelector('link[rel="canonical"]')
+      if (!canonical) {
+        canonical = document.createElement('link')
+        canonical.rel = 'canonical'
+        document.head.appendChild(canonical)
+      }
+      canonical.href = cleanUrl
     }
   }, [slug, kind])
   
@@ -126,203 +91,284 @@ export default function MarkdownPage({ basePath, kind }) {
   }, [html, loading])
   
   useEffect(() => {
-    if (!slug) {
-      setHtml('<p class="text-slate-600">No slug provided.</p>')
-      setLoading(false)
-      return
-    }
-    
-    setLoading(true)
-    // Ensure basePath starts with / and slug doesn't
-    const cleanBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`
-    const cleanSlug = slug.startsWith('/') ? slug.slice(1) : slug
-    const url = `${cleanBasePath}/${cleanSlug}.md`
-    
-    console.log('Fetching markdown:', { basePath, slug, url })
-    
-    fetch(url)
+    try {
+      if (!slug) {
+        setHtml('<p class="text-slate-600">No slug provided.</p>')
+        setLoading(false)
+        setError(null)
+        return
+      }
+      
+      setLoading(true)
+      setError(null)
+      
+      // Determine route path from basePath
+      const routePath = basePath.includes('/blog') ? '/blog' : 
+                       basePath.includes('/learn') ? '/learn' : 
+                       basePath.includes('/ops') ? '/ops' : '/'
+      const cleanSlug = slug.startsWith('/') ? slug.slice(1) : slug
+      
+      // Try pre-rendered HTML first, fallback to markdown if not available
+      const cleanBasePath = basePath.startsWith('/') ? basePath : `/${basePath}`
+      const markdownUrl = `${cleanBasePath}/${cleanSlug}.md`
+      const htmlUrl = `${routePath}/${cleanSlug}/index.html`
+      
+      console.log('Fetching content - trying pre-rendered HTML first:', htmlUrl)
+      
+      // Try pre-rendered HTML first
+      fetch(htmlUrl)
       .then(r => {
+        // If HTML not found, try markdown as fallback
         if (!r.ok) {
-          console.error('Fetch failed:', r.status, r.statusText, 'URL:', url)
-          throw new Error(`Failed to fetch: ${r.status} ${r.statusText}`)
+          console.log('Pre-rendered HTML not found (status:', r.status, '), falling back to markdown:', markdownUrl)
+          return fetch(markdownUrl).then(mdRes => {
+            if (!mdRes.ok) {
+              console.error('Markdown fetch also failed:', mdRes.status, mdRes.statusText)
+              throw new Error(`Failed to fetch both HTML (${r.status}) and markdown (${mdRes.status})`)
+            }
+            console.log('Successfully fetched markdown file')
+            return mdRes.text().then(text => ({ text, isMarkdown: true }))
+          })
         }
-        return r.text()
+        console.log('Successfully fetched pre-rendered HTML')
+        return r.text().then(text => ({ text, isMarkdown: false }))
       })
-      .then(text => {
-        if (!text || text.trim().length === 0) {
+      .then(async ({ text: responseText, isMarkdown }) => {
+        if (!responseText || responseText.trim().length === 0) {
           throw new Error('Empty response')
         }
-        const parsed = parseFrontmatter(text)
-        console.log('Parsed content length:', parsed.content.length)
         
-        // Update metadata for SEO
-        if (parsed.data.title || parsed.data.description) {
-          setMetaData({
-            title: parsed.data.title || slug,
-            description: parsed.data.description || ''
-          })
-          
-          // Update document title
-          if (parsed.data.title) {
-            document.title = `${parsed.data.title} | Kubernetes Community`
-          }
-          
-          // Update meta description
-          const metaDesc = document.querySelector('meta[name="description"]')
-          if (metaDesc && parsed.data.description) {
-            metaDesc.setAttribute('content', parsed.data.description)
-          }
-          
-          // Add Article structured data for better SEO and backlinks
-          if (typeof window !== 'undefined' && parsed.data.title) {
-            const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
-            
-            // Article Schema
-            const articleSchema = {
-              "@context": "https://schema.org",
-              "@type": "Article",
-              "headline": parsed.data.title,
-              "description": parsed.data.description || parsed.data.title,
-              "url": window.location.origin + window.location.pathname,
-              "datePublished": new Date().toISOString(),
-              "dateModified": new Date().toISOString(),
-              "author": {
-                "@type": "Organization",
-                "name": "Kubernetes Community"
-              },
-              "publisher": {
-                "@type": "Organization",
-                "name": "Kubernetes Community",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": `${window.location.origin}/images/hero.svg`
-                }
-              },
-              "mainEntityOfPage": {
-                "@type": "WebPage",
-                "@id": window.location.origin + window.location.pathname
-              },
-              "inLanguage": "en-US",
-              "isAccessibleForFree": true,
-              "articleSection": categoryName
-            }
-            
-            // Breadcrumb Schema
-            const breadcrumbSchema = {
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": window.location.origin
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 2,
-                  "name": categoryName,
-                  "item": `${window.location.origin}${kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'}`
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 3,
-                  "name": parsed.data.title,
-                  "item": window.location.origin + window.location.pathname
-                }
-              ]
-            }
-            
-            // Remove existing schemas if any
-            const existingArticle = document.querySelector('script[data-schema="article"]')
-            const existingBreadcrumb = document.querySelector('script[data-schema="breadcrumb"]')
-            if (existingArticle) existingArticle.remove()
-            if (existingBreadcrumb) existingBreadcrumb.remove()
-            
-            // Add article schema
-            const articleScript = document.createElement('script')
-            articleScript.type = 'application/ld+json'
-            articleScript.setAttribute('data-schema', 'article')
-            articleScript.textContent = JSON.stringify(articleSchema)
-            document.head.appendChild(articleScript)
-            
-            // Add breadcrumb schema
-            const breadcrumbScript = document.createElement('script')
-            breadcrumbScript.type = 'application/ld+json'
-            breadcrumbScript.setAttribute('data-schema', 'breadcrumb')
-            breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
-            document.head.appendChild(breadcrumbScript)
-            
-            // Update canonical URL - use clean URL without query params or hash
-            const cleanUrl = window.location.origin + window.location.pathname
-            let canonical = document.querySelector('link[rel="canonical"]')
-            if (!canonical) {
-              canonical = document.createElement('link')
-              canonical.rel = 'canonical'
-              document.head.appendChild(canonical)
-            }
-            canonical.href = cleanUrl
-            
-            // Update Open Graph meta tags
-            const ogTitle = document.querySelector('meta[property="og:title"]')
-            const ogDesc = document.querySelector('meta[property="og:description"]')
-            const ogUrl = document.querySelector('meta[property="og:url"]')
-            if (ogTitle) ogTitle.setAttribute('content', `${parsed.data.title} | Kubernetes Community`)
-            if (ogDesc) ogDesc.setAttribute('content', parsed.data.description || parsed.data.title)
-            if (ogUrl) ogUrl.setAttribute('content', window.location.origin + window.location.pathname)
-          }
-        }
+        let title, description, articleHtml
         
-        // Parse markdown to HTML
-        try {
-          console.log('Parsing markdown content, first 200 chars:', parsed.content.substring(0, 200))
-          console.log('Content contains image markdown:', parsed.content.includes('!['))
-          const markdownHtml = marked.parse(parsed.content)
+        if (isMarkdown) {
+          // Fallback: Parse markdown
+          const { marked } = await import('marked')
+          const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/
+          const match = responseText.match(frontMatterRegex)
           
-          // Handle both sync and async cases
-          if (markdownHtml && typeof markdownHtml.then === 'function') {
-            // Async version
-            markdownHtml.then((html) => {
-              console.log('Markdown parsed successfully (async)')
-              setHtml(html)
-              setLoading(false)
-            }).catch((err) => {
-              console.error('Markdown parsing error:', err)
-              setHtml('<p class="text-red-600">Error parsing markdown content.</p>')
-              setLoading(false)
+          if (match) {
+            const frontmatter = match[1]
+            const content = match[2]
+            const data = {}
+            frontmatter.split('\n').forEach(line => {
+              const colonIndex = line.indexOf(':')
+              if (colonIndex > 0) {
+                const key = line.substring(0, colonIndex).trim()
+                const value = line.substring(colonIndex + 1).trim()
+                if (key && value) {
+                  data[key] = value.replace(/^["']|["']$/g, '')
+                }
+              }
             })
+            title = data.title || slug
+            description = data.description || title
+            articleHtml = marked.parse(content)
           } else {
-            // Sync version
-            console.log('Markdown parsed successfully (sync)')
-            const htmlString = String(markdownHtml)
-            console.log('HTML preview (first 500 chars):', htmlString.substring(0, 500))
-            console.log('HTML contains <img tags:', htmlString.includes('<img'))
-            const imgMatches = htmlString.match(/<img[^>]*>/g)
-            if (imgMatches) {
-              console.log('Found img tags in HTML:', imgMatches)
-            } else {
-              console.warn('No <img> tags found in parsed HTML!')
-              console.log('Full HTML:', htmlString)
-            }
-            setHtml(htmlString)
-            setLoading(false)
+            title = slug
+            description = slug
+            articleHtml = marked.parse(responseText)
           }
-        } catch (error) {
-          console.error('Error in markdown parsing:', error)
-          setHtml('<p class="text-red-600">Error parsing markdown: ' + error.message + '</p>')
-          setLoading(false)
+          console.log('Loaded from markdown (fallback)')
+        } else {
+          // Extract from pre-rendered HTML
+          const parser = new DOMParser()
+          const doc = parser.parseFromString(responseText, 'text/html')
+          
+          const articleElement = doc.querySelector('article.markdown-content')
+          
+          // Check if this is actually the React app's index.html (has #root div but no article)
+          const hasRootDiv = doc.querySelector('#root') !== null
+          const hasArticle = articleElement !== null && articleElement.innerHTML.trim().length > 0
+          
+          if (hasRootDiv && !hasArticle) {
+            // This is the React app's index.html, not pre-rendered HTML
+            // Fall back to markdown
+            console.log('Detected React app HTML instead of pre-rendered HTML, falling back to markdown')
+            const { marked } = await import('marked')
+            const mdRes = await fetch(markdownUrl)
+            if (!mdRes.ok) {
+              throw new Error(`Failed to fetch markdown: ${mdRes.status} ${mdRes.statusText}`)
+            }
+            const mdText = await mdRes.text()
+            const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/
+            const match = mdText.match(frontMatterRegex)
+            
+            if (match) {
+              const frontmatter = match[1]
+              const content = match[2]
+              const data = {}
+              frontmatter.split('\n').forEach(line => {
+                const colonIndex = line.indexOf(':')
+                if (colonIndex > 0) {
+                  const key = line.substring(0, colonIndex).trim()
+                  const value = line.substring(colonIndex + 1).trim()
+                  if (key && value) {
+                    data[key] = value.replace(/^["']|["']$/g, '')
+                  }
+                }
+              })
+              title = data.title || slug
+              description = data.description || title
+              articleHtml = marked.parse(content)
+            } else {
+              title = slug
+              description = slug
+              articleHtml = marked.parse(mdText)
+            }
+            console.log('Loaded from markdown (fallback after detecting React HTML)')
+          } else if (hasArticle) {
+            // This is actual pre-rendered HTML
+            const titleElement = doc.querySelector('title')
+            title = titleElement ? titleElement.textContent.replace(' | Kubernetes Community', '') : slug
+            const metaDesc = doc.querySelector('meta[name="description"]')
+            description = metaDesc ? metaDesc.getAttribute('content') : ''
+            articleHtml = articleElement.innerHTML
+            
+            console.log('Loaded from pre-rendered HTML')
+          } else {
+            throw new Error('No article content found in pre-rendered HTML')
+          }
         }
+        
+        console.log('Content loaded:', { title, description, htmlLength: articleHtml.length })
+        
+        setMetaData({ title, description })
+        
+        // Update document title
+        if (title) {
+          document.title = `${title} | Kubernetes Community`
+        }
+        
+        // Update meta description
+        const metaDescElement = document.querySelector('meta[name="description"]')
+        if (metaDescElement && description) {
+          metaDescElement.setAttribute('content', description)
+        }
+        
+        // Add Article structured data for better SEO
+        if (typeof window !== 'undefined' && title) {
+          const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
+          
+          // Article Schema
+          const articleSchema = {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            "headline": title,
+            "description": description || title,
+            "url": window.location.origin + window.location.pathname,
+            "datePublished": new Date().toISOString(),
+            "dateModified": new Date().toISOString(),
+            "author": {
+              "@type": "Organization",
+              "name": "Kubernetes Community"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Kubernetes Community",
+              "logo": {
+                "@type": "ImageObject",
+                "url": `${window.location.origin}/images/hero.svg`
+              }
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": window.location.origin + window.location.pathname
+            },
+            "inLanguage": "en-US",
+            "isAccessibleForFree": true,
+            "articleSection": categoryName
+          }
+          
+          // Breadcrumb Schema
+          const breadcrumbSchema = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": categoryName,
+                "item": `${window.location.origin}${kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'}`
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": title,
+                "item": window.location.origin + window.location.pathname
+              }
+            ]
+          }
+          
+          // Remove existing schemas if any
+          const existingArticle = document.querySelector('script[data-schema="article"]')
+          const existingBreadcrumb = document.querySelector('script[data-schema="breadcrumb"]')
+          if (existingArticle) existingArticle.remove()
+          if (existingBreadcrumb) existingBreadcrumb.remove()
+          
+          // Add article schema
+          const articleScript = document.createElement('script')
+          articleScript.type = 'application/ld+json'
+          articleScript.setAttribute('data-schema', 'article')
+          articleScript.textContent = JSON.stringify(articleSchema)
+          document.head.appendChild(articleScript)
+          
+          // Add breadcrumb schema
+          const breadcrumbScript = document.createElement('script')
+          breadcrumbScript.type = 'application/ld+json'
+          breadcrumbScript.setAttribute('data-schema', 'breadcrumb')
+          breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
+          document.head.appendChild(breadcrumbScript)
+          
+          // Update canonical URL
+          const cleanUrl = window.location.origin + window.location.pathname
+          let canonical = document.querySelector('link[rel="canonical"]')
+          if (!canonical) {
+            canonical = document.createElement('link')
+            canonical.rel = 'canonical'
+            document.head.appendChild(canonical)
+          }
+          canonical.href = cleanUrl
+          
+          // Update Open Graph meta tags
+          const ogTitle = document.querySelector('meta[property="og:title"]')
+          const ogDesc = document.querySelector('meta[property="og:description"]')
+          const ogUrl = document.querySelector('meta[property="og:url"]')
+          if (ogTitle) ogTitle.setAttribute('content', `${title} | Kubernetes Community`)
+          if (ogDesc) ogDesc.setAttribute('content', description || title)
+          if (ogUrl) ogUrl.setAttribute('content', window.location.origin + window.location.pathname)
+        }
+        
+        // Set the extracted HTML content
+        setHtml(articleHtml)
+        setLoading(false)
       })
       .catch((error) => {
-        console.error('Error loading markdown:', error, 'URL:', url)
+        console.error('Error loading content:', error)
+        setError(error.message)
+        setMetaData({
+          title: slug ? slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : 'Page Not Found',
+          description: 'The requested page could not be loaded.'
+        })
         setHtml(`<div class="text-slate-600 p-4 border border-red-200 rounded-lg">
           <p class="font-semibold">Content not found</p>
-          <p class="text-sm mt-2">Attempted to load: <code class="bg-slate-100 px-1 rounded">${url}</code></p>
+          <p class="text-sm mt-2">Tried: <code class="bg-slate-100 px-1 rounded">${htmlUrl}</code> and <code class="bg-slate-100 px-1 rounded">${markdownUrl}</code></p>
           <p class="text-sm">Error: ${error.message}</p>
-          <p class="text-xs mt-2 text-slate-500">Check the browser console for more details.</p>
+          <p class="text-xs mt-2 text-slate-500">For production: Run <code>npm run build</code> to generate pre-rendered HTML</p>
         </div>`)
         setLoading(false)
       })
+    } catch (err) {
+      console.error('Error in useEffect:', err)
+      setError(err.message)
+      setLoading(false)
+      setHtml(`<div class="text-red-600 p-4">Error: ${err.message}</div>`)
+    }
   }, [slug, basePath])
   
   const copyToClipboard = () => {
@@ -373,6 +419,38 @@ export default function MarkdownPage({ basePath, kind }) {
   // Breadcrumb navigation for better SEO
   const categoryName = kind === 'learn' ? 'Day-1 Basics' : kind === 'ops' ? 'Day-2 Operations' : 'Blog'
   const categoryPath = kind === 'learn' ? '/#day1' : kind === 'ops' ? '/#day2' : '/blog'
+
+  // Debug logging
+  useEffect(() => {
+    console.log('MarkdownPage render:', { slug, kind, basePath, loading, htmlLength: html.length })
+    console.log('Component mounted with slug:', slug, 'kind:', kind)
+  }, [slug, kind, basePath, loading, html])
+  
+  // Log when component first mounts
+  useEffect(() => {
+    console.log('MarkdownPage component mounted')
+    return () => console.log('MarkdownPage component unmounted')
+  }, [])
+
+  // Always render something visible
+  if (error && !loading) {
+    return (
+      <main className="min-h-screen bg-white">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <h1 className="text-2xl font-bold text-red-900 mb-2">Error Loading Page</h1>
+            <p className="text-red-700">{error}</p>
+            <button
+              onClick={() => navigate('/')}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            >
+              Go Home
+            </button>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-white">
@@ -449,17 +527,30 @@ export default function MarkdownPage({ basePath, kind }) {
 
         {loading ? (
           <div className="text-center py-20">
-            <p className="text-slate-600">Loading…</p>
+            <p className="text-slate-600 text-lg">Loading content…</p>
+            <p className="text-slate-400 text-sm mt-2">Fetching: {slug}</p>
           </div>
         ) : (
           <>
             {metaData.title && (
               <h1 className="text-4xl font-bold text-slate-900 mb-6">{metaData.title}</h1>
             )}
-            <article 
-              className="markdown-content max-w-none" 
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
+            {!metaData.title && slug && (
+              <h1 className="text-4xl font-bold text-slate-900 mb-6">
+                {slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              </h1>
+            )}
+            {html && html.trim().length > 0 ? (
+              <article 
+                className="markdown-content max-w-none" 
+                dangerouslySetInnerHTML={{ __html: html }}
+              />
+            ) : (
+              <div className="text-red-600 p-4 border border-red-200 rounded-lg">
+                <p className="font-semibold">No content to display</p>
+                <p className="text-sm mt-2">HTML is empty. Check console for errors.</p>
+              </div>
+            )}
             
             {/* Footer with internal links for SEO */}
             <footer className="mt-12 pt-8 border-t border-slate-200">

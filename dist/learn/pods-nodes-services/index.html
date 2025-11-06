@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pods &amp; Services | Kubernetes Community</title>
+    <meta name="description" content="How containers become pods, get traffic, and stay resilient." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/pods-nodes-services" />
+    <meta property="og:title" content="Pods &amp; Services | Kubernetes Community" />
+    <meta property="og:description" content="How containers become pods, get traffic, and stay resilient." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/pods-nodes-services" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Pods &amp; Services",
+      "description": "How containers become pods, get traffic, and stay resilient.",
+      "url": "https://managekubernetes.com/learn/pods-nodes-services",
+      "datePublished": "2025-11-06T09:00:53.609Z",
+      "dateModified": "2025-11-06T09:00:53.609Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/pods-nodes-services"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Pods & Services",
+          "item": "https://managekubernetes.com/learn/pods-nodes-services"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Pods & Services</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Pods &amp; Services</h1>
+        <article class="markdown-content max-w-none"><h1>Pods &amp; Services</h1>
+<p>Understanding pods, nodes, and services is fundamental to working with Kubernetes. These concepts form the foundation of how your applications run and communicate.</p>
+<h2>Pods: The Basic Unit</h2>
+<p>A <strong>Pod</strong> is the smallest deployable unit in Kubernetes. It represents one or more containers that share:</p>
+<ul>
+<li>Network namespace (same IP address)</li>
+<li>Storage volumes</li>
+<li>A lifecycle (created and destroyed together)</li>
+</ul>
+<h3>Pod Characteristics</h3>
+<p><strong>Single Container Pod (Most Common):</strong></p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.21
+</code></pre>
+<p><strong>Multi-Container Pods:</strong><br>Useful for sidecar patterns (logging, monitoring, proxies):</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: app-with-sidecar
+spec:
+  containers:
+  - name: app
+    image: my-app:latest
+  - name: sidecar
+    image: logging-sidecar:latest
+</code></pre>
+<h3>Pod Lifecycle</h3>
+<ol>
+<li><strong>Pending</strong>: Pod accepted, but containers not created yet</li>
+<li><strong>Running</strong>: Pod bound to a node, containers created and running</li>
+<li><strong>Succeeded</strong>: All containers terminated successfully</li>
+<li><strong>Failed</strong>: At least one container terminated in failure</li>
+<li><strong>Unknown</strong>: Pod state couldn&#39;t be determined</li>
+</ol>
+<h3>Pod IP Addresses</h3>
+<ul>
+<li>Each pod gets its own IP address</li>
+<li>Pods can communicate with each other using these IPs</li>
+<li>IPs are ephemeral - they change when pods are recreated</li>
+</ul>
+<h2>Nodes: Where Pods Run</h2>
+<p>A <strong>Node</strong> is a worker machine in Kubernetes. It can be a physical or virtual machine.</p>
+<h3>Node Components</h3>
+<ul>
+<li><strong>kubelet</strong>: Agent that communicates with the control plane</li>
+<li><strong>kube-proxy</strong>: Maintains network rules</li>
+<li><strong>Container Runtime</strong>: Runs containers (containerd, CRI-O, etc.)</li>
+</ul>
+<h3>Node Status</h3>
+<p>Nodes can be in different states:</p>
+<ul>
+<li><strong>Ready</strong>: Node is healthy and ready to accept pods</li>
+<li><strong>NotReady</strong>: Node isn&#39;t responding to health checks</li>
+<li><strong>Unknown</strong>: Controller can&#39;t reach the node</li>
+</ul>
+<h3>Viewing Nodes</h3>
+<pre><code class="language-bash"># List all nodes
+kubectl get nodes
+
+# Get detailed node information
+kubectl describe node &lt;node-name&gt;
+
+# View node resources
+kubectl top node &lt;node-name&gt;
+</code></pre>
+<h2>Services: Stable Networking</h2>
+<p>A <strong>Service</strong> provides a stable IP address and DNS name for a set of pods. Since pod IPs change, services are essential for reliable communication.</p>
+<h3>Service Types</h3>
+<p><strong>ClusterIP (Default):</strong></p>
+<ul>
+<li>Internal IP accessible only within the cluster</li>
+<li>Used for pod-to-pod communication</li>
+</ul>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+  - port: 80
+    targetPort: 8080
+</code></pre>
+<p><strong>NodePort:</strong></p>
+<ul>
+<li>Exposes the service on each node&#39;s IP at a static port</li>
+<li>Accessible from outside the cluster via <code>&lt;NodeIP&gt;:&lt;NodePort&gt;</code></li>
+</ul>
+<p><strong>LoadBalancer:</strong></p>
+<ul>
+<li>Creates an external load balancer (cloud provider specific)</li>
+<li>Automatically assigned an external IP</li>
+</ul>
+<p><strong>ExternalName:</strong></p>
+<ul>
+<li>Maps a service to an external DNS name</li>
+<li>Used for accessing external services</li>
+</ul>
+<h3>How Services Route Traffic</h3>
+<ol>
+<li><strong>Service selector</strong> matches pods with specific labels</li>
+<li><strong>Endpoints</strong> are automatically created and updated</li>
+<li><strong>kube-proxy</strong> maintains iptables/IPVS rules</li>
+<li>Traffic is load-balanced across matching pods</li>
+</ol>
+<h3>Service Discovery</h3>
+<p><strong>DNS-based:</strong></p>
+<ul>
+<li>Services get DNS names: <code>&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local</code></li>
+<li>Short name <code>&lt;service-name&gt;</code> works within the same namespace</li>
+<li>Pods can resolve services by name</li>
+</ul>
+<h2>How Containers Become Pods</h2>
+<h3>1. Container Image → Pod Spec</h3>
+<pre><code class="language-bash"># Simple way (creates deployment, which creates pods)
+kubectl create deployment nginx --image=nginx:1.21
+</code></pre>
+<h3>2. Pod Scheduling</h3>
+<p>The scheduler assigns pods to nodes based on:</p>
+<ul>
+<li>Resource requirements (CPU, memory)</li>
+<li>Node capacity</li>
+<li>Affinity/anti-affinity rules</li>
+<li>Taints and tolerations</li>
+</ul>
+<h3>3. Container Runtime</h3>
+<p>The kubelet on the assigned node:</p>
+<ul>
+<li>Pulls the container image</li>
+<li>Creates the container using the container runtime</li>
+<li>Starts the container with the specified configuration</li>
+</ul>
+<h2>Keeping Applications Resilient</h2>
+<h3>Replicas with Deployments</h3>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: app
+        image: my-app:latest
+</code></pre>
+<h3>Health Checks</h3>
+<p><strong>Liveness Probe:</strong><br>Determines if a container is running properly. If it fails, Kubernetes restarts the container.</p>
+<p><strong>Readiness Probe:</strong><br>Determines if a container is ready to accept traffic. If it fails, the pod is removed from service endpoints.</p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+</code></pre>
+<h2>Practical Commands</h2>
+<pre><code class="language-bash"># Create a pod
+kubectl run nginx --image=nginx:1.21
+
+# View pods
+kubectl get pods
+kubectl get pods -o wide  # Shows node info
+
+# Describe a pod
+kubectl describe pod &lt;pod-name&gt;
+
+# View pod logs
+kubectl logs &lt;pod-name&gt;
+
+# Execute command in pod
+kubectl exec -it &lt;pod-name&gt; -- /bin/bash
+
+# Create a service
+kubectl expose deployment nginx --port=80 --target-port=8080
+
+# View services and endpoints
+kubectl get svc
+kubectl get endpoints
+</code></pre>
+<p>Understanding pods, nodes, and services is essential for deploying and managing applications in Kubernetes effectively.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

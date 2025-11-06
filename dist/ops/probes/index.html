@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Readiness &amp; Liveness Probes | Kubernetes Community</title>
+    <meta name="description" content="Design endpoints &amp; timeouts to avoid flapping and false restarts." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/probes" />
+    <meta property="og:title" content="Readiness &amp; Liveness Probes | Kubernetes Community" />
+    <meta property="og:description" content="Design endpoints &amp; timeouts to avoid flapping and false restarts." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/probes" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Readiness &amp; Liveness Probes",
+      "description": "Design endpoints &amp; timeouts to avoid flapping and false restarts.",
+      "url": "https://managekubernetes.com/ops/probes",
+      "datePublished": "2025-11-06T09:00:53.623Z",
+      "dateModified": "2025-11-06T09:00:53.623Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/probes"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Readiness & Liveness Probes",
+          "item": "https://managekubernetes.com/ops/probes"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Readiness & Liveness Probes</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Readiness &amp; Liveness Probes</h1>
+        <article class="markdown-content max-w-none"><h1>Readiness &amp; Liveness Probes</h1>
+<p>Probes are Kubernetes&#39; way of checking if your containers are healthy and ready to serve traffic. Properly configured probes prevent unnecessary restarts and ensure traffic only goes to ready pods.</p>
+<h2>Types of Probes</h2>
+<h3>Liveness Probe</h3>
+<p><strong>Purpose</strong>: Determines if the container is running properly.</p>
+<p><strong>What happens if it fails:</strong></p>
+<ul>
+<li>Kubernetes kills the container</li>
+<li>Container restarts (if restart policy allows)</li>
+<li>New container instance is created</li>
+</ul>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Application can get into a broken state</li>
+<li>Restarting might fix the issue</li>
+<li>Deadlock or infinite loop scenarios</li>
+</ul>
+<h3>Readiness Probe</h3>
+<p><strong>Purpose</strong>: Determines if the container is ready to accept traffic.</p>
+<p><strong>What happens if it fails:</strong></p>
+<ul>
+<li>Pod is removed from Service endpoints</li>
+<li>Traffic stops being routed to this pod</li>
+<li>Container keeps running (doesn&#39;t restart)</li>
+</ul>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Application needs time to start up</li>
+<li>Application temporarily can&#39;t serve traffic</li>
+<li>Database connections need to be established</li>
+</ul>
+<h2>Probe Mechanisms</h2>
+<h3>HTTP Get Probe</h3>
+<p>Most common for web applications:</p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+    scheme: HTTP
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Use a dedicated health endpoint (not your main API)</li>
+<li>Keep the endpoint lightweight (no database queries)</li>
+<li>Return 200 for healthy, anything else for unhealthy</li>
+</ul>
+<h3>TCP Socket Probe</h3>
+<p>For non-HTTP services:</p>
+<pre><code class="language-yaml">livenessProbe:
+  tcpSocket:
+    port: 3306
+  initialDelaySeconds: 30
+  periodSeconds: 10
+</code></pre>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Database services</li>
+<li>Non-HTTP applications</li>
+<li>Services that don&#39;t expose HTTP endpoints</li>
+</ul>
+<h3>Exec Probe</h3>
+<p>Run a command inside the container:</p>
+<pre><code class="language-yaml">livenessProbe:
+  exec:
+    command:
+    - /bin/sh
+    - -c
+    - &quot;pgrep -f myapp || exit 1&quot;
+  initialDelaySeconds: 30
+  periodSeconds: 10
+</code></pre>
+<p><strong>Use sparingly:</strong></p>
+<ul>
+<li>More expensive than HTTP/TCP</li>
+<li>Requires shell access</li>
+<li>Harder to debug</li>
+</ul>
+<h2>Probe Parameters</h2>
+<h3>initialDelaySeconds</h3>
+<p><strong>Purpose</strong>: Wait time before first probe after container starts.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30  # Wait 30 seconds after startup
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Set based on actual startup time</li>
+<li>Add buffer (startup time + 10-20 seconds)</li>
+<li>Too low = premature failures</li>
+<li>Too high = slow detection of issues</li>
+</ul>
+<h3>periodSeconds</h3>
+<p><strong>Purpose</strong>: How often to perform the probe.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  periodSeconds: 10  # Check every 10 seconds
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Balance between detection speed and load</li>
+<li>Common: 5-30 seconds</li>
+<li>For liveness: Can be longer (10-30s)</li>
+<li>For readiness: Can be shorter (5-10s)</li>
+</ul>
+<h3>timeoutSeconds</h3>
+<p><strong>Purpose</strong>: Time to wait for probe response.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  timeoutSeconds: 5  # Fail if no response in 5 seconds
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Should be less than periodSeconds</li>
+<li>Typical: 1-5 seconds</li>
+<li>Account for network latency</li>
+<li>Too low = false failures under load</li>
+</ul>
+<h3>successThreshold</h3>
+<p><strong>Purpose</strong>: Number of consecutive successes needed to mark probe as successful.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  successThreshold: 1  # One success = healthy (default)
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Default is 1 (immediate)</li>
+<li>Increase to 2-3 for flaky endpoints</li>
+<li>Helps avoid flapping</li>
+</ul>
+<h3>failureThreshold</h3>
+<p><strong>Purpose</strong>: Number of consecutive failures before marking as failed.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  failureThreshold: 3  # Fail after 3 consecutive failures
+</code></pre>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Default is 3</li>
+<li>Higher = more tolerant of temporary failures</li>
+<li>Lower = faster failure detection</li>
+<li>Balance between false positives and detection speed</li>
+</ul>
+<h2>Complete Example</h2>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: web-app
+spec:
+  containers:
+  - name: app
+    image: my-app:latest
+    ports:
+    - containerPort: 8080
+    livenessProbe:
+      httpGet:
+        path: /health/live
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /health/ready
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 3
+</code></pre>
+<h2>Common Patterns</h2>
+<h3>Pattern 1: Separate Endpoints</h3>
+<p><strong>Best practice</strong>: Use different endpoints for liveness and readiness.</p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 8080
+
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8080
+</code></pre>
+<p><strong>Why:</strong></p>
+<ul>
+<li>Liveness: Check if process is alive (simple)</li>
+<li>Readiness: Check if ready to serve (check dependencies)</li>
+</ul>
+<h3>Pattern 2: Startup Probe</h3>
+<p><strong>Use for</strong>: Slow-starting applications.</p>
+<pre><code class="language-yaml">startupProbe:
+  httpGet:
+    path: /health/startup
+    port: 8080
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  failureThreshold: 30  # Allow up to 2.5 minutes to start
+
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 10
+</code></pre>
+<p><strong>Why:</strong></p>
+<ul>
+<li>Prevents liveness probe from killing slow-starting apps</li>
+<li>Once startup succeeds, liveness takes over</li>
+<li>Use for apps that take &gt;30 seconds to start</li>
+</ul>
+<h3>Pattern 3: Conservative Readiness</h3>
+<p><strong>Use for</strong>: Applications with external dependencies.</p>
+<pre><code class="language-yaml">readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 1  # Remove from service immediately
+  successThreshold: 2  # Require 2 successes before adding back
+</code></pre>
+<p><strong>Why:</strong></p>
+<ul>
+<li>Prevents sending traffic to unhealthy pods</li>
+<li>Avoids flapping (rapid add/remove cycles)</li>
+</ul>
+<h2>Avoiding Common Pitfalls</h2>
+<h3>Pitfall 1: Probes Too Aggressive</h3>
+<p><strong>Problem:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5  # Too short!
+  periodSeconds: 1        # Too frequent!
+</code></pre>
+<p><strong>Issues:</strong></p>
+<ul>
+<li>App killed before fully started</li>
+<li>High load from probe checks</li>
+<li>False restarts</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Increase initialDelaySeconds to actual startup time</li>
+<li>Use periodSeconds of 10+ seconds</li>
+<li>Add startupProbe for slow starters</li>
+</ul>
+<h3>Pitfall 2: Heavy Health Checks</h3>
+<p><strong>Problem:</strong></p>
+<pre><code class="language-yaml"># Health endpoint performs database query
+readinessProbe:
+  httpGet:
+    path: /health  # This queries the database!
+</code></pre>
+<p><strong>Issues:</strong></p>
+<ul>
+<li>Database overload from health checks</li>
+<li>Slow responses cause probe failures</li>
+<li>Cascading failures</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Health endpoint should be lightweight</li>
+<li>Check dependencies separately</li>
+<li>Cache health status if needed</li>
+</ul>
+<h3>Pitfall 3: Same Endpoint for Both</h3>
+<p><strong>Problem:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  httpGet:
+    path: /health
+readinessProbe:
+  httpGet:
+    path: /health  # Same endpoint!
+</code></pre>
+<p><strong>Issues:</strong></p>
+<ul>
+<li>Can&#39;t differentiate between &quot;dead&quot; and &quot;not ready&quot;</li>
+<li>Inappropriate restarts</li>
+<li>Traffic routing issues</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Use <code>/health/live</code> for liveness</li>
+<li>Use <code>/health/ready</code> for readiness</li>
+<li>Different logic in each endpoint</li>
+</ul>
+<h3>Pitfall 4: Wrong Failure Threshold</h3>
+<p><strong>Problem:</strong></p>
+<pre><code class="language-yaml">livenessProbe:
+  failureThreshold: 1  # Too sensitive!
+</code></pre>
+<p><strong>Issues:</strong></p>
+<ul>
+<li>Single network hiccup = restart</li>
+<li>False positives cause unnecessary restarts</li>
+<li>Application instability</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Use failureThreshold: 3 (default)</li>
+<li>Increase for flaky networks</li>
+<li>Monitor probe failures to tune</li>
+</ul>
+<h2>Health Endpoint Implementation</h2>
+<h3>Example: Go Application</h3>
+<pre><code class="language-go">func healthLive(w http.ResponseWriter, r *http.Request) {
+    // Simple check: is the process running?
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(&quot;OK&quot;))
+}
+
+func healthReady(w http.ResponseWriter, r *http.Request) {
+    // Check: can we serve traffic?
+    // - Database connection OK?
+    // - External dependencies available?
+    
+    if !db.IsConnected() {
+        http.Error(w, &quot;DB not connected&quot;, http.StatusServiceUnavailable)
+        return
+    }
+    
+    w.WriteHeader(http.StatusOK)
+    w.Write([]byte(&quot;OK&quot;))
+}
+</code></pre>
+<h3>Example: Node.js Application</h3>
+<pre><code class="language-javascript">// Liveness: simple process check
+app.get(&#39;/health/live&#39;, (req, res) =&gt; {
+  res.status(200).send(&#39;OK&#39;);
+});
+
+// Readiness: check dependencies
+app.get(&#39;/health/ready&#39;, async (req, res) =&gt; {
+  try {
+    await db.ping();
+    await redis.ping();
+    res.status(200).send(&#39;OK&#39;);
+  } catch (error) {
+    res.status(503).send(&#39;Not ready&#39;);
+  }
+});
+</code></pre>
+<h2>Testing Probes</h2>
+<h3>Test Liveness Probe</h3>
+<pre><code class="language-bash"># Create pod
+kubectl apply -f pod-with-probes.yaml
+
+# Watch pod status
+kubectl get pods -w
+
+# Check probe status
+kubectl describe pod &lt;pod-name&gt; | grep -A 10 &quot;Liveness\|Readiness&quot;
+
+# Force probe failure (make endpoint return 500)
+kubectl exec -it &lt;pod-name&gt; -- curl http://localhost:8080/health -X POST -d &quot;fail=true&quot;
+</code></pre>
+<h3>Monitor Probe Failures</h3>
+<pre><code class="language-bash"># View events
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt;
+
+# Check for probe failures
+kubectl describe pod &lt;pod-name&gt; | grep -i &quot;probe\|unhealthy&quot;
+
+# View container logs
+kubectl logs &lt;pod-name&gt;
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Probe Failing Immediately</h3>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt;
+</code></pre>
+<p><strong>Common causes:</strong></p>
+<ul>
+<li>Wrong path or port</li>
+<li>Application not listening on that port</li>
+<li>Firewall/network issues</li>
+<li>Application crash on startup</li>
+</ul>
+<h3>Probe Timing Out</h3>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash"># Test endpoint manually
+kubectl exec -it &lt;pod-name&gt; -- curl http://localhost:8080/health
+
+# Check response time
+kubectl exec -it &lt;pod-name&gt; -- time curl http://localhost:8080/health
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Increase timeoutSeconds</li>
+<li>Optimize health endpoint</li>
+<li>Check application performance</li>
+</ul>
+<h3>Pod Flapping (Rapid Ready/NotReady)</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Pod repeatedly becomes ready/unready</li>
+<li>Service endpoints changing constantly</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Increase successThreshold for readiness</li>
+<li>Fix flaky health endpoint</li>
+<li>Check for resource constraints</li>
+<li>Verify external dependencies</li>
+</ul>
+<h2>Best Practices Summary</h2>
+<ol>
+<li>✅ Use separate endpoints for liveness and readiness</li>
+<li>✅ Make health endpoints lightweight and fast</li>
+<li>✅ Set appropriate initialDelaySeconds</li>
+<li>✅ Use startupProbe for slow-starting apps</li>
+<li>✅ Avoid heavy operations in probe endpoints</li>
+<li>✅ Test probes under load</li>
+<li>✅ Monitor probe failure rates</li>
+<li>✅ Use failureThreshold &gt; 1 to avoid false positives</li>
+<li>✅ Tune periodSeconds based on application needs</li>
+<li>✅ Document probe behavior in application code</li>
+</ol>
+<h2>Quick Reference</h2>
+<pre><code class="language-yaml"># Standard configuration
+livenessProbe:
+  httpGet:
+    path: /health/live
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health/ready
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+  successThreshold: 2
+</code></pre>
+<p>Properly configured probes are essential for reliable Kubernetes applications. They ensure traffic only goes to healthy pods and that unhealthy containers are restarted when needed!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Troubleshooting Kubernetes Pods Stuck in Pending State | Kubernetes Community</title>
+    <meta name="description" content="Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/troubleshooting-pods-pending-state" />
+    <meta property="og:title" content="Troubleshooting Kubernetes Pods Stuck in Pending State | Kubernetes Community" />
+    <meta property="og:description" content="Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/troubleshooting-pods-pending-state" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Troubleshooting Kubernetes Pods Stuck in Pending State",
+      "description": "Learn how to diagnose and fix pods stuck in Pending state, including resource issues, scheduling problems, and storage configuration.",
+      "url": "https://managekubernetes.com/blog/troubleshooting-pods-pending-state",
+      "datePublished": "2025-11-06T09:00:53.593Z",
+      "dateModified": "2025-11-06T09:00:53.593Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/troubleshooting-pods-pending-state"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Troubleshooting Kubernetes Pods Stuck in Pending State",
+          "item": "https://managekubernetes.com/blog/troubleshooting-pods-pending-state"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Troubleshooting Kubernetes Pods Stuck in Pending State</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Troubleshooting Kubernetes Pods Stuck in Pending State</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-pending-state.svg" alt="Troubleshooting Kubernetes Pods in Pending State"></p>
+<h1>Troubleshooting Kubernetes Pods Stuck in Pending State</h1>
+<p>A pod in Kubernetes enters the <strong>Pending</strong> state when it has been created and accepted by the Kubernetes control plane but hasn&#39;t been scheduled to run on any node yet. Understanding why pods get stuck in this state is crucial for maintaining healthy Kubernetes clusters.</p>
+<h2>What is the Pending State?</h2>
+<p>The Pending state indicates that either:</p>
+<ul>
+<li>The Kubernetes scheduler is still trying to find a suitable node for the pod</li>
+<li>Container images are being downloaded</li>
+<li>Required resources (like PersistentVolumes) are being provisioned</li>
+</ul>
+<p>You can identify pending pods using:</p>
+<pre><code class="language-bash">kubectl get pods
+
+NAME               READY   STATUS    RESTARTS   AGE
+my-app-pod         0/1     Pending  0          5m
+</code></pre>
+<h2>Impact of Pending Pods</h2>
+<ul>
+<li>Applications won&#39;t start running until pods are scheduled</li>
+<li>Dependent services and workloads will be delayed</li>
+<li>Deployment rollouts may stall or fail</li>
+<li>Auto-scaling operations may malfunction</li>
+<li>Production availability issues can occur</li>
+</ul>
+<p><strong>In short</strong>: A Pending pod indicates a scheduling or provisioning issue that must be resolved before your workload can function.</p>
+<h2>Common Causes and Solutions</h2>
+<h3>1. Insufficient Node Resources</h3>
+<p><strong>Symptom</strong>: No nodes have enough CPU or memory to satisfy the pod&#39;s resource requests.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash"># Check node resource availability
+kubectl top nodes
+
+# Check pod resource requests
+kubectl describe pod &lt;pod-name&gt; | grep -A 5 &quot;Requests:&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase cluster capacity by adding nodes</li>
+<li>Reduce pod resource requests</li>
+<li>Clear unused pods to free resources</li>
+<li>Implement resource quotas to prevent resource hoarding</li>
+</ul>
+<h3>2. NodeSelector or Affinity Mismatch</h3>
+<p><strong>Symptom</strong>: Pod&#39;s node selection rules don&#39;t match any available node.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -A 10 &quot;Node-Selectors:&quot;
+kubectl get nodes --show-labels
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Remove restrictive node selectors if not needed</li>
+<li>Add matching labels to nodes: <code>kubectl label nodes &lt;node-name&gt; &lt;key&gt;=&lt;value&gt;</code></li>
+<li>Adjust affinity rules to match your cluster topology</li>
+</ul>
+<h3>3. Taints and Tolerations</h3>
+<p><strong>Symptom</strong>: Nodes have taints that the pod doesn&#39;t tolerate.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe node &lt;node-name&gt; | grep -A 5 &quot;Taints:&quot;
+kubectl describe pod &lt;pod-name&gt; | grep -A 5 &quot;Tolerations:&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Add matching tolerations to your pod spec</li>
+<li>Remove unnecessary taints from nodes</li>
+<li>Create a dedicated node pool without taints for workloads</li>
+</ul>
+<h3>4. PersistentVolumeClaim Issues</h3>
+<p><strong>Symptom</strong>: Pod references a PVC that isn&#39;t bound to a PersistentVolume.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl get pvc
+kubectl describe pvc &lt;pvc-name&gt;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check storage class configuration</li>
+<li>Verify storage provisioner is running</li>
+<li>Ensure sufficient storage capacity exists</li>
+<li>Review PVC access modes (ReadWriteOnce, ReadOnlyMany, ReadWriteMany)</li>
+</ul>
+<h3>5. Network Plugin Not Ready</h3>
+<p><strong>Symptom</strong>: CNI plugin hasn&#39;t initialized on nodes.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl get nodes
+kubectl describe node &lt;node-name&gt; | grep -i &quot;network&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Wait for CNI plugin to initialize (usually automatic)</li>
+<li>Restart CNI pods if stuck</li>
+<li>Check CNI pod logs: <code>kubectl logs -n kube-system &lt;cni-pod-name&gt;</code></li>
+</ul>
+<h3>6. All Nodes Unschedulable</h3>
+<p><strong>Symptom</strong>: All nodes are cordoned or marked unschedulable.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl get nodes
+kubectl describe node &lt;node-name&gt; | grep -i &quot;unschedulable&quot;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Uncordon nodes: <code>kubectl uncordon &lt;node-name&gt;</code></li>
+<li>Check why nodes were cordoned (maintenance, issues)</li>
+<li>Ensure at least some nodes are schedulable</li>
+</ul>
+<h2>Step-by-Step Troubleshooting Process</h2>
+<h3>Step 1: Check Pod Events</h3>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<p>Look for events that explain why the pod isn&#39;t scheduling, such as:</p>
+<ul>
+<li>&quot;Insufficient cpu&quot;</li>
+<li>&quot;Insufficient memory&quot;</li>
+<li>&quot;0/3 nodes are available&quot;</li>
+</ul>
+<h3>Step 2: Check Node Capacity</h3>
+<pre><code class="language-bash">kubectl get nodes -o custom-columns=NAME:.metadata.name,CPU:.status.capacity.cpu,MEMORY:.status.capacity.memory
+kubectl top nodes
+</code></pre>
+<h3>Step 3: Verify Pod Requirements</h3>
+<pre><code class="language-bash">kubectl get pod &lt;pod-name&gt; -o yaml | grep -A 10 &quot;resources:&quot;
+</code></pre>
+<h3>Step 4: Check Scheduling Constraints</h3>
+<pre><code class="language-bash">kubectl get pod &lt;pod-name&gt; -o yaml | grep -A 5 &quot;nodeSelector:&quot;
+kubectl get pod &lt;pod-name&gt; -o yaml | grep -A 10 &quot;affinity:&quot;
+</code></pre>
+<h2>Quick Fixes</h2>
+<h3>Immediate Actions</h3>
+<ol>
+<li><p><strong>Delete and recreate</strong>: Sometimes recreating the pod helps</p>
+<pre><code class="language-bash">kubectl delete pod &lt;pod-name&gt;
+</code></pre>
+</li>
+<li><p><strong>Add a node</strong>: Quickly add capacity to your cluster</p>
+</li>
+<li><p><strong>Remove resource constraints</strong>: Temporarily remove resource requests to test</p>
+</li>
+<li><p><strong>Check for stuck PVCs</strong>: Delete and recreate PVCs if they&#39;re stuck</p>
+</li>
+</ol>
+<h3>Preventive Measures</h3>
+<ul>
+<li>Set appropriate resource requests (not too high, not too low)</li>
+<li>Use HorizontalPodAutoscaler for dynamic scaling</li>
+<li>Implement resource quotas at namespace level</li>
+<li>Monitor node capacity and plan scaling</li>
+<li>Use node affinity carefully (prefer soft affinity)</li>
+<li>Document node taints and ensure pods have tolerations</li>
+</ul>
+<h2>Related Resources</h2>
+<ul>
+<li><a href="/learn/basic-troubleshooting">Basic Troubleshooting Commands</a></li>
+<li><a href="/ops/monitor-pods">Monitor Pods &amp; Resources</a></li>
+<li><a href="/ops/check-cluster-health">Check Cluster Health</a></li>
+<li><a href="/blog/troubleshooting-pods-crashloopbackoff">Troubleshooting CrashLoopBackOff Pods</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>Pods stuck in Pending state are usually caused by resource constraints, scheduling rules, or provisioning issues. Use <code>kubectl describe pod</code> to identify the specific cause, then apply the appropriate solution based on the error message.</p>
+<p>Remember: Most Pending state issues can be resolved by either adjusting pod requirements or adding cluster capacity.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

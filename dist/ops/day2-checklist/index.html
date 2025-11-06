@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Day-2 Checklist | Kubernetes Community</title>
+    <meta name="description" content="Printable weekly checklist for SLOs, backups, and security basics." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/day2-checklist" />
+    <meta property="og:title" content="Day-2 Checklist | Kubernetes Community" />
+    <meta property="og:description" content="Printable weekly checklist for SLOs, backups, and security basics." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/day2-checklist" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Day-2 Checklist",
+      "description": "Printable weekly checklist for SLOs, backups, and security basics.",
+      "url": "https://managekubernetes.com/ops/day2-checklist",
+      "datePublished": "2025-11-06T09:00:53.618Z",
+      "dateModified": "2025-11-06T09:00:53.618Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/day2-checklist"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Day-2 Checklist",
+          "item": "https://managekubernetes.com/ops/day2-checklist"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Day-2 Checklist</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Day-2 Checklist</h1>
+        <article class="markdown-content max-w-none"><h1>Day-2 Checklist</h1>
+<p>A practical weekly checklist for maintaining your Kubernetes cluster. Print this out, keep it handy, and use it to ensure nothing falls through the cracks.</p>
+<h2>Weekly Checklist</h2>
+<h3>Cluster Health</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check node status</strong></p>
+<pre><code class="language-bash">kubectl get nodes
+</code></pre>
+<ul>
+<li>All nodes should be <code>Ready</code></li>
+<li>No nodes in <code>NotReady</code> for extended time</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review node conditions</strong></p>
+<pre><code class="language-bash">kubectl describe nodes | grep -A 5 &quot;Conditions&quot;
+</code></pre>
+<ul>
+<li>No MemoryPressure</li>
+<li>No DiskPressure</li>
+<li>No PIDPressure</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check control plane health</strong></p>
+<pre><code class="language-bash">kubectl get pods -n kube-system
+kubectl get --raw /healthz
+</code></pre>
+<ul>
+<li>All control plane pods running</li>
+<li>API server healthy</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review pending pods</strong></p>
+<pre><code class="language-bash">kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+</code></pre>
+<ul>
+<li>Investigate any pending pods</li>
+<li>Check for resource constraints</li>
+</ul>
+</li>
+</ul>
+<h3>Application Health</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check for crash looping pods</strong></p>
+<pre><code class="language-bash">kubectl get pods --all-namespaces | grep -E &quot;CrashLoopBackOff|Error&quot;
+</code></pre>
+<ul>
+<li>Investigate and fix crash loops</li>
+<li>Review logs for root cause</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review pod restarts</strong></p>
+<pre><code class="language-bash">kubectl get pods --all-namespaces | awk &#39;$4&gt;0&#39;
+</code></pre>
+<ul>
+<li>Investigate pods with frequent restarts</li>
+<li>Check if restarts are expected</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check resource usage</strong></p>
+<pre><code class="language-bash">kubectl top pods --all-namespaces
+kubectl top nodes
+</code></pre>
+<ul>
+<li>Identify pods using excessive resources</li>
+<li>Check for throttling/OOMKilled</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review application logs</strong></p>
+<pre><code class="language-bash"># Check error logs
+kubectl logs -l app=my-app --tail=100 | grep -i error
+</code></pre>
+<ul>
+<li>Look for error patterns</li>
+<li>Check for warnings</li>
+</ul>
+</li>
+</ul>
+<h3>Performance Monitoring</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review response times</strong></p>
+<ul>
+<li>Check p95/p99 latency metrics</li>
+<li>Compare with SLO targets</li>
+<li>Investigate if above thresholds</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check error rates</strong></p>
+<pre><code class="language-bash"># If using Prometheus
+rate(http_requests_total{status=~&quot;5..&quot;}[5m])
+</code></pre>
+<ul>
+<li>Error rate should be &lt; 1%</li>
+<li>Investigate spikes</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review throughput</strong></p>
+<ul>
+<li>Check request volume trends</li>
+<li>Identify peak usage periods</li>
+<li>Plan capacity accordingly</li>
+</ul>
+</li>
+</ul>
+<h3>Capacity Planning</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check node utilization</strong></p>
+<pre><code class="language-bash">kubectl top nodes
+kubectl describe nodes | grep -A 2 &quot;Capacity\|Allocatable&quot;
+</code></pre>
+<ul>
+<li>CPU utilization: Target 70-80%</li>
+<li>Memory utilization: Target 70-80%</li>
+<li>Plan scaling if &gt; 90%</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review resource requests/limits</strong></p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -A 4 &quot;Requests\|Limits&quot;
+</code></pre>
+<ul>
+<li>Compare requests vs actual usage</li>
+<li>Identify over-provisioned pods</li>
+<li>Identify under-provisioned pods</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check for scheduling issues</strong></p>
+<pre><code class="language-bash">kubectl get events --all-namespaces | grep -i &quot;insufficient&quot;
+</code></pre>
+<ul>
+<li>Look for &quot;Insufficient cpu&quot; or &quot;Insufficient memory&quot;</li>
+<li>Plan node scaling if frequent</li>
+</ul>
+</li>
+</ul>
+<h3>Security</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review RBAC</strong></p>
+<pre><code class="language-bash">kubectl get roles,rolebindings --all-namespaces
+kubectl get clusterroles,clusterrolebindings
+</code></pre>
+<ul>
+<li>Check for overly permissive roles</li>
+<li>Review service account permissions</li>
+<li>Remove unused bindings</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check for exposed secrets</strong></p>
+<pre><code class="language-bash">kubectl get secrets --all-namespaces
+</code></pre>
+<ul>
+<li>Review secret usage</li>
+<li>Rotate secrets if needed</li>
+<li>Check for secrets in logs</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review network policies</strong></p>
+<pre><code class="language-bash">kubectl get networkpolicies --all-namespaces
+</code></pre>
+<ul>
+<li>Ensure policies are applied</li>
+<li>Review and tighten rules</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check image vulnerabilities</strong></p>
+<ul>
+<li>Scan container images</li>
+<li>Update base images if needed</li>
+<li>Review security advisories</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review pod security</strong></p>
+<pre><code class="language-bash">kubectl get pods --all-namespaces -o jsonpath=&#39;{.items[*].spec.securityContext}&#39;
+</code></pre>
+<ul>
+<li>Ensure pods don&#39;t run as root</li>
+<li>Check security contexts</li>
+<li>Review privilege escalations</li>
+</ul>
+</li>
+</ul>
+<h3>Backups &amp; Disaster Recovery</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Verify etcd backups</strong></p>
+<ul>
+<li>Confirm backups are running</li>
+<li>Test restore procedure</li>
+<li>Verify backup integrity</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review application backups</strong></p>
+<ul>
+<li>Database backups verified</li>
+<li>Application data backed up</li>
+<li>Backup retention policy reviewed</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Test disaster recovery</strong></p>
+<ul>
+<li>Document recovery procedures</li>
+<li>Test restore from backup (quarterly)</li>
+<li>Update runbooks if needed</li>
+</ul>
+</li>
+</ul>
+<h3>Configuration Management</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review ConfigMaps and Secrets</strong></p>
+<pre><code class="language-bash">kubectl get configmaps,secrets --all-namespaces
+</code></pre>
+<ul>
+<li>Remove unused ConfigMaps</li>
+<li>Remove unused Secrets</li>
+<li>Review for sensitive data</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check for deprecated APIs</strong></p>
+<pre><code class="language-bash">kubectl get --raw /api/v1 | grep -i deprecated
+</code></pre>
+<ul>
+<li>Review deprecation warnings</li>
+<li>Plan API version migrations</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review resource versions</strong></p>
+<ul>
+<li>Check Kubernetes version compatibility</li>
+<li>Plan upgrades if needed</li>
+</ul>
+</li>
+</ul>
+<h3>Cost Optimization</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review resource waste</strong></p>
+<pre><code class="language-bash">kubectl top pods --all-namespaces
+</code></pre>
+<ul>
+<li>Identify over-provisioned pods</li>
+<li>Identify idle pods</li>
+<li>Right-size resources</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Check for unused resources</strong></p>
+<pre><code class="language-bash">kubectl get deployments,services,pvc --all-namespaces
+</code></pre>
+<ul>
+<li>Remove unused deployments</li>
+<li>Remove unused services</li>
+<li>Clean up unused PVCs</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review node costs</strong></p>
+<ul>
+<li>Check node utilization</li>
+<li>Consider spot instances for non-critical</li>
+<li>Review reserved instance usage</li>
+</ul>
+</li>
+</ul>
+<h3>Monitoring &amp; Alerting</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review alert history</strong></p>
+<ul>
+<li>Check alert volume</li>
+<li>Review false positives</li>
+<li>Tune alert thresholds if needed</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Verify monitoring coverage</strong></p>
+<ul>
+<li>All critical services monitored</li>
+<li>Key metrics being collected</li>
+<li>Dashboards up to date</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Test alerting</strong></p>
+<ul>
+<li>Verify alerts are firing</li>
+<li>Check alert routing</li>
+<li>Update runbooks if needed</li>
+</ul>
+</li>
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Update runbooks</strong></p>
+<ul>
+<li>Document new procedures</li>
+<li>Update outdated information</li>
+<li>Review incident responses</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review architecture docs</strong></p>
+<ul>
+<li>Update service diagrams</li>
+<li>Document configuration changes</li>
+<li>Update contact information</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review change log</strong></p>
+<ul>
+<li>Document recent changes</li>
+<li>Note any issues encountered</li>
+<li>Update lessons learned</li>
+</ul>
+</li>
+</ul>
+<h2>Monthly Checklist</h2>
+<h3>Capacity Review</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review growth trends</strong></p>
+<ul>
+<li>Analyze resource usage trends</li>
+<li>Project future capacity needs</li>
+<li>Plan scaling accordingly</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review SLOs/SLAs</strong></p>
+<ul>
+<li>Compare actual vs targets</li>
+<li>Adjust targets if needed</li>
+<li>Review with stakeholders</li>
+</ul>
+</li>
+</ul>
+<h3>Security Audit</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Comprehensive RBAC review</strong></p>
+<ul>
+<li>Audit all roles and bindings</li>
+<li>Remove unnecessary permissions</li>
+<li>Document access patterns</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Vulnerability scanning</strong></p>
+<ul>
+<li>Scan all container images</li>
+<li>Review security advisories</li>
+<li>Update vulnerable components</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review network policies</strong></p>
+<ul>
+<li>Audit all network rules</li>
+<li>Tighten policies if possible</li>
+<li>Document network topology</li>
+</ul>
+</li>
+</ul>
+<h3>Cost Analysis</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Detailed cost breakdown</strong></p>
+<ul>
+<li>Analyze costs by namespace</li>
+<li>Analyze costs by service</li>
+<li>Identify optimization opportunities</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review resource allocation</strong></p>
+<ul>
+<li>Right-size all workloads</li>
+<li>Remove unused resources</li>
+<li>Optimize node types</li>
+</ul>
+</li>
+</ul>
+<h3>Disaster Recovery</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Test backup restore</strong></p>
+<ul>
+<li>Restore from etcd backup</li>
+<li>Test application restore</li>
+<li>Document any issues</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review DR procedures</strong></p>
+<ul>
+<li>Update recovery procedures</li>
+<li>Test failover scenarios</li>
+<li>Update contact lists</li>
+</ul>
+</li>
+</ul>
+<h2>Quarterly Checklist</h2>
+<h3>Upgrade Planning</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review Kubernetes versions</strong></p>
+<ul>
+<li>Check current versions</li>
+<li>Review upgrade paths</li>
+<li>Plan upgrade schedule</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review dependency versions</strong></p>
+<ul>
+<li>Update base images</li>
+<li>Review library versions</li>
+<li>Plan dependency updates</li>
+</ul>
+</li>
+</ul>
+<h3>Architecture Review</h3>
+<ul>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Review architecture</strong></p>
+<ul>
+<li>Evaluate current architecture</li>
+<li>Identify improvement opportunities</li>
+<li>Plan architectural changes</li>
+</ul>
+</li>
+<li><p><input disabled="" type="checkbox"> 
+<strong>Performance optimization</strong></p>
+<ul>
+<li>Review performance metrics</li>
+<li>Identify bottlenecks</li>
+<li>Plan optimizations</li>
+</ul>
+</li>
+</ul>
+<h3>Team Training</h3>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Review team skills</strong><ul>
+<li>Identify training needs</li>
+<li>Plan knowledge sharing</li>
+<li>Update documentation</li>
+</ul>
+</li>
+</ul>
+<h2>Quick Commands Reference</h2>
+<pre><code class="language-bash"># Cluster health
+kubectl get nodes
+kubectl get pods -n kube-system
+kubectl get --raw /healthz
+
+# Application health
+kubectl get pods --all-namespaces
+kubectl top pods --all-namespaces
+kubectl get events --sort-by=&#39;.lastTimestamp&#39; | tail -20
+
+# Resource usage
+kubectl top nodes
+kubectl describe nodes | grep -A 5 &quot;Capacity\|Allocatable&quot;
+
+# Security
+kubectl get roles,rolebindings --all-namespaces
+kubectl get networkpolicies --all-namespaces
+
+# Troubleshooting
+kubectl describe pod &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt;
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt;
+</code></pre>
+<h2>Notes Section</h2>
+<p>Use this space to document issues, findings, or action items:</p>
+<hr>
+<hr>
+<hr>
+<hr>
+<hr>
+<h2>Tips</h2>
+<ul>
+<li><strong>Automate what you can</strong>: Use tools to automate routine checks</li>
+<li><strong>Focus on trends</strong>: Look for patterns over time, not just current state</li>
+<li><strong>Document everything</strong>: Future you will thank current you</li>
+<li><strong>Don&#39;t skip reviews</strong>: Regular reviews prevent small issues becoming big ones</li>
+<li><strong>Share knowledge</strong>: Document findings for the team</li>
+</ul>
+<hr>
+<p><strong>Last Review Date:</strong> _________________</p>
+<p><strong>Reviewed By:</strong> _________________</p>
+<p><strong>Next Review Date:</strong> _________________</p>
+<p>Keep this checklist visible and make it part of your routine. Consistent maintenance prevents incidents and reduces stress!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

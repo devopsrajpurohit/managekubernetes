@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && node scripts/prerender.js",
+    "preview": "vite preview",
+    "dev:html": "npm run build && vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",

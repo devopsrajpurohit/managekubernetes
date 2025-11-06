@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Getting Started with Kubernetes: A Complete Guide | Kubernetes Community</title>
+    <meta name="description" content="Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/getting-started-with-kubernetes" />
+    <meta property="og:title" content="Getting Started with Kubernetes: A Complete Guide | Kubernetes Community" />
+    <meta property="og:description" content="Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/getting-started-with-kubernetes" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Getting Started with Kubernetes: A Complete Guide",
+      "description": "Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster.",
+      "url": "https://managekubernetes.com/blog/getting-started-with-kubernetes",
+      "datePublished": "2025-11-06T09:00:53.582Z",
+      "dateModified": "2025-11-06T09:00:53.582Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/getting-started-with-kubernetes"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Getting Started with Kubernetes: A Complete Guide",
+          "item": "https://managekubernetes.com/blog/getting-started-with-kubernetes"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Getting Started with Kubernetes: A Complete Guide</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Getting Started with Kubernetes: A Complete Guide</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-getting-started.svg" alt="Getting Started with Kubernetes"></p>
+<h1>Getting Started with Kubernetes: A Complete Guide</h1>
+<p>Kubernetes has become the de facto standard for container orchestration in modern software development. Whether you&#39;re a developer looking to deploy your first application or an operations engineer managing production workloads, understanding Kubernetes is essential.</p>
+<h2>What is Kubernetes?</h2>
+<p>Kubernetes (often abbreviated as K8s) is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications. Originally developed by Google, Kubernetes is now maintained by the Cloud Native Computing Foundation (CNCF).</p>
+<h3>Key Benefits</h3>
+<ul>
+<li><strong>Automated deployment and scaling</strong>: Deploy applications with ease and scale them up or down based on demand</li>
+<li><strong>Self-healing</strong>: Automatically restart failed containers and replace them</li>
+<li><strong>Service discovery and load balancing</strong>: Automatically expose containers and distribute network traffic</li>
+<li><strong>Storage orchestration</strong>: Mount storage systems of your choice</li>
+<li><strong>Rolling updates</strong>: Update applications with zero downtime</li>
+</ul>
+<h2>Core Concepts</h2>
+<p>Before diving into hands-on examples, it&#39;s important to understand Kubernetes&#39; core concepts:</p>
+<h3>Pods</h3>
+<p>Pods are the smallest deployable units in Kubernetes. A pod represents a single instance of a running process in your cluster and can contain one or more containers.</p>
+<h3>Services</h3>
+<p>Services provide a stable network endpoint to access your pods. They abstract away the complexity of pod IP addresses and enable load balancing.</p>
+<h3>Deployments</h3>
+<p>Deployments manage the desired state of your application, including how many replicas should run and what container images to use.</p>
+<h3>Nodes</h3>
+<p>Nodes are the worker machines that run your applications. Each node runs pods and is managed by the control plane.</p>
+<h2>Your First Kubernetes Deployment</h2>
+<p>Let&#39;s create a simple deployment to get you started:</p>
+<pre><code class="language-yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+</code></pre>
+<p>Apply this configuration:</p>
+<pre><code class="language-bash">kubectl apply -f deployment.yaml
+</code></pre>
+<h2>Next Steps</h2>
+<p>Now that you&#39;ve deployed your first application, explore more Kubernetes concepts:</p>
+<ul>
+<li>Learn about <a href="/learn/pods-nodes-services">Pods and Services</a></li>
+<li>Understand the <a href="/learn/control-plane">Control Plane</a></li>
+<li>Master <a href="/learn/basic-troubleshooting">Basic Troubleshooting</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>Kubernetes provides powerful tools for managing containerized applications at scale. Start with the basics, practice deploying simple applications, and gradually explore more advanced features as you build confidence.</p>
+<p>Happy deploying!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

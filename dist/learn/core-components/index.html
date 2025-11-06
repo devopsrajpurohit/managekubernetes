@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Core Components | Kubernetes Community</title>
+    <meta name="description" content="API server, scheduler, controller manager, etcd — the control plane at a glance." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/core-components" />
+    <meta property="og:title" content="Core Components | Kubernetes Community" />
+    <meta property="og:description" content="API server, scheduler, controller manager, etcd — the control plane at a glance." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/core-components" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Core Components",
+      "description": "API server, scheduler, controller manager, etcd — the control plane at a glance.",
+      "url": "https://managekubernetes.com/learn/core-components",
+      "datePublished": "2025-11-06T09:00:53.608Z",
+      "dateModified": "2025-11-06T09:00:53.608Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/core-components"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Core Components",
+          "item": "https://managekubernetes.com/learn/core-components"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Core Components</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Core Components</h1>
+        <article class="markdown-content max-w-none"><h1>Core Components</h1>
+<p>The Kubernetes control plane consists of several core components that work together to manage your cluster. Understanding these components helps you troubleshoot issues and understand how Kubernetes works under the hood.</p>
+<h2>Control Plane Components</h2>
+<h3>1. API Server (kube-apiserver)</h3>
+<p>The <strong>API Server</strong> is the front-end to the Kubernetes control plane. It&#39;s the only component that communicates with etcd.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Validates and processes all API requests</li>
+<li>Authenticates and authorizes users (RBAC)</li>
+<li>Acts as the gateway for all cluster operations</li>
+<li>Maintains the REST API that <code>kubectl</code> and other tools use</li>
+</ul>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>All communication goes through the API Server</li>
+<li>It&#39;s stateless and can be scaled horizontally</li>
+<li>Multiple API servers can run for high availability</li>
+</ul>
+<h3>2. etcd</h3>
+<p><strong>etcd</strong> is a distributed key-value store that serves as Kubernetes&#39; backing store for all cluster data.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Stores all cluster state (pods, services, configs, secrets)</li>
+<li>Only the API Server communicates with etcd directly</li>
+<li>Provides watch capabilities for change notifications</li>
+</ul>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>Highly consistent and available</li>
+<li>Can be run in a cluster for redundancy</li>
+<li>Backups are critical for disaster recovery</li>
+</ul>
+<h3>3. Controller Manager (kube-controller-manager)</h3>
+<p>The <strong>Controller Manager</strong> runs controllers that handle routine tasks in the cluster.</p>
+<p><strong>What Controllers Do:</strong></p>
+<ul>
+<li><strong>Node Controller</strong>: Monitors node health and responds to failures</li>
+<li><strong>Replication Controller</strong>: Maintains the correct number of pod replicas</li>
+<li><strong>Endpoints Controller</strong>: Populates Endpoints objects (joins Services &amp; Pods)</li>
+<li><strong>Service Account &amp; Token Controllers</strong>: Create default accounts and API access tokens</li>
+</ul>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>Controllers watch the API Server for changes</li>
+<li>They reconcile actual state with desired state</li>
+<li>Multiple controllers run in a single process</li>
+</ul>
+<h3>4. Scheduler (kube-scheduler)</h3>
+<p>The <strong>Scheduler</strong> assigns newly created pods to nodes.</p>
+<p><strong>How It Works:</strong></p>
+<ol>
+<li>Watches for pods with <code>nodeName</code> unset</li>
+<li>Filters nodes based on resource requirements and constraints</li>
+<li>Scores remaining nodes (affinity, anti-affinity, etc.)</li>
+<li>Selects the best node and binds the pod</li>
+</ol>
+<p><strong>Scheduling Factors:</strong></p>
+<ul>
+<li>Resource requests (CPU, memory)</li>
+<li>Node affinity/anti-affinity rules</li>
+<li>Taints and tolerations</li>
+<li>Pod affinity/anti-affinity</li>
+<li>Resource availability</li>
+</ul>
+<h3>5. Cloud Controller Manager</h3>
+<p>Runs controllers that interact with the underlying cloud provider (optional, cloud-specific).</p>
+<p><strong>Handles:</strong></p>
+<ul>
+<li>Node controller interactions with cloud APIs</li>
+<li>Route controller for cloud load balancers</li>
+<li>Service controller for cloud provider integrations</li>
+</ul>
+<h2>Node Components</h2>
+<h3>kubelet</h3>
+<p>The <strong>kubelet</strong> is an agent that runs on each node and ensures containers are running in a pod.</p>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Registers the node with the API Server</li>
+<li>Receives pod specifications and ensures containers are running</li>
+<li>Reports node and pod status back to the control plane</li>
+<li>Executes liveness and readiness probes</li>
+</ul>
+<h3>kube-proxy</h3>
+<p><strong>kube-proxy</strong> maintains network rules on nodes, enabling service abstraction.</p>
+<p><strong>Functions:</strong></p>
+<ul>
+<li>Implements service networking</li>
+<li>Routes traffic to pods based on service definitions</li>
+<li>Can use iptables, IPVS, or userspace mode</li>
+</ul>
+<h3>Container Runtime</h3>
+<p>The <strong>Container Runtime</strong> (containerd, CRI-O, Docker) actually runs the containers.</p>
+<h2>How They Work Together</h2>
+<ol>
+<li><strong>User runs <code>kubectl create deployment</code></strong> → API Server receives request</li>
+<li><strong>API Server validates</strong> → Stores desired state in etcd</li>
+<li><strong>Controller Manager</strong> → Creates a ReplicaSet</li>
+<li><strong>ReplicaSet Controller</strong> → Creates Pod objects (no node assigned yet)</li>
+<li><strong>Scheduler</strong> → Finds suitable node and assigns pod</li>
+<li><strong>kubelet on that node</strong> → Creates containers via container runtime</li>
+<li><strong>kube-proxy</strong> → Updates networking rules for services</li>
+</ol>
+<h2>Checking Component Health</h2>
+<pre><code class="language-bash"># Check control plane component status
+kubectl get componentstatuses
+
+# Check API Server health
+kubectl get --raw /healthz
+
+# View scheduler logs (if you have access)
+kubectl logs -n kube-system &lt;scheduler-pod&gt;
+
+# Check etcd health (requires etcdctl)
+ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 endpoint health
+</code></pre>
+<p>Understanding these components is key to troubleshooting cluster issues and designing reliable applications.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

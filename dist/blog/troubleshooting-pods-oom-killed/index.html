@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory) | Kubernetes Community</title>
+    <meta name="description" content="Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/troubleshooting-pods-oom-killed" />
+    <meta property="og:title" content="Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory) | Kubernetes Community" />
+    <meta property="og:description" content="Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/troubleshooting-pods-oom-killed" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)",
+      "description": "Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies.",
+      "url": "https://managekubernetes.com/blog/troubleshooting-pods-oom-killed",
+      "datePublished": "2025-11-06T09:00:53.592Z",
+      "dateModified": "2025-11-06T09:00:53.592Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/troubleshooting-pods-oom-killed"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)",
+          "item": "https://managekubernetes.com/blog/troubleshooting-pods-oom-killed"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-oom-killed.svg" alt="Troubleshooting Kubernetes Pods Killed by OOM"></p>
+<h1>Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)</h1>
+<p>When a pod container in Kubernetes enters the <strong>OOMKilled</strong> state, it means the kernel&#39;s Out-Of-Memory (OOM) killer terminated the container because it exceeded its memory limits. This is a runtime failure - the container started successfully but used more memory than allowed.</p>
+<p>You can identify this state using:</p>
+<pre><code class="language-bash">kubectl get pods
+
+NAME               READY   STATUS      RESTARTS   AGE
+my-app-pod         0/1     OOMKilled   3          4m
+</code></pre>
+<p>Confirm with:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+# Look for:
+# State:          Terminated
+# Reason:         OOMKilled
+# Exit Code:      137
+</code></pre>
+<h2>Impact of OOMKilled State</h2>
+<ul>
+<li>Container is terminated abruptly, and Kubernetes may restart it repeatedly</li>
+<li>Application becomes unavailable or behaves unpredictably</li>
+<li>Deployment rollouts may hang due to constant restarts</li>
+<li>Cluster resources are wasted if the pod keeps restarting</li>
+<li>Continuous OOMKills can impact node stability and cause other pods to be evicted</li>
+</ul>
+<p><strong>Bottom line</strong>: OOMKilled means your application needs more memory or is leaking memory and must be tuned or fixed.</p>
+<h2>Common Causes and Solutions</h2>
+<h3>1. Memory Limit Too Low</h3>
+<p><strong>Symptom</strong>: Container&#39;s memory limit is lower than what the application actually requires.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -A 5 &quot;Limits:&quot;
+kubectl top pod &lt;pod-name&gt;
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase memory limit in deployment</li>
+<li>Monitor actual memory usage over time</li>
+<li>Set limits based on peak usage, not average</li>
+<li>Consider setting limits 20-30% higher than peak observed usage</li>
+</ul>
+<h3>2. Memory Leaks</h3>
+<p><strong>Symptom</strong>: Application gradually consumes all available memory due to poor memory management.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl logs &lt;pod-name&gt; | grep -i &quot;memory\|outofmemory\|heap&quot;
+kubectl top pod &lt;pod-name&gt; --containers
+# Monitor memory usage over time - if it keeps increasing, there&#39;s a leak
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Fix application memory leaks in code</li>
+<li>Implement proper resource cleanup</li>
+<li>Use memory profiling tools (heap analyzers)</li>
+<li>Restart pods periodically if leaks can&#39;t be fixed immediately</li>
+<li>Consider implementing memory limits with automatic restarts</li>
+</ul>
+<h3>3. Unexpected Load or Traffic Spikes</h3>
+<p><strong>Symptom</strong>: Increased usage causes application to exceed memory allocation.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl top pod &lt;pod-name&gt;
+kubectl get events --field-selector involvedObject.name=&lt;pod-name&gt; | grep -i oom
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase memory limits for traffic spikes</li>
+<li>Implement horizontal pod autoscaling</li>
+<li>Add memory buffers for peak loads</li>
+<li>Use request throttling to limit memory usage</li>
+<li>Monitor and set alerts for memory usage patterns</li>
+</ul>
+<h3>4. JVM Heap Misconfiguration</h3>
+<p><strong>Symptom</strong>: For Java apps, JVM heap settings are too close to container memory limit.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl exec &lt;pod-name&gt; -- env | grep -i jvm\|heap\|xmx
+kubectl describe pod &lt;pod-name&gt; | grep -i memory
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Set JVM heap size lower than container memory limit</li>
+<li>Leave headroom for JVM overhead (usually 20-25% of limit)</li>
+<li>Configure <code>-XX:MaxRAMPercentage</code> instead of fixed heap sizes</li>
+<li>Example: For 512Mi limit, use max heap of ~384Mi</li>
+</ul>
+<h3>5. Shared Memory or Caching Issues</h3>
+<p><strong>Symptom</strong>: In-memory caching, shared memory, or tmpfs volumes consume unaccounted memory.</p>
+<p><strong>Diagnosis</strong>:</p>
+<pre><code class="language-bash">kubectl exec &lt;pod-name&gt; -- df -h
+kubectl exec &lt;pod-name&gt; -- cat /proc/meminfo | grep -i shmem
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Account for tmpfs mounts in memory limits</li>
+<li>Reduce cache sizes in applications</li>
+<li>Use Redis or external cache instead of in-memory</li>
+<li>Monitor <code>/dev/shm</code> usage if using shared memory</li>
+</ul>
+<h2>Step-by-Step Troubleshooting</h2>
+<h3>Step 1: Confirm OOMKilled</h3>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -A 10 &quot;Last State&quot;
+# Should show: Reason: OOMKilled, Exit Code: 137
+</code></pre>
+<h3>Step 2: Check Current Memory Usage</h3>
+<pre><code class="language-bash">kubectl top pod &lt;pod-name&gt;
+kubectl top pod &lt;pod-name&gt; --containers
+</code></pre>
+<h3>Step 3: Review Memory Limits</h3>
+<pre><code class="language-bash">kubectl get pod &lt;pod-name&gt; -o jsonpath=&#39;{.spec.containers[*].resources.limits.memory}&#39;
+</code></pre>
+<h3>Step 4: Analyze Memory Patterns</h3>
+<pre><code class="language-bash"># Check if memory grows over time (memory leak indicator)
+kubectl top pod &lt;pod-name&gt; --containers --containers
+# Run this multiple times and observe growth
+</code></pre>
+<h3>Step 5: Check Container Logs</h3>
+<pre><code class="language-bash">kubectl logs &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt; --previous
+# Look for memory-related errors or warnings
+</code></pre>
+<h2>Quick Fixes</h2>
+<h3>Immediate Actions</h3>
+<ol>
+<li><p><strong>Increase memory limit temporarily</strong>:</p>
+<pre><code class="language-yaml">resources:
+  limits:
+    memory: &quot;1Gi&quot;  # Increase from current limit
+</code></pre>
+</li>
+<li><p><strong>Reduce memory pressure</strong>:</p>
+<ul>
+<li>Scale down other pods on the same node</li>
+<li>Evict low-priority pods</li>
+<li>Add more nodes to cluster</li>
+</ul>
+</li>
+<li><p><strong>Implement restart policy</strong>:</p>
+<pre><code class="language-yaml">restartPolicy: OnFailure  # For jobs
+# Or let deployment handle restarts
+</code></pre>
+</li>
+<li><p><strong>Add memory requests</strong> (if missing):</p>
+<pre><code class="language-yaml">resources:
+  requests:
+    memory: &quot;256Mi&quot;
+  limits:
+    memory: &quot;512Mi&quot;
+</code></pre>
+</li>
+</ol>
+<h2>Best Practices to Prevent OOMKilled</h2>
+<ol>
+<li><strong>Set appropriate memory limits</strong>: Based on actual usage patterns, not guesses</li>
+<li><strong>Monitor memory usage</strong>: Use tools like Prometheus to track memory over time</li>
+<li><strong>Implement memory requests</strong>: Help scheduler make better placement decisions</li>
+<li><strong>Fix memory leaks</strong>: Address application bugs causing gradual memory growth</li>
+<li><strong>Right-size resources</strong>: Regularly review and adjust limits based on metrics</li>
+<li><strong>Use memory-aware languages</strong>: For Java, configure heap properly</li>
+<li><strong>Implement graceful degradation</strong>: Reduce functionality under memory pressure</li>
+<li><strong>Set up alerts</strong>: Monitor for memory usage approaching limits</li>
+</ol>
+<h2>Resource Configuration Examples</h2>
+<h3>Correct Memory Configuration</h3>
+<pre><code class="language-yaml">resources:
+  requests:
+    memory: &quot;256Mi&quot;
+    cpu: &quot;250m&quot;
+  limits:
+    memory: &quot;512Mi&quot;  # Leave 20-30% buffer above peak usage
+    cpu: &quot;500m&quot;
+</code></pre>
+<h3>Java Application Configuration</h3>
+<pre><code class="language-yaml">env:
+- name: JAVA_OPTS
+  value: &quot;-Xmx384m -XX:MaxRAMPercentage=75.0&quot;
+resources:
+  limits:
+    memory: &quot;512Mi&quot;  # Heap (384Mi) + overhead (~128Mi)
+</code></pre>
+<h2>Related Resources</h2>
+<ul>
+<li><a href="/ops/monitor-pods">Monitor Pods &amp; Resources</a></li>
+<li><a href="/ops/cost-optimization">Performance &amp; Cost Insights</a></li>
+<li><a href="/blog/troubleshooting-pods-crashloopbackoff">Troubleshooting CrashLoopBackOff Pods</a></li>
+<li><a href="/blog/troubleshooting-pods-pending-state">Troubleshooting Pending Pods</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>OOMKilled pods are usually caused by insufficient memory limits, memory leaks, or unexpected load. Start by increasing memory limits temporarily, then investigate the root cause. Monitor memory usage patterns and set limits based on actual peak usage with appropriate buffers.</p>
+<p>Remember: Exit code 137 typically indicates OOMKilled (128 + 9, where 9 is SIGKILL).</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

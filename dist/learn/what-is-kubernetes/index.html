@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>What is Kubernetes? | Kubernetes Community</title>
+    <meta name="description" content="Why teams use it, when not to, and what problems it solves." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/learn/what-is-kubernetes" />
+    <meta property="og:title" content="What is Kubernetes? | Kubernetes Community" />
+    <meta property="og:description" content="Why teams use it, when not to, and what problems it solves." />
+    <meta property="og:url" content="https://managekubernetes.com/learn/what-is-kubernetes" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "What is Kubernetes?",
+      "description": "Why teams use it, when not to, and what problems it solves.",
+      "url": "https://managekubernetes.com/learn/what-is-kubernetes",
+      "datePublished": "2025-11-06T09:00:53.610Z",
+      "dateModified": "2025-11-06T09:00:53.610Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/learn/what-is-kubernetes"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-1 Basics"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-1 Basics",
+          "item": "https://managekubernetes.com/#day1"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "What is Kubernetes?",
+          "item": "https://managekubernetes.com/learn/what-is-kubernetes"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">What is Kubernetes?</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">What is Kubernetes?</h1>
+        <article class="markdown-content max-w-none"><h1>What is Kubernetes?</h1>
+<p>Kubernetes (often abbreviated as K8s) is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications.</p>
+<h2>Why Teams Use Kubernetes</h2>
+<h3>1. <strong>Portability</strong></h3>
+<p>Run your applications consistently across different environments - from your laptop to production cloud providers. Kubernetes abstracts away the underlying infrastructure.</p>
+<h3>2. <strong>Scalability</strong></h3>
+<p>Automatically scale your applications up or down based on demand. Kubernetes can scale horizontally by adding more pods or vertically by adjusting resource limits.</p>
+<h3>3. <strong>High Availability</strong></h3>
+<p>Built-in features like health checks, self-healing, and rolling updates ensure your applications stay running even when individual components fail.</p>
+<h3>4. <strong>Resource Efficiency</strong></h3>
+<p>Better utilization of compute resources by packing multiple containers onto nodes and optimizing resource allocation.</p>
+<h3>5. <strong>Declarative Configuration</strong></h3>
+<p>Describe your desired state, and Kubernetes works to maintain it. This makes infrastructure as code a reality.</p>
+<h2>When NOT to Use Kubernetes</h2>
+<p>Kubernetes isn&#39;t always the right choice:</p>
+<ul>
+<li><strong>Small, simple applications</strong>: If you&#39;re running a single service with minimal traffic, Kubernetes adds unnecessary complexity.</li>
+<li><strong>Limited team size</strong>: Kubernetes requires operational expertise. Small teams might be better served with simpler platforms.</li>
+<li><strong>Budget constraints</strong>: Running Kubernetes requires infrastructure (nodes, control plane). Managed services cost money, and self-hosting requires expertise.</li>
+<li><strong>Stateless applications only</strong>: While Kubernetes handles stateful apps, traditional databases might be easier to manage with specialized tools.</li>
+<li><strong>Short-term projects</strong>: The overhead of setting up and maintaining Kubernetes might not be worth it for temporary projects.</li>
+</ul>
+<h2>Problems Kubernetes Solves</h2>
+<h3>Container Orchestration</h3>
+<ul>
+<li><strong>Scheduling</strong>: Decides where containers run based on resource requirements and constraints.</li>
+<li><strong>Service Discovery</strong>: Automatically finds and connects services to each other.</li>
+<li><strong>Load Balancing</strong>: Distributes traffic across multiple instances of your application.</li>
+</ul>
+<h3>Application Lifecycle Management</h3>
+<ul>
+<li><strong>Rolling Updates</strong>: Update your application with zero downtime.</li>
+<li><strong>Rollbacks</strong>: Quickly revert to a previous version if something goes wrong.</li>
+<li><strong>Health Monitoring</strong>: Continuously checks if your containers are healthy and restarts them if needed.</li>
+</ul>
+<h3>Resource Management</h3>
+<ul>
+<li><strong>Request/Limits</strong>: Specify how much CPU and memory your containers need.</li>
+<li><strong>Quotas</strong>: Control resource usage per namespace or team.</li>
+<li><strong>Auto-scaling</strong>: Automatically adjust replica count based on metrics.</li>
+</ul>
+<h3>Networking &amp; Security</h3>
+<ul>
+<li><strong>Network Policies</strong>: Control how pods communicate with each other.</li>
+<li><strong>Secrets Management</strong>: Securely store and manage sensitive information.</li>
+<li><strong>RBAC</strong>: Fine-grained access control for different users and services.</li>
+</ul>
+<h2>Getting Started</h2>
+<p>The best way to learn Kubernetes is hands-on:</p>
+<ol>
+<li><strong>Local Development</strong>: Use <code>minikube</code> or <code>kind</code> (Kubernetes in Docker) to run a cluster on your machine.</li>
+<li><strong>Cloud Free Tiers</strong>: Many cloud providers offer free tiers to experiment with managed Kubernetes.</li>
+<li><strong>Tutorials</strong>: Start with the official Kubernetes tutorials and work through examples.</li>
+</ol>
+<p>Remember: Kubernetes is a powerful tool, but it&#39;s also complex. Start simple, understand the basics, and gradually explore more advanced features as you need them.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

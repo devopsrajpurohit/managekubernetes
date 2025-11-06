@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Alerting &amp; Notifications | Kubernetes Community</title>
+    <meta name="description" content="Turn signals into sensible alerts. Reduce noise, keep actionability." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/smart-alerts" />
+    <meta property="og:title" content="Smart Alerting &amp; Notifications | Kubernetes Community" />
+    <meta property="og:description" content="Turn signals into sensible alerts. Reduce noise, keep actionability." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/smart-alerts" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Smart Alerting &amp; Notifications",
+      "description": "Turn signals into sensible alerts. Reduce noise, keep actionability.",
+      "url": "https://managekubernetes.com/ops/smart-alerts",
+      "datePublished": "2025-11-06T09:00:53.624Z",
+      "dateModified": "2025-11-06T09:00:53.624Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/smart-alerts"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Smart Alerting & Notifications",
+          "item": "https://managekubernetes.com/ops/smart-alerts"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Smart Alerting & Notifications</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Smart Alerting &amp; Notifications</h1>
+        <article class="markdown-content max-w-none"><h1>Smart Alerting &amp; Notifications</h1>
+<p>Good alerting saves you from incidents. Bad alerting keeps you awake with false alarms. This guide shows you how to create actionable alerts that actually help instead of overwhelm.</p>
+<h2>Alerting Principles</h2>
+<h3>1. Alert on Symptoms, Not Causes</h3>
+<p><strong>Bad</strong>: Alert on &quot;high CPU usage&quot;<br><strong>Good</strong>: Alert on &quot;response time &gt; 500ms for 5 minutes&quot;</p>
+<p><strong>Why:</strong></p>
+<ul>
+<li>Symptoms tell you users are affected</li>
+<li>Causes might not impact users</li>
+<li>Focus on what matters</li>
+</ul>
+<h3>2. Alert on What You Can Action</h3>
+<p><strong>Bad</strong>: Alert on &quot;node disk usage &gt; 80%&quot;<br><strong>Good</strong>: Alert on &quot;node disk usage &gt; 85% for 10 minutes&quot;</p>
+<p><strong>Why:</strong></p>
+<ul>
+<li>Temporary spikes are noise</li>
+<li>Sustained issues need attention</li>
+<li>Actionable alerts = clear response</li>
+</ul>
+<h3>3. Use Alert Severity Appropriately</h3>
+<p><strong>Critical</strong>: Users are affected, action needed immediately<br><strong>Warning</strong>: Potential issue, investigate soon<br><strong>Info</strong>: Notable event, no immediate action</p>
+<h3>4. Reduce Noise</h3>
+<ul>
+<li>Group related alerts</li>
+<li>Suppress during known maintenance</li>
+<li>Use alert fatigue thresholds</li>
+<li>Route non-critical to different channels</li>
+</ul>
+<h2>What to Alert On</h2>
+<h3>Application-Level Alerts</h3>
+<p><strong>High Priority:</strong></p>
+<ul>
+<li>Error rate spike (&gt; 1% for 5 minutes)</li>
+<li>Response time degradation (p95 &gt; threshold)</li>
+<li>Availability drop (health checks failing)</li>
+<li>Critical business metrics (orders failing, payments failing)</li>
+</ul>
+<p><strong>Medium Priority:</strong></p>
+<ul>
+<li>Warning rate increase</li>
+<li>Resource usage approaching limits</li>
+<li>Dependency health issues</li>
+</ul>
+<h3>Infrastructure Alerts</h3>
+<p><strong>High Priority:</strong></p>
+<ul>
+<li>Pods crash looping</li>
+<li>Nodes not ready</li>
+<li>Control plane components down</li>
+<li>Out of capacity (pods can&#39;t be scheduled)</li>
+</ul>
+<p><strong>Medium Priority:</strong></p>
+<ul>
+<li>High resource usage</li>
+<li>Disk space warning</li>
+<li>Network issues</li>
+</ul>
+<h3>Business-Critical Alerts</h3>
+<p><strong>High Priority:</strong></p>
+<ul>
+<li>Revenue-generating features down</li>
+<li>Customer-facing services unavailable</li>
+<li>Security incidents</li>
+<li>Data loss risks</li>
+</ul>
+<h2>Alert Examples</h2>
+<h3>Example 1: Pod CrashLoopBackOff</h3>
+<p><strong>Alert:</strong></p>
+<pre><code class="language-yaml">groups:
+- name: kubernetes.pods
+  rules:
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total[15m]) &gt; 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: &quot;Pod {{ $labels.pod }} is crash looping&quot;
+      description: &quot;Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted {{ $value }} times in the last 15 minutes&quot;
+</code></pre>
+<p><strong>Why it works:</strong></p>
+<ul>
+<li>Only alerts on sustained crashes (5 minutes)</li>
+<li>Includes context (namespace, pod name)</li>
+<li>Critical severity = immediate attention</li>
+</ul>
+<h3>Example 2: High Error Rate</h3>
+<p><strong>Alert:</strong></p>
+<pre><code class="language-yaml">- alert: HighErrorRate
+  expr: |
+    sum(rate(http_requests_total{status=~&quot;5..&quot;}[5m])) by (service)
+    /
+    sum(rate(http_requests_total[5m])) by (service)
+    &gt; 0.05
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: &quot;High error rate for {{ $labels.service }}&quot;
+    description: &quot;Error rate is {{ $value | humanizePercentage }} for the last 5 minutes&quot;
+</code></pre>
+<p><strong>Why it works:</strong></p>
+<ul>
+<li>Percentage based (scales with traffic)</li>
+<li>5-minute window prevents false positives</li>
+<li>Warning level (investigate, not critical yet)</li>
+</ul>
+<h3>Example 3: Node Not Ready</h3>
+<p><strong>Alert:</strong></p>
+<pre><code class="language-yaml">- alert: NodeNotReady
+  expr: kube_node_status_condition{condition=&quot;Ready&quot;,status=&quot;true&quot;} == 0
+  for: 2m
+  labels:
+    severity: critical
+  annotations:
+    summary: &quot;Node {{ $labels.node }} is not ready&quot;
+    description: &quot;Node {{ $labels.node }} has been not ready for more than 2 minutes&quot;
+</code></pre>
+<p><strong>Why it works:</strong></p>
+<ul>
+<li>Short duration (nodes should recover quickly)</li>
+<li>Critical (affects pod scheduling)</li>
+<li>Clear description</li>
+</ul>
+<h3>Example 4: Response Time Degradation</h3>
+<p><strong>Alert:</strong></p>
+<pre><code class="language-yaml">- alert: HighResponseTime
+  expr: |
+    histogram_quantile(0.95,
+      sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+    ) &gt; 0.5
+  for: 10m
+  labels:
+    severity: warning
+  annotations:
+    summary: &quot;High response time for {{ $labels.service }}&quot;
+    description: &quot;95th percentile response time is {{ $value }}s for {{ $labels.service }}&quot;
+</code></pre>
+<p><strong>Why it works:</strong></p>
+<ul>
+<li>Uses percentile (p95) - accounts for outliers</li>
+<li>10-minute window - sustained performance issue</li>
+<li>Warning level - investigate before it becomes critical</li>
+</ul>
+<h2>Alert Routing</h2>
+<h3>Route by Severity</h3>
+<p><strong>Critical Alerts:</strong></p>
+<ul>
+<li>Slack: #critical-alerts (with @here)</li>
+<li>PagerDuty: Immediate escalation</li>
+<li>Email: Sent immediately</li>
+</ul>
+<p><strong>Warning Alerts:</strong></p>
+<ul>
+<li>Slack: #alerts channel</li>
+<li>PagerDuty: Low urgency</li>
+<li>Email: Daily digest</li>
+</ul>
+<p><strong>Info Alerts:</strong></p>
+<ul>
+<li>Slack: #monitoring channel</li>
+<li>No PagerDuty</li>
+<li>Email: Weekly digest</li>
+</ul>
+<h3>Route by Team</h3>
+<ul>
+<li>Frontend team → Frontend alerts</li>
+<li>Backend team → Backend alerts</li>
+<li>Infrastructure team → Cluster alerts</li>
+</ul>
+<h3>Route by Service</h3>
+<ul>
+<li>Critical services → Immediate notification</li>
+<li>Non-critical services → Standard routing</li>
+<li>Development → Dev channel only</li>
+</ul>
+<h2>Reducing Alert Noise</h2>
+<h3>1. Use Alert Grouping</h3>
+<p>Group related alerts to reduce noise:</p>
+<pre><code class="language-yaml">route:
+  group_by: [&#39;alertname&#39;, &#39;cluster&#39;, &#39;service&#39;]
+  group_wait: 10s
+  group_interval: 10m
+  repeat_interval: 12h
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Multiple pod failures = one alert group</li>
+<li>Reduces notification spam</li>
+<li>Easier to triage</li>
+</ul>
+<h3>2. Suppress During Maintenance</h3>
+<pre><code class="language-yaml">inhibit_rules:
+- source_match:
+    severity: &#39;critical&#39;
+  target_match:
+    severity: &#39;warning&#39;
+  equal: [&#39;alertname&#39;, &#39;cluster&#39;]
+</code></pre>
+<p><strong>Why:</strong></p>
+<ul>
+<li>If critical alert fires, suppress warnings</li>
+<li>Reduces duplicate alerts</li>
+<li>Focus on what matters</li>
+</ul>
+<h3>3. Alert Fatigue Thresholds</h3>
+<p>Don&#39;t alert on every single event:</p>
+<pre><code class="language-yaml">- alert: PodRestart
+  expr: increase(kube_pod_container_status_restarts_total[1h]) &gt; 0
+  # Only alert if &gt; 3 restarts in an hour
+  expr: increase(kube_pod_container_status_restarts_total[1h]) &gt; 3
+</code></pre>
+<h3>4. Time-Based Routing</h3>
+<p>Route alerts based on time:</p>
+<pre><code class="language-yaml">routes:
+- match:
+    severity: warning
+  receiver: &#39;weekday-only&#39;
+  # Only route during business hours
+</code></pre>
+<h2>Alert Best Practices</h2>
+<h3>1. Include Context</h3>
+<p><strong>Bad:</strong></p>
+<pre><code>Alert: High CPU usage
+</code></pre>
+<p><strong>Good:</strong></p>
+<pre><code>Alert: High CPU usage on pod web-app-abc123
+Namespace: production
+CPU: 850m / 1000m (85%)
+Duration: 10 minutes
+Node: worker-1
+</code></pre>
+<h3>2. Include Runbooks</h3>
+<p>Every alert should link to a runbook:</p>
+<pre><code class="language-yaml">annotations:
+  summary: &quot;Pod crash looping&quot;
+  description: &quot;Pod {{ $labels.pod }} is crash looping&quot;
+  runbook_url: &quot;https://wiki.company.com/runbooks/pod-crashloop&quot;
+</code></pre>
+<h3>3. Test Alerts</h3>
+<pre><code class="language-bash"># Test alert rule
+promtool test rules alert-rules.yml
+
+# Send test alert
+curl -X POST http://alertmanager:9093/api/v1/alerts \
+  -d &#39;[{
+    &quot;labels&quot;: {&quot;alertname&quot;: &quot;TestAlert&quot;, &quot;severity&quot;: &quot;warning&quot;}
+  }]&#39;
+</code></pre>
+<h3>4. Review and Tune</h3>
+<p><strong>Regular review:</strong></p>
+<ul>
+<li>Weekly: Review alert frequency</li>
+<li>Monthly: Remove unused alerts</li>
+<li>Quarterly: Review alert thresholds</li>
+</ul>
+<p><strong>Metrics to track:</strong></p>
+<ul>
+<li>Alert volume</li>
+<li>False positive rate</li>
+<li>Mean time to acknowledge</li>
+<li>Mean time to resolve</li>
+</ul>
+<h2>Practical Alert Configuration</h2>
+<h3>Prometheus AlertManager Config</h3>
+<pre><code class="language-yaml">global:
+  resolve_timeout: 5m
+
+route:
+  receiver: &#39;default-receiver&#39;
+  group_by: [&#39;alertname&#39;, &#39;cluster&#39;]
+  group_wait: 10s
+  group_interval: 10m
+  repeat_interval: 12h
+  
+  routes:
+  # Critical alerts - immediate
+  - match:
+      severity: critical
+    receiver: &#39;critical-team&#39;
+    continue: true
+    
+  # Warning alerts - business hours
+  - match:
+      severity: warning
+    receiver: &#39;warning-team&#39;
+    routes:
+    - match_re:
+        time: &#39;^(09|10|11|12|13|14|15|16|17):&#39;
+      receiver: &#39;warning-team-immediate&#39;
+    - receiver: &#39;warning-team-delayed&#39;
+
+inhibit_rules:
+- source_match:
+    severity: &#39;critical&#39;
+  target_match:
+    severity: &#39;warning&#39;
+  equal: [&#39;alertname&#39;, &#39;cluster&#39;]
+
+receivers:
+- name: &#39;critical-team&#39;
+  slack_configs:
+  - api_url: &#39;YOUR_SLACK_WEBHOOK&#39;
+    channel: &#39;#critical-alerts&#39;
+    title: &#39;🚨 Critical Alert&#39;
+    text: &#39;{{ range .Alerts }}{{ .Annotations.description }}{{ end }}&#39;
+    
+- name: &#39;warning-team&#39;
+  slack_configs:
+  - api_url: &#39;YOUR_SLACK_WEBHOOK&#39;
+    channel: &#39;#alerts&#39;
+    title: &#39;⚠️ Warning&#39;
+</code></pre>
+<h2>Common Alert Patterns</h2>
+<h3>Pattern 1: Rate-Based Alerts</h3>
+<pre><code class="language-yaml"># Alert on increasing error rate
+expr: rate(http_requests_total{status=&quot;500&quot;}[5m]) &gt; 10
+</code></pre>
+<h3>Pattern 2: Threshold Alerts</h3>
+<pre><code class="language-yaml"># Alert on resource usage
+expr: (container_memory_usage_bytes / container_spec_memory_limit_bytes) &gt; 0.9
+</code></pre>
+<h3>Pattern 3: Absence Alerts</h3>
+<pre><code class="language-yaml"># Alert when metric disappears
+expr: up{job=&quot;my-service&quot;} == 0
+</code></pre>
+<h3>Pattern 4: Comparison Alerts</h3>
+<pre><code class="language-yaml"># Alert when current vs historical
+expr: |
+  (avg_over_time(metric[1h]) - avg_over_time(metric[6h])) 
+  / avg_over_time(metric[6h]) &gt; 0.2
+</code></pre>
+<h2>Monitoring Alert Health</h2>
+<h3>Track Alert Metrics</h3>
+<ul>
+<li>Alert volume over time</li>
+<li>Alert resolution time</li>
+<li>False positive rate</li>
+<li>Alert acknowledgment time</li>
+</ul>
+<h3>Alert on Alerts</h3>
+<pre><code class="language-yaml"># Alert if too many alerts firing
+- alert: TooManyAlerts
+  expr: count(ALERTS{alertstate=&quot;firing&quot;}) &gt; 50
+  annotations:
+    summary: &quot;Too many alerts firing&quot;
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Alert on symptoms users experience</strong>, not just technical metrics</li>
+<li><strong>Use appropriate severity levels</strong> - not everything is critical</li>
+<li><strong>Include context</strong> in alert messages</li>
+<li><strong>Group related alerts</strong> to reduce noise</li>
+<li><strong>Test your alerts</strong> before production</li>
+<li><strong>Review regularly</strong> and tune thresholds</li>
+<li><strong>Link to runbooks</strong> for faster resolution</li>
+<li><strong>Route intelligently</strong> based on severity and team</li>
+<li><strong>Monitor alert health</strong> itself</li>
+<li><strong>Start simple</strong>, add complexity only when needed</li>
+</ol>
+<p>Good alerting is an art. Start with the basics, measure what happens, and continuously improve. Your future self (and your team) will thank you!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

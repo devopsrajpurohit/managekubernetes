@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Check Cluster Health | Kubernetes Community</title>
+    <meta name="description" content="Read node conditions, component status, and kubelet health in minutes." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/check-cluster-health" />
+    <meta property="og:title" content="Check Cluster Health | Kubernetes Community" />
+    <meta property="og:description" content="Read node conditions, component status, and kubelet health in minutes." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/check-cluster-health" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Check Cluster Health",
+      "description": "Read node conditions, component status, and kubelet health in minutes.",
+      "url": "https://managekubernetes.com/ops/check-cluster-health",
+      "datePublished": "2025-11-06T09:00:53.613Z",
+      "dateModified": "2025-11-06T09:00:53.613Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/check-cluster-health"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Check Cluster Health",
+          "item": "https://managekubernetes.com/ops/check-cluster-health"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Check Cluster Health</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Check Cluster Health</h1>
+        <article class="markdown-content max-w-none"><h1>Check Cluster Health</h1>
+<p>Regularly checking your Kubernetes cluster health helps you catch issues before they impact your applications. This guide shows you how to quickly assess the overall health of your cluster.</p>
+<h2>Quick Health Check</h2>
+<h3>1. Check Node Status</h3>
+<pre><code class="language-bash"># List all nodes and their status
+kubectl get nodes
+
+# Detailed node information
+kubectl get nodes -o wide
+
+# Describe a specific node
+kubectl describe node &lt;node-name&gt;
+</code></pre>
+<p><strong>What to Look For:</strong></p>
+<ul>
+<li>Status should be <code>Ready</code></li>
+<li>All nodes should be in <code>Ready</code> state</li>
+<li>Check age - recently created nodes might still be initializing</li>
+</ul>
+<p><strong>Example Output:</strong></p>
+<pre><code>NAME           STATUS   ROLES           AGE   VERSION
+control-plane  Ready    control-plane   30d   v1.28.0
+worker-1       Ready    &lt;none&gt;          30d   v1.28.0
+worker-2       Ready    &lt;none&gt;          30d   v1.28.0
+</code></pre>
+<h3>2. Check Node Conditions</h3>
+<p>Node conditions provide detailed health information:</p>
+<pre><code class="language-bash"># View node conditions
+kubectl get nodes -o jsonpath=&#39;{range .items[*]}{.metadata.name}{&quot;\t&quot;}{range .status.conditions[*]}{.type}{&quot;=&quot;}{.status}{&quot;\t&quot;}{end}{&quot;\n&quot;}{end}&#39;
+</code></pre>
+<p><strong>Key Conditions:</strong></p>
+<ul>
+<li><strong>Ready</strong>: Node is healthy and ready to accept pods (<code>True</code> = good)</li>
+<li><strong>MemoryPressure</strong>: Node has insufficient memory (<code>False</code> = good)</li>
+<li><strong>DiskPressure</strong>: Node has insufficient disk space (<code>False</code> = good)</li>
+<li><strong>PIDPressure</strong>: Node has insufficient process IDs (<code>False</code> = good)</li>
+<li><strong>NetworkUnavailable</strong>: Node network is not configured (<code>False</code> = good)</li>
+</ul>
+<p><strong>Using describe for detailed conditions:</strong></p>
+<pre><code class="language-bash">kubectl describe node &lt;node-name&gt;
+</code></pre>
+<p>Look for the Conditions section:</p>
+<pre><code>Conditions:
+  Type                 Status  Reason                       Message
+  ----                 ------  ------                       -------
+  NetworkUnavailable   False   FlannelIsUp                  Flannel is running on this node
+  MemoryPressure       False   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure         False   KubeletHasSufficientDisk     kubelet has sufficient disk space available
+  PIDPressure          False   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready                True    KubeletReady                  kubelet is posting ready status
+</code></pre>
+<h3>3. Check Control Plane Components</h3>
+<pre><code class="language-bash"># Check component statuses (legacy command)
+kubectl get componentstatuses
+
+# Check control plane pods
+kubectl get pods -n kube-system
+
+# Check API server health
+kubectl get --raw /healthz
+
+# Check API server readiness
+kubectl get --raw /readyz
+</code></pre>
+<p><strong>Key Components:</strong></p>
+<ul>
+<li><strong>kube-apiserver</strong>: API server pods should be running</li>
+<li><strong>kube-controller-manager</strong>: Controller manager should be running</li>
+<li><strong>kube-scheduler</strong>: Scheduler should be running</li>
+<li><strong>etcd</strong>: etcd pods should be running (if self-hosted)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">kubectl get pods -n kube-system | grep -E &quot;kube-apiserver|kube-controller|kube-scheduler|etcd&quot;
+</code></pre>
+<h3>4. Check kubelet Health</h3>
+<pre><code class="language-bash"># Check kubelet status on a node
+# SSH to node or use kubectl exec if you have access
+systemctl status kubelet
+
+# Check kubelet logs (on the node)
+journalctl -u kubelet -n 50
+
+# Check kubelet service (from cluster)
+# View node status for kubelet conditions
+kubectl describe node &lt;node-name&gt; | grep -A 5 &quot;KubeletReady&quot;
+</code></pre>
+<p><strong>What to Check:</strong></p>
+<ul>
+<li>kubelet service should be active and running</li>
+<li>No frequent restarts</li>
+<li>Logs should show successful node heartbeat</li>
+</ul>
+<h3>5. Check Pod Distribution</h3>
+<pre><code class="language-bash"># Check pods per node
+kubectl get pods -o wide --all-namespaces | awk &#39;{print $7}&#39; | sort | uniq -c
+
+# See pods that can&#39;t be scheduled
+kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+
+# Check for CrashLoopBackOff pods
+kubectl get pods --all-namespaces | grep CrashLoopBackOff
+</code></pre>
+<h3>6. Check Resource Usage</h3>
+<pre><code class="language-bash"># Node resource usage (requires metrics-server)
+kubectl top nodes
+
+# Pod resource usage
+kubectl top pods --all-namespaces
+
+# Node capacity vs allocatable
+kubectl describe node &lt;node-name&gt; | grep -A 5 &quot;Capacity\|Allocatable&quot;
+</code></pre>
+<h2>Comprehensive Health Check Script</h2>
+<p>Create a simple script to check everything:</p>
+<pre><code class="language-bash">#!/bin/bash
+
+echo &quot;=== Node Status ===&quot;
+kubectl get nodes
+
+echo -e &quot;\n=== Node Conditions ===&quot;
+for node in $(kubectl get nodes -o name); do
+  echo &quot;$node:&quot;
+  kubectl get $node -o jsonpath=&#39;{range .status.conditions[*]}{.type}={.status} {end}&#39; &amp;&amp; echo
+done
+
+echo -e &quot;\n=== Control Plane Pods ===&quot;
+kubectl get pods -n kube-system | grep -E &quot;kube-apiserver|kube-controller|kube-scheduler|etcd&quot;
+
+echo -e &quot;\n=== API Server Health ===&quot;
+kubectl get --raw /healthz &amp;&amp; echo &quot; OK&quot; || echo &quot; FAILED&quot;
+
+echo -e &quot;\n=== Pending Pods ===&quot;
+kubectl get pods --all-namespaces --field-selector=status.phase=Pending
+
+echo -e &quot;\n=== CrashLoopBackOff Pods ===&quot;
+kubectl get pods --all-namespaces | grep CrashLoopBackOff || echo &quot;None&quot;
+
+echo -e &quot;\n=== Node Resource Usage ===&quot;
+kubectl top nodes 2&gt;/dev/null || echo &quot;metrics-server not available&quot;
+</code></pre>
+<h2>Common Issues and Solutions</h2>
+<h3>Node NotReady</h3>
+<p><strong>Symptoms:</strong></p>
+<pre><code>NAME      STATUS     ROLES    AGE   VERSION
+node-1    NotReady   &lt;none&gt;   5d    v1.28.0
+</code></pre>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl describe node node-1
+# Look for:
+# - Network issues
+# - kubelet not running
+# - Resource pressure
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Check kubelet service: <code>systemctl status kubelet</code></li>
+<li>Check network connectivity</li>
+<li>Check resource pressure (memory, disk)</li>
+<li>Review kubelet logs</li>
+</ol>
+<h3>Memory/Disk Pressure</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Node condition shows <code>MemoryPressure=True</code> or <code>DiskPressure=True</code></li>
+<li>Pods can&#39;t be scheduled</li>
+<li>Existing pods might be evicted</li>
+</ul>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl describe node &lt;node-name&gt; | grep -A 2 &quot;Pressure&quot;
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Free up disk space</li>
+<li>Add more memory or nodes</li>
+<li>Clean up unused images: <code>docker system prune</code> (if using Docker)</li>
+<li>Remove unused volumes</li>
+</ol>
+<h3>Control Plane Issues</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>API server not responding</li>
+<li><code>kubectl</code> commands fail</li>
+<li>Components showing as unavailable</li>
+</ul>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl get pods -n kube-system
+kubectl logs -n kube-system kube-apiserver-&lt;node&gt;
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Restart control plane components</li>
+<li>Check etcd health (if self-hosted)</li>
+<li>Verify network connectivity between components</li>
+<li>Check logs for errors</li>
+</ol>
+<h3>High Resource Usage</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Node showing high CPU/memory usage</li>
+<li>Pods being throttled</li>
+<li>Slow application performance</li>
+</ul>
+<p><strong>Check:</strong></p>
+<pre><code class="language-bash">kubectl top nodes
+kubectl top pods --all-namespaces --sort-by=cpu
+</code></pre>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Identify resource-heavy pods</li>
+<li>Add resource limits to pods</li>
+<li>Scale cluster horizontally</li>
+<li>Optimize application resource usage</li>
+</ol>
+<h2>Regular Health Check Schedule</h2>
+<p><strong>Daily:</strong></p>
+<ul>
+<li>Quick node status check</li>
+<li>Pending/CrashLoopBackOff pods</li>
+</ul>
+<p><strong>Weekly:</strong></p>
+<ul>
+<li>Full cluster health check</li>
+<li>Resource usage review</li>
+<li>Control plane component status</li>
+</ul>
+<p><strong>Monthly:</strong></p>
+<ul>
+<li>Capacity planning review</li>
+<li>Node condition deep dive</li>
+<li>Historical trend analysis</li>
+</ul>
+<h2>Monitoring Tools</h2>
+<p>While manual checks are important, consider setting up:</p>
+<ol>
+<li><strong>Prometheus + Grafana</strong>: Comprehensive metrics and alerting</li>
+<li><strong>kubectl-who-can</strong>: Audit permissions</li>
+<li><strong>kube-score</strong>: Static analysis of YAML files</li>
+<li><strong>Popeye</strong>: Kubernetes cluster sanitizer</li>
+</ol>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Check nodes first</strong> - They&#39;re the foundation of your cluster</li>
+<li><strong>Monitor conditions</strong> - They provide early warning signs</li>
+<li><strong>Watch control plane</strong> - If it&#39;s unhealthy, nothing works</li>
+<li><strong>Track resource usage</strong> - Prevent capacity issues</li>
+<li><strong>Automate checks</strong> - Regular automated health checks catch issues early</li>
+</ol>
+<p>A healthy cluster is the foundation for reliable applications. Regular health checks help you catch and fix issues before they impact your users!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

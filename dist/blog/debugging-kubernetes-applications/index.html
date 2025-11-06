@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Debugging Kubernetes Applications: Common Issues and Solutions | Kubernetes Community</title>
+    <meta name="description" content="A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/blog/debugging-kubernetes-applications" />
+    <meta property="og:title" content="Debugging Kubernetes Applications: Common Issues and Solutions | Kubernetes Community" />
+    <meta property="og:description" content="A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips." />
+    <meta property="og:url" content="https://managekubernetes.com/blog/debugging-kubernetes-applications" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Debugging Kubernetes Applications: Common Issues and Solutions",
+      "description": "A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips.",
+      "url": "https://managekubernetes.com/blog/debugging-kubernetes-applications",
+      "datePublished": "2025-11-06T09:00:53.575Z",
+      "dateModified": "2025-11-06T09:00:53.577Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/blog/debugging-kubernetes-applications"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Blog"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://managekubernetes.com/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Debugging Kubernetes Applications: Common Issues and Solutions",
+          "item": "https://managekubernetes.com/blog/debugging-kubernetes-applications"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Debugging Kubernetes Applications: Common Issues and Solutions</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Debugging Kubernetes Applications: Common Issues and Solutions</h1>
+        <article class="markdown-content max-w-none"><p><img src="/images/blog-debugging.svg" alt="Debugging Kubernetes Applications"></p>
+<h1>Debugging Kubernetes Applications: Common Issues and Solutions</h1>
+<p>Debugging applications running in Kubernetes can be challenging, but with the right tools and techniques, you can quickly identify and resolve issues. This guide covers common problems and their solutions.</p>
+<h2>Common Debugging Scenarios</h2>
+<h3>Pods Not Starting</h3>
+<p><strong>Symptoms</strong>: Pods stuck in <code>Pending</code> or <code>ContainerCreating</code> state.</p>
+<p><strong>Debugging steps</strong>:</p>
+<ol>
+<li>Check pod status:</li>
+</ol>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<ol start="2">
+<li>Check node resources:</li>
+</ol>
+<pre><code class="language-bash">kubectl top nodes
+kubectl describe node &lt;node-name&gt;
+</code></pre>
+<ol start="3">
+<li>Check events:</li>
+</ol>
+<pre><code class="language-bash">kubectl get events --sort-by=&#39;.lastTimestamp&#39;
+</code></pre>
+<p><strong>Common causes</strong>:</p>
+<ul>
+<li>Insufficient node resources</li>
+<li>Image pull errors</li>
+<li>Resource quota limits</li>
+<li>Node selectors not matching</li>
+</ul>
+<h3>Pods Crashing or Restarting</h3>
+<p><strong>Symptoms</strong>: Pods in <code>CrashLoopBackOff</code> state.</p>
+<p><strong>Debugging steps</strong>:</p>
+<ol>
+<li>Check pod logs:</li>
+</ol>
+<pre><code class="language-bash">kubectl logs &lt;pod-name&gt;
+kubectl logs &lt;pod-name&gt; --previous  # Previous container instance
+</code></pre>
+<ol start="2">
+<li>Execute into the pod:</li>
+</ol>
+<pre><code class="language-bash">kubectl exec -it &lt;pod-name&gt; -- /bin/sh
+</code></pre>
+<ol start="3">
+<li>Check container exit codes:</li>
+</ol>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<p><strong>Common causes</strong>:</p>
+<ul>
+<li>Application errors</li>
+<li>Missing environment variables</li>
+<li>Incorrect resource limits</li>
+<li>Health check failures</li>
+</ul>
+<h3>Services Not Accessible</h3>
+<p><strong>Symptoms</strong>: Can&#39;t reach services from other pods or external traffic.</p>
+<p><strong>Debugging steps</strong>:</p>
+<ol>
+<li>Verify service endpoints:</li>
+</ol>
+<pre><code class="language-bash">kubectl get endpoints &lt;service-name&gt;
+</code></pre>
+<ol start="2">
+<li>Check service selector:</li>
+</ol>
+<pre><code class="language-bash">kubectl get svc &lt;service-name&gt; -o yaml
+</code></pre>
+<ol start="3">
+<li>Test connectivity:</li>
+</ol>
+<pre><code class="language-bash">kubectl run -it --rm debug --image=busybox --restart=Never -- wget -O- &lt;service-name&gt;
+</code></pre>
+<p><strong>Common causes</strong>:</p>
+<ul>
+<li>Selector mismatch between service and pods</li>
+<li>Port configuration errors</li>
+<li>Network policies blocking traffic</li>
+</ul>
+<h3>Application Performance Issues</h3>
+<p><strong>Symptoms</strong>: Slow response times, high latency, resource exhaustion.</p>
+<p><strong>Debugging steps</strong>:</p>
+<ol>
+<li>Check resource usage:</li>
+</ol>
+<pre><code class="language-bash">kubectl top pods
+kubectl top pods --containers
+</code></pre>
+<ol start="2">
+<li>Analyze metrics:</li>
+</ol>
+<pre><code class="language-bash">kubectl get --raw /apis/metrics.k8s.io/v1beta1/namespaces/&lt;namespace&gt;/pods
+</code></pre>
+<ol start="3">
+<li>Check for throttling:</li>
+</ol>
+<pre><code class="language-bash">kubectl describe pod &lt;pod-name&gt; | grep -i throttl
+</code></pre>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Increase resource requests and limits</li>
+<li>Optimize application code</li>
+<li>Implement caching strategies</li>
+<li>Use horizontal pod autoscaling</li>
+</ul>
+<h2>Essential Debugging Commands</h2>
+<h3>Get Detailed Pod Information</h3>
+<pre><code class="language-bash">kubectl get pod &lt;pod-name&gt; -o yaml
+kubectl describe pod &lt;pod-name&gt;
+</code></pre>
+<h3>View Logs</h3>
+<pre><code class="language-bash"># Current logs
+kubectl logs &lt;pod-name&gt;
+
+# Follow logs
+kubectl logs -f &lt;pod-name&gt;
+
+# Logs from all containers
+kubectl logs &lt;pod-name&gt; --all-containers=true
+
+# Logs from specific container
+kubectl logs &lt;pod-name&gt; -c &lt;container-name&gt;
+</code></pre>
+<h3>Execute Commands in Pods</h3>
+<pre><code class="language-bash">kubectl exec &lt;pod-name&gt; -- &lt;command&gt;
+kubectl exec -it &lt;pod-name&gt; -- /bin/bash
+</code></pre>
+<h3>Check Events</h3>
+<pre><code class="language-bash">kubectl get events --all-namespaces
+kubectl get events -n &lt;namespace&gt; --sort-by=&#39;.lastTimestamp&#39;
+</code></pre>
+<h3>Inspect Resources</h3>
+<pre><code class="language-bash">kubectl get all -n &lt;namespace&gt;
+kubectl get pods -o wide
+kubectl get pods --show-labels
+</code></pre>
+<h2>Debugging Tools</h2>
+<h3>kubectl Debug</h3>
+<p>Kubectl debug allows you to create debugging sessions in running pods:</p>
+<pre><code class="language-bash">kubectl debug &lt;pod-name&gt; -it --image=busybox --target=&lt;container-name&gt;
+</code></pre>
+<h3>Ephemeral Containers</h3>
+<p>Use ephemeral containers to debug running pods without modifying the original pod spec:</p>
+<pre><code class="language-bash">kubectl debug &lt;pod-name&gt; -it --image=busybox --target=&lt;container-name&gt;
+</code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Enable detailed logging</strong>: Configure log levels appropriately</li>
+<li><strong>Use health checks</strong>: Implement liveness and readiness probes</li>
+<li><strong>Monitor metrics</strong>: Set up Prometheus and Grafana for observability</li>
+<li><strong>Document common issues</strong>: Keep a runbook of known problems and solutions</li>
+<li><strong>Use structured logging</strong>: Makes log analysis easier</li>
+</ol>
+<h2>Related Resources</h2>
+<ul>
+<li><a href="/learn/basic-troubleshooting">Basic Troubleshooting Commands</a></li>
+<li><a href="/ops/monitor-pods">Monitor Pods &amp; Resources</a></li>
+<li><a href="/ops/check-cluster-health">Check Cluster Health</a></li>
+</ul>
+<h2>Conclusion</h2>
+<p>Effective debugging in Kubernetes requires understanding the different layers (pods, services, nodes) and using the right tools. Start with basic commands like <code>kubectl describe</code> and <code>kubectl logs</code>, then gradually expand your debugging toolkit.</p>
+<p>Remember: Most issues can be resolved by carefully examining pod status, logs, and events.</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>

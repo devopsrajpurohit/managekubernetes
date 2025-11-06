@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Performance &amp; Cost Insights | Kubernetes Community</title>
+    <meta name="description" content="Right-size requests/limits, spot waste, and keep latency predictable." />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://managekubernetes.com/ops/cost-optimization" />
+    <meta property="og:title" content="Performance &amp; Cost Insights | Kubernetes Community" />
+    <meta property="og:description" content="Right-size requests/limits, spot waste, and keep latency predictable." />
+    <meta property="og:url" content="https://managekubernetes.com/ops/cost-optimization" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Kubernetes Community" />
+    <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Performance &amp; Cost Insights",
+      "description": "Right-size requests/limits, spot waste, and keep latency predictable.",
+      "url": "https://managekubernetes.com/ops/cost-optimization",
+      "datePublished": "2025-11-06T09:00:53.615Z",
+      "dateModified": "2025-11-06T09:00:53.615Z",
+      "author": {
+        "@type": "Organization",
+        "name": "Kubernetes Community"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Kubernetes Community",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://managekubernetes.com/images/hero.svg"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://managekubernetes.com/ops/cost-optimization"
+      },
+      "inLanguage": "en-US",
+      "isAccessibleForFree": true,
+      "articleSection": "Day-2 Operations"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://managekubernetes.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Day-2 Operations",
+          "item": "https://managekubernetes.com/#day2"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Performance & Cost Insights",
+          "item": "https://managekubernetes.com/ops/cost-optimization"
+        }
+      ]
+    }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
+      .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
+      .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
+      .markdown-content p { margin-top: 1.25em; margin-bottom: 1.25em; }
+      .markdown-content ul, .markdown-content ol { margin-top: 1.25em; margin-bottom: 1.25em; padding-left: 1.625em; }
+      .markdown-content code { background-color: rgb(241 245 249); color: rgb(51 65 85); padding: 0.125em 0.25em; border-radius: 0.25rem; font-size: 0.875em; }
+      .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
+      .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
+      .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content img { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="min-h-screen bg-white">
+      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
+          <a href="/" class="hover:text-indigo-700">Home</a>
+          <span>/</span>
+          <span class="text-slate-800 font-medium">Performance & Cost Insights</span>
+        </nav>
+        <h1 class="text-4xl font-bold text-slate-900 mb-6">Performance &amp; Cost Insights</h1>
+        <article class="markdown-content max-w-none"><h1>Performance &amp; Cost Insights</h1>
+<p>Optimizing for performance and cost in Kubernetes requires balancing resource allocation, identifying waste, and ensuring predictable latency. This guide shows you how to right-size your workloads and reduce costs without sacrificing performance.</p>
+<h2>Understanding Resource Requests and Limits</h2>
+<h3>Requests vs Limits</h3>
+<p><strong>Requests:</strong></p>
+<ul>
+<li>Guaranteed minimum resources</li>
+<li>Used by scheduler to place pods</li>
+<li>Reserved for the pod</li>
+<li><strong>Cost impact</strong>: Nodes need capacity for requests</li>
+</ul>
+<p><strong>Limits:</strong></p>
+<ul>
+<li>Maximum resources pod can use</li>
+<li>Throttling occurs if exceeded</li>
+<li>OOMKilled if memory limit exceeded</li>
+<li><strong>Cost impact</strong>: Less direct, but affects node density</li>
+</ul>
+<h3>The Right-Sizing Process</h3>
+<ol>
+<li><p><strong>Baseline Measurement</strong></p>
+<pre><code class="language-bash"># Monitor actual usage over time
+kubectl top pods --all-namespaces --containers
+</code></pre>
+</li>
+<li><p><strong>Analyze Usage Patterns</strong></p>
+<ul>
+<li>Average usage (set requests)</li>
+<li>Peak usage (set limits)</li>
+<li>Add 20-30% buffer for limits</li>
+</ul>
+</li>
+<li><p><strong>Apply Changes Gradually</strong></p>
+<ul>
+<li>Start with non-critical workloads</li>
+<li>Monitor for issues</li>
+<li>Adjust based on feedback</li>
+</ul>
+</li>
+<li><p><strong>Continuous Optimization</strong></p>
+<ul>
+<li>Review monthly</li>
+<li>Adjust for traffic patterns</li>
+<li>Remove unused resources</li>
+</ul>
+</li>
+</ol>
+<h2>Identifying Waste</h2>
+<h3>1. Over-Provisioned Pods</h3>
+<p><strong>Signs:</strong></p>
+<ul>
+<li>Actual usage &lt;&lt; requests</li>
+<li>CPU throttling rare or never</li>
+<li>Memory usage well below limits</li>
+</ul>
+<p><strong>How to find:</strong></p>
+<pre><code class="language-bash"># Compare requests vs actual usage
+kubectl top pods --all-namespaces
+kubectl describe pod &lt;pod-name&gt; | grep -A 2 &quot;Requests\|Limits&quot;
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code>Pod: web-app-xyz
+Requests: CPU 1000m, Memory 1Gi
+Actual:    CPU 50m,   Memory 128Mi
+Waste:     95% CPU, 87% Memory
+</code></pre>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-yaml">resources:
+  requests:
+    cpu: &quot;100m&quot;    # Down from 1000m
+    memory: &quot;256Mi&quot; # Down from 1Gi
+  limits:
+    cpu: &quot;500m&quot;     # Still have headroom
+    memory: &quot;512Mi&quot; # But not excessive
+</code></pre>
+<h3>2. Idle Pods</h3>
+<p><strong>Signs:</strong></p>
+<ul>
+<li>Pods with zero or near-zero usage</li>
+<li>High replica counts with low traffic</li>
+<li>Pods that never receive requests</li>
+</ul>
+<p><strong>How to find:</strong></p>
+<pre><code class="language-bash"># Pods with zero resource usage
+kubectl top pods --all-namespaces | awk &#39;$3==0 &amp;&amp; $4==0&#39;
+
+# Low-traffic services
+kubectl get hpa --all-namespaces
+# Check if min replicas &gt; actual needed
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Reduce replica count</li>
+<li>Use HPA with lower min replicas</li>
+<li>Consider removing unused services</li>
+</ul>
+<h3>3. Zombie Resources</h3>
+<p><strong>Signs:</strong></p>
+<ul>
+<li>Old deployments still running</li>
+<li>Unused ConfigMaps/Secrets</li>
+<li>Orphaned PVCs</li>
+<li>Services pointing to nothing</li>
+</ul>
+<p><strong>How to find:</strong></p>
+<pre><code class="language-bash"># Find unused deployments
+kubectl get deployments --all-namespaces
+# Check if any have zero desired replicas
+
+# Find unused PVCs
+kubectl get pvc --all-namespaces
+# Compare with actual pod usage
+
+# Find services without endpoints
+kubectl get svc --all-namespaces -o wide
+kubectl get endpoints --all-namespaces
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Delete unused resources</li>
+<li>Clean up old PVCs</li>
+<li>Remove orphaned services</li>
+</ul>
+<h3>4. Inefficient Node Utilization</h3>
+<p><strong>Signs:</strong></p>
+<ul>
+<li>Nodes with low resource usage</li>
+<li>Many small nodes vs fewer large ones</li>
+<li>High ratio of system overhead</li>
+</ul>
+<p><strong>How to find:</strong></p>
+<pre><code class="language-bash"># Node resource usage
+kubectl top nodes
+
+# Check node capacity
+kubectl describe nodes | grep -A 5 &quot;Capacity\|Allocatable&quot;
+
+# Calculate utilization
+# (Allocatable - Available) / Allocatable
+</code></pre>
+<p><strong>Target utilization:</strong></p>
+<ul>
+<li>CPU: 70-80%</li>
+<li>Memory: 70-80%</li>
+<li>Below 50% = waste</li>
+<li>Above 90% = risk of issues</li>
+</ul>
+<h2>Right-Sizing Strategies</h2>
+<h3>Strategy 1: Start Conservative, Scale Up</h3>
+<p><strong>Initial deployment:</strong></p>
+<pre><code class="language-yaml">resources:
+  requests:
+    cpu: &quot;100m&quot;
+    memory: &quot;128Mi&quot;
+  limits:
+    cpu: &quot;500m&quot;
+    memory: &quot;512Mi&quot;
+</code></pre>
+<p><strong>After monitoring:</strong></p>
+<ul>
+<li>Adjust based on actual usage</li>
+<li>Scale up if hitting limits frequently</li>
+<li>Scale down if consistently low</li>
+</ul>
+<h3>Strategy 2: Use HPA with Resource Metrics</h3>
+<pre><code class="language-yaml">apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Automatically scales based on usage</li>
+<li>Reduces waste during low traffic</li>
+<li>Handles traffic spikes</li>
+</ul>
+<h3>Strategy 3: Vertical Pod Autoscaler (VPA)</h3>
+<p><strong>VPA automatically adjusts resource requests:</strong></p>
+<pre><code class="language-yaml">apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: web-app-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-app
+  updatePolicy:
+    updateMode: &quot;Auto&quot;  # or &quot;Off&quot;, &quot;Initial&quot;
+  resourcePolicy:
+    containerPolicies:
+    - containerName: &#39;*&#39;
+      minAllowed:
+        cpu: 50m
+        memory: 64Mi
+      maxAllowed:
+        cpu: 2
+        memory: 4Gi
+</code></pre>
+<p><strong>Use when:</strong></p>
+<ul>
+<li>Workload patterns vary</li>
+<li>Manual optimization is difficult</li>
+<li>You want automatic right-sizing</li>
+</ul>
+<h2>Performance Optimization</h2>
+<h3>1. CPU Throttling Prevention</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>Pods hitting CPU limits</li>
+<li>Throttling causing slow responses</li>
+<li>Poor user experience</li>
+</ul>
+<p><strong>Detection:</strong></p>
+<pre><code class="language-bash"># Check throttling (requires metrics)
+# Look for pods with CPU usage at limit
+kubectl top pods --all-namespaces
+
+# Check events for throttling
+kubectl get events --all-namespaces | grep -i throttle
+</code></pre>
+<p><strong>Solution:</strong></p>
+<pre><code class="language-yaml">resources:
+  limits:
+    cpu: &quot;1000m&quot;  # Increase limit
+    # Or remove limit if trust the app
+</code></pre>
+<h3>2. Memory Leak Prevention</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>Memory usage gradually increasing</li>
+<li>Eventually OOMKilled</li>
+<li>Frequent restarts</li>
+</ul>
+<p><strong>Detection:</strong></p>
+<pre><code class="language-bash"># Monitor memory trends
+kubectl top pods -w
+
+# Check for OOMKilled
+kubectl describe pod &lt;pod-name&gt; | grep -i oom
+kubectl get events | grep OOMKilled
+</code></pre>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>Fix memory leak in application</li>
+<li>Increase memory limit temporarily</li>
+<li>Set appropriate memory limits to catch early</li>
+</ul>
+<h3>3. Network Latency Optimization</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>High latency between services</li>
+<li>Slow service-to-service communication</li>
+</ul>
+<p><strong>Optimizations:</strong></p>
+<ul>
+<li>Use NodePort/LoadBalancer for external traffic</li>
+<li>Keep services in same namespace (faster DNS)</li>
+<li>Use service mesh for optimization (Istio, Linkerd)</li>
+<li>Optimize pod placement (affinity rules)</li>
+</ul>
+<h3>4. Storage Performance</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>Slow disk I/O</li>
+<li>High latency on storage operations</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Use SSD-backed storage classes</li>
+<li>Optimize database queries</li>
+<li>Use local storage for hot data</li>
+<li>Cache frequently accessed data</li>
+</ul>
+<h2>Cost Optimization Techniques</h2>
+<h3>1. Use Spot Instances</h3>
+<p><strong>For:</strong></p>
+<ul>
+<li>Stateless workloads</li>
+<li>Batch jobs</li>
+<li>Non-critical services</li>
+<li>Development/staging</li>
+</ul>
+<p><strong>Configuration:</strong></p>
+<pre><code class="language-yaml"># Node selector for spot instances
+nodeSelector:
+  node.kubernetes.io/instance-type: spot
+</code></pre>
+<h3>2. Cluster Autoscaling</h3>
+<p><strong>Automatically add/remove nodes:</strong></p>
+<ul>
+<li>Scales down during low usage</li>
+<li>Scales up during peak</li>
+<li>Reduces idle node costs</li>
+</ul>
+<h3>3. Resource Quotas</h3>
+<p><strong>Prevent resource waste:</strong></p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: team-quota
+spec:
+  hard:
+    requests.cpu: &quot;10&quot;
+    requests.memory: 20Gi
+    limits.cpu: &quot;20&quot;
+    limits.memory: 40Gi
+</code></pre>
+<h3>4. Right-Size Nodes</h3>
+<p><strong>Choose appropriate instance types:</strong></p>
+<ul>
+<li>Match workload requirements</li>
+<li>Avoid over-provisioned nodes</li>
+<li>Consider reserved instances for stable workloads</li>
+</ul>
+<h3>5. Image Optimization</h3>
+<p><strong>Reduce:</strong></p>
+<ul>
+<li>Image pull time</li>
+<li>Storage costs</li>
+<li>Network transfer</li>
+</ul>
+<p><strong>Techniques:</strong></p>
+<ul>
+<li>Multi-stage builds</li>
+<li>Use distroless/minimal base images</li>
+<li>Remove unnecessary packages</li>
+<li>Use image layers efficiently</li>
+</ul>
+<h2>Monitoring and Metrics</h2>
+<h3>Key Metrics to Track</h3>
+<p><strong>Resource Utilization:</strong></p>
+<ul>
+<li>CPU usage vs requests/limits</li>
+<li>Memory usage vs requests/limits</li>
+<li>Network I/O</li>
+<li>Storage I/O</li>
+</ul>
+<p><strong>Cost Metrics:</strong></p>
+<ul>
+<li>Cost per pod</li>
+<li>Cost per namespace</li>
+<li>Cost per service</li>
+<li>Node utilization</li>
+</ul>
+<p><strong>Performance Metrics:</strong></p>
+<ul>
+<li>Response time (p50, p95, p99)</li>
+<li>Error rate</li>
+<li>Throughput</li>
+<li>Request latency</li>
+</ul>
+<h3>Tools for Cost Analysis</h3>
+<p><strong>kubectl-cost:</strong></p>
+<pre><code class="language-bash"># Install
+kubectl krew install cost
+
+# View costs
+kubectl cost namespace --show-cpu --show-memory
+kubectl cost pod --show-cpu --show-memory
+</code></pre>
+<p><strong>Cloud Provider Tools:</strong></p>
+<ul>
+<li>AWS Cost Explorer</li>
+<li>GCP Cost Management</li>
+<li>Azure Cost Management</li>
+</ul>
+<p><strong>Third-Party:</strong></p>
+<ul>
+<li>Kubecost</li>
+<li>OpenCost</li>
+<li>CloudHealth</li>
+</ul>
+<h2>Right-Sizing Checklist</h2>
+<h3>Initial Deployment</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Set conservative requests</li>
+<li><input disabled="" type="checkbox"> Set limits with headroom</li>
+<li><input disabled="" type="checkbox"> Monitor for 24-48 hours</li>
+<li><input disabled="" type="checkbox"> Review usage patterns</li>
+</ul>
+<h3>Optimization Phase</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Identify over-provisioned pods</li>
+<li><input disabled="" type="checkbox"> Identify under-provisioned pods</li>
+<li><input disabled="" type="checkbox"> Check for idle resources</li>
+<li><input disabled="" type="checkbox"> Review node utilization</li>
+<li><input disabled="" type="checkbox"> Calculate waste percentage</li>
+</ul>
+<h3>Implementation</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Adjust requests based on averages</li>
+<li><input disabled="" type="checkbox"> Adjust limits based on peaks</li>
+<li><input disabled="" type="checkbox"> Add HPA for dynamic scaling</li>
+<li><input disabled="" type="checkbox"> Consider VPA for automatic tuning</li>
+<li><input disabled="" type="checkbox"> Set up monitoring/alerting</li>
+</ul>
+<h3>Continuous Improvement</h3>
+<ul>
+<li><input disabled="" type="checkbox"> Monthly resource review</li>
+<li><input disabled="" type="checkbox"> Quarterly cost analysis</li>
+<li><input disabled="" type="checkbox"> Remove unused resources</li>
+<li><input disabled="" type="checkbox"> Optimize based on traffic patterns</li>
+<li><input disabled="" type="checkbox"> Review and update runbooks</li>
+</ul>
+<h2>Example: Right-Sizing Workflow</h2>
+<h3>Step 1: Baseline</h3>
+<pre><code class="language-bash"># Deploy with conservative resources
+kubectl apply -f app.yaml
+
+# Monitor for 48 hours
+kubectl top pods -w
+</code></pre>
+<h3>Step 2: Analyze</h3>
+<pre><code class="language-bash"># Get usage stats
+kubectl top pods --all-namespaces &gt; usage.txt
+
+# Compare requests vs actual
+# Identify waste
+</code></pre>
+<h3>Step 3: Optimize</h3>
+<pre><code class="language-yaml"># Adjust resources
+resources:
+  requests:
+    cpu: &quot;150m&quot;    # Based on average + buffer
+    memory: &quot;256Mi&quot; # Based on average + buffer
+  limits:
+    cpu: &quot;500m&quot;     # Based on peak + buffer
+    memory: &quot;512Mi&quot; # Based on peak + buffer
+</code></pre>
+<h3>Step 4: Validate</h3>
+<pre><code class="language-bash"># Deploy changes
+kubectl apply -f app.yaml
+
+# Monitor for issues
+kubectl get events --watch
+kubectl top pods -w
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Right-size based on actual usage</strong>, not guesses</li>
+<li><strong>Monitor continuously</strong> to catch drift</li>
+<li><strong>Use HPA/VPA</strong> for automatic optimization</li>
+<li><strong>Review regularly</strong> (monthly minimum)</li>
+<li><strong>Balance cost and performance</strong> - don&#39;t optimize one at expense of other</li>
+<li><strong>Start conservative</strong>, scale up if needed</li>
+<li><strong>Remove unused resources</strong> regularly</li>
+<li><strong>Use appropriate instance types</strong> for workloads</li>
+<li><strong>Monitor key metrics</strong> (CPU, memory, latency, cost)</li>
+<li><strong>Document decisions</strong> for future reference</li>
+</ol>
+<p>Cost optimization is an ongoing process. Start with the basics, measure everything, and continuously improve. Your cloud bill (and performance) will thank you!</p>
+</article>
+        
+        <!-- Footer with internal links for SEO -->
+        <footer class="mt-12 pt-8 border-t border-slate-200">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
+                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
+                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
+                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
+              <ul class="space-y-2 text-slate-600">
+                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
+                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
+                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+              </ul>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+    <!-- Pre-rendered HTML - no React needed for crawlers -->
+    <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
+    <noscript>
+      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+    </noscript>
+  </body>
+</html>
