@@ -87,10 +87,10 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
       "publisher": {
         "@type": "Organization",
         "name": "Kubernetes Community",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://managekubernetes.com/images/hero.svg"
-        }
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.managekubernetes.com/images/hero.svg"
+          }
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
@@ -197,12 +197,16 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
 }
 
 // Process markdown files
-// Normalize URL to always use non-www version
+// Normalize URL to always use www version
 function normalizeUrl(url) {
   if (!url) return url
-  return url.replace(/^https?:\/\/(www\.)?/, (match) => {
-    return match.replace('www.', '')
-  })
+  // Add www if not present
+  if (!url.includes('://www.')) {
+    return url.replace(/^https?:\/\//, (match) => {
+      return match + 'www.'
+    })
+  }
+  return url
 }
 
 function processMarkdownFiles() {
