@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import './index.css'
 import Landing from './pages/Landing.jsx'
 import Blog from './pages/Blog.jsx'
 import MarkdownPage from './components/MarkdownPage.jsx'

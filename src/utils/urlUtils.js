@@ -40,7 +40,11 @@ export function getCanonicalUrl() {
     
     // Always use www version, even if accessed via non-www
     // NEVER use window.location.origin - always hardcode www
-    const pathname = window.location.pathname || '/'
+    let pathname = window.location.pathname || '/'
+    // Normalize pathname: remove trailing slash except for root
+    if (pathname !== '/' && pathname.endsWith('/')) {
+      pathname = pathname.slice(0, -1)
+    }
     const baseUrl = 'https://www.managekubernetes.com'
     
     // Return normalized URL with www - this is ALWAYS www

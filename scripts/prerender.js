@@ -84,6 +84,7 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Kubernetes Community" />
     <link rel="icon" type="image/svg+xml" href="/images/kubernetes-logo.svg" />
+    <!-- Tailwind CSS will be bundled by Vite and included in the main CSS file -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -172,7 +173,6 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
       ]
     }
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body { font-family: system-ui, -apple-system, sans-serif; }
       .markdown-content { line-height: 1.75; color: rgb(15 23 42); }

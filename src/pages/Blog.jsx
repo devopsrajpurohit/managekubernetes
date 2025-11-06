@@ -110,7 +110,9 @@ export default function Blog() {
     }
     try {
       // Update canonical URL - normalized to www
-      const cleanUrl = getCanonicalUrl()
+      // Force the canonical URL to be /blog (not /)
+      const cleanUrl = 'https://www.managekubernetes.com/blog'
+      
       let canonical = document.querySelector('link[rel="canonical"]')
       if (!canonical) {
         canonical = document.createElement('link')
@@ -121,8 +123,14 @@ export default function Blog() {
       canonical.setAttribute('href', cleanUrl)
       canonical.href = cleanUrl
       
-      // Verify www is present
+      // Verify it's set correctly - force update if wrong
       const currentHref = canonical.getAttribute('href') || canonical.href
+      if (currentHref !== cleanUrl) {
+        canonical.setAttribute('href', cleanUrl)
+        canonical.href = cleanUrl
+      }
+      
+      // Verify www is present
       if (currentHref && !currentHref.includes('://www.')) {
         canonical.setAttribute('href', cleanUrl)
         canonical.href = cleanUrl
