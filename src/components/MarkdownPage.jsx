@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Facebook } from 'lucide-react'
 import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
+import { getCanonicalUrl } from '../utils/urlUtils.js'
 
 export default function MarkdownPage({ basePath, kind }) {
   const { slug } = useParams()
@@ -24,9 +25,9 @@ export default function MarkdownPage({ basePath, kind }) {
       trackMarkdownView(slug, kind)
     }
     
-    // Set canonical URL immediately when component mounts
+    // Set canonical URL immediately when component mounts (normalized to non-www)
     if (typeof window !== 'undefined') {
-      const cleanUrl = window.location.origin + window.location.pathname
+      const cleanUrl = getCanonicalUrl()
       let canonical = document.querySelector('link[rel="canonical"]')
       if (!canonical) {
         canonical = document.createElement('link')
@@ -325,8 +326,8 @@ export default function MarkdownPage({ basePath, kind }) {
           breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
           document.head.appendChild(breadcrumbScript)
           
-          // Update canonical URL
-          const cleanUrl = window.location.origin + window.location.pathname
+          // Update canonical URL (normalized to non-www)
+          const cleanUrl = getCanonicalUrl()
           let canonical = document.querySelector('link[rel="canonical"]')
           if (!canonical) {
             canonical = document.createElement('link')
@@ -335,13 +336,13 @@ export default function MarkdownPage({ basePath, kind }) {
           }
           canonical.href = cleanUrl
           
-          // Update Open Graph meta tags
+          // Update Open Graph meta tags (also normalized)
           const ogTitle = document.querySelector('meta[property="og:title"]')
           const ogDesc = document.querySelector('meta[property="og:description"]')
           const ogUrl = document.querySelector('meta[property="og:url"]')
           if (ogTitle) ogTitle.setAttribute('content', `${title} | Kubernetes Community`)
           if (ogDesc) ogDesc.setAttribute('content', description || title)
-          if (ogUrl) ogUrl.setAttribute('content', window.location.origin + window.location.pathname)
+          if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
         }
         
         // Set the extracted HTML content

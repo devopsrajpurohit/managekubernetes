@@ -197,8 +197,16 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
 }
 
 // Process markdown files
+// Normalize URL to always use non-www version
+function normalizeUrl(url) {
+  if (!url) return url
+  return url.replace(/^https?:\/\/(www\.)?/, (match) => {
+    return match.replace('www.', '')
+  })
+}
+
 function processMarkdownFiles() {
-  const baseUrl = 'https://managekubernetes.com'
+  const baseUrl = normalizeUrl('https://managekubernetes.com')
   const contentDirs = [
     { dir: path.join(__dirname, '../public/content/blog'), route: '/blog', category: 'Blog' },
     { dir: path.join(__dirname, '../public/content/learn'), route: '/learn', category: 'Day-1 Basics' },
@@ -229,7 +237,7 @@ function processMarkdownFiles() {
       const title = data.title || slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
       const description = data.description || title
       const htmlContent = marked.parse(markdownContent)
-      const url = `${baseUrl}${route}/${slug}`
+      const url = normalizeUrl(`${baseUrl}${route}/${slug}`)
       const categoryName = route.includes('/blog') ? 'Blog' : route.includes('/learn') ? 'Day-1 Basics' : 'Day-2 Operations'
       
       // Create route directory

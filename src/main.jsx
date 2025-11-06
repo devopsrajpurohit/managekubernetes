@@ -6,6 +6,7 @@ import Blog from './pages/Blog.jsx'
 import MarkdownPage from './components/MarkdownPage.jsx'
 import { trackPageView } from './utils/analytics.js'
 import { setupAnalytics } from './utils/setupAnalytics.js'
+import { getCanonicalUrl } from './utils/urlUtils.js'
 
 // Setup analytics from environment variable
 setupAnalytics()
@@ -15,8 +16,8 @@ function PageTracker() {
   const location = useLocation()
 
   useEffect(() => {
-    // Update canonical URL immediately on route change
-    const cleanUrl = window.location.origin + window.location.pathname
+    // Update canonical URL immediately on route change (normalized to non-www)
+    const cleanUrl = getCanonicalUrl()
     let canonical = document.querySelector('link[rel="canonical"]')
     if (!canonical) {
       canonical = document.createElement('link')
@@ -25,7 +26,7 @@ function PageTracker() {
     }
     canonical.href = cleanUrl
     
-    // Update Open Graph URL
+    // Update Open Graph URL (also normalized)
     const ogUrl = document.querySelector('meta[property="og:url"]')
     if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     

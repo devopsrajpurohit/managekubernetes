@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Calendar, Clock } from 'lucide-react'
 import { trackPageView } from '../utils/analytics.js'
+import { getCanonicalUrl } from '../utils/urlUtils.js'
 
 // Blog posts metadata - in production, this could be fetched from an API or generated from markdown files
 const blogPosts = [
@@ -107,8 +108,8 @@ export default function Blog() {
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Explore our Kubernetes blog with in-depth tutorials, troubleshooting guides, and best practices for Kubernetes (K8s) container orchestration, kubectl commands, and production operations.')
     }
-    // Update canonical URL - use clean URL without query params or hash
-    const cleanUrl = window.location.origin + window.location.pathname
+    // Update canonical URL - normalized to non-www
+    const cleanUrl = getCanonicalUrl()
     let canonical = document.querySelector('link[rel="canonical"]')
     if (!canonical) {
       canonical = document.createElement('link')
@@ -116,7 +117,7 @@ export default function Blog() {
       document.head.appendChild(canonical)
     }
     canonical.href = cleanUrl
-    // Update Open Graph URL
+    // Update Open Graph URL (also normalized)
     const ogUrl = document.querySelector('meta[property="og:url"]')
     if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
     trackPageView('/blog', 'Kubernetes Blog | Kubernetes Community')
