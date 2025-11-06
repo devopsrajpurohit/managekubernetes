@@ -25,7 +25,16 @@ function PageTracker() {
         canonical.rel = 'canonical'
         document.head.appendChild(canonical)
       }
+      // Use setAttribute to ensure it's properly set
+      canonical.setAttribute('href', cleanUrl)
       canonical.href = cleanUrl
+      
+      // Verify www is present
+      const currentHref = canonical.getAttribute('href') || canonical.href
+      if (currentHref && !currentHref.includes('://www.')) {
+        canonical.setAttribute('href', cleanUrl)
+        canonical.href = cleanUrl
+      }
       
       // Update Open Graph URL (also normalized to www)
       const ogUrl = document.querySelector('meta[property="og:url"]')

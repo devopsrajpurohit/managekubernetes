@@ -36,10 +36,14 @@ export default function MarkdownPage({ basePath, kind }) {
           document.head.appendChild(canonical)
         }
         // Always set to normalized www URL
+        // Use setAttribute to ensure it's properly set
+        canonical.setAttribute('href', cleanUrl)
         canonical.href = cleanUrl
         
         // Verify it's set correctly (defensive check)
-        if (canonical.href && !canonical.href.includes('://www.')) {
+        const currentHref = canonical.getAttribute('href') || canonical.href
+        if (currentHref && !currentHref.includes('://www.')) {
+          canonical.setAttribute('href', cleanUrl)
           canonical.href = cleanUrl
         }
       }
@@ -370,10 +374,14 @@ export default function MarkdownPage({ basePath, kind }) {
             document.head.appendChild(canonical)
           }
           // Force update to ensure www version is always used
+          // Use setAttribute to ensure it's properly set
+          canonical.setAttribute('href', cleanUrl)
           canonical.href = cleanUrl
           
-          // Double-check: if somehow the URL doesn't have www, fix it
-          if (!canonical.href.includes('://www.')) {
+          // Triple-check: ensure www is always present
+          const currentHref = canonical.getAttribute('href') || canonical.href
+          if (currentHref && !currentHref.includes('://www.')) {
+            canonical.setAttribute('href', cleanUrl)
             canonical.href = cleanUrl
           }
           
