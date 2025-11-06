@@ -38,9 +38,11 @@ kubectl get events --sort-by='.lastTimestamp'
 
 **Common causes**:
 - Insufficient node resources
-- Image pull errors
+- [Image pull errors](/blog/troubleshooting-image-pull-errors)
 - Resource quota limits
 - Node selectors not matching
+
+For more details, see our guide on [troubleshooting pods in Pending state](/blog/troubleshooting-pods-pending-state).
 
 ### Pods Crashing or Restarting
 
@@ -69,6 +71,8 @@ kubectl describe pod <pod-name>
 - Missing environment variables
 - Incorrect resource limits
 - Health check failures
+
+Learn more about [troubleshooting CrashLoopBackOff pods](/blog/troubleshooting-pods-crashloopbackoff) and [understanding pod error states](/blog/troubleshooting-pods-error-state).
 
 ### Services Not Accessible
 
@@ -123,6 +127,8 @@ kubectl describe pod <pod-name> | grep -i throttl
 - Optimize application code
 - Implement caching strategies
 - Use horizontal pod autoscaling
+
+For memory-related issues, see our guide on [troubleshooting OOM killed pods](/blog/troubleshooting-pods-oom-killed). Learn about [monitoring pods](/ops/monitor-pods) and [cost optimization](/ops/cost-optimization) strategies.
 
 ## Essential Debugging Commands
 
@@ -192,16 +198,31 @@ kubectl debug <pod-name> -it --image=busybox --target=<container-name>
 ## Best Practices
 
 1. **Enable detailed logging**: Configure log levels appropriately
-2. **Use health checks**: Implement liveness and readiness probes
-3. **Monitor metrics**: Set up Prometheus and Grafana for observability
+2. **Use health checks**: Implement [liveness and readiness probes](/ops/probes) for better reliability
+3. **Monitor metrics**: Set up Prometheus and Grafana for observability. Learn about [monitoring pods](/ops/monitor-pods) and [smart alerts](/ops/smart-alerts)
 4. **Document common issues**: Keep a runbook of known problems and solutions
 5. **Use structured logging**: Makes log analysis easier
 
+For production deployments, follow our [Kubernetes best practices guide](/blog/kubernetes-best-practices) and [Day-2 operations checklist](/ops/day2-checklist).
+
 ## Related Resources
 
-- [Basic Troubleshooting Commands](/learn/basic-troubleshooting)
-- [Monitor Pods & Resources](/ops/monitor-pods)
-- [Check Cluster Health](/ops/check-cluster-health)
+### Learning Resources
+- [What is Kubernetes?](/learn/what-is-kubernetes) - Start with the basics
+- [Kubernetes Core Components](/learn/core-components) - Understand the architecture
+- [Basic Troubleshooting Commands](/learn/basic-troubleshooting) - Essential kubectl commands
+
+### Operations Guides
+- [Monitor Pods & Resources](/ops/monitor-pods) - Monitoring strategies
+- [Check Cluster Health](/ops/check-cluster-health) - Health check procedures
+- [Probes Configuration](/ops/probes) - Health check configuration
+
+### Troubleshooting Guides
+- [Troubleshooting Pods in Pending State](/blog/troubleshooting-pods-pending-state)
+- [Troubleshooting CrashLoopBackOff](/blog/troubleshooting-pods-crashloopbackoff)
+- [Troubleshooting Image Pull Errors](/blog/troubleshooting-image-pull-errors)
+- [Troubleshooting OOM Killed Pods](/blog/troubleshooting-pods-oom-killed)
+- [Troubleshooting Evicted Pods](/blog/troubleshooting-pods-evicted)
 
 ## Conclusion
 

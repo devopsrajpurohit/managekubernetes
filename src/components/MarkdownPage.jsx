@@ -10,7 +10,7 @@ export default function MarkdownPage({ basePath, kind }) {
   const location = useLocation()
   const [html, setHtml] = useState('<p>Loading…</p>')
   const [loading, setLoading] = useState(true)
-  const [metaData, setMetaData] = useState({ title: '', description: '' })
+  const [metaData, setMetaData] = useState({ title: '', description: '', image: '' })
   const [urlCopied, setUrlCopied] = useState(false)
   const [error, setError] = useState(null)
   
@@ -25,16 +25,16 @@ export default function MarkdownPage({ basePath, kind }) {
       trackMarkdownView(slug, kind)
     }
     
-    // Set canonical URL immediately when component mounts (normalized to non-www)
+    // Set canonical URL immediately when component mounts - match actual URL
     if (typeof window !== 'undefined') {
-      const cleanUrl = getCanonicalUrl()
+      const currentUrl = window.location.origin + window.location.pathname
       let canonical = document.querySelector('link[rel="canonical"]')
       if (!canonical) {
         canonical = document.createElement('link')
         canonical.rel = 'canonical'
         document.head.appendChild(canonical)
       }
-      canonical.href = cleanUrl
+      canonical.href = currentUrl
     }
   }, [slug, kind])
   
@@ -139,7 +139,7 @@ export default function MarkdownPage({ basePath, kind }) {
           throw new Error('Empty response')
         }
         
-        let title, description, articleHtml
+        let title, description, image, articleHtml
         
         if (isMarkdown) {
           // Fallback: Parse markdown
@@ -163,10 +163,12 @@ export default function MarkdownPage({ basePath, kind }) {
             })
             title = data.title || slug
             description = data.description || title
+            image = data.image || ''
             articleHtml = marked.parse(content)
           } else {
             title = slug
             description = slug
+            image = ''
             articleHtml = marked.parse(responseText)
           }
           console.log('Loaded from markdown (fallback)')
@@ -210,19 +212,23 @@ export default function MarkdownPage({ basePath, kind }) {
               })
               title = data.title || slug
               description = data.description || title
+              image = data.image || ''
               articleHtml = marked.parse(content)
             } else {
               title = slug
               description = slug
+              image = ''
               articleHtml = marked.parse(mdText)
             }
             console.log('Loaded from markdown (fallback after detecting React HTML)')
           } else if (hasArticle) {
             // This is actual pre-rendered HTML
             const titleElement = doc.querySelector('title')
-            title = titleElement ? titleElement.textContent.replace(' | Kubernetes Community', '') : slug
+            title = titleElement ? titleElement.textContent.replace(' | Kubernetes Community', '').replace(' | K8s Community', '') : slug
             const metaDesc = doc.querySelector('meta[name="description"]')
             description = metaDesc ? metaDesc.getAttribute('content') : ''
+            const ogImage = doc.querySelector('meta[property="og:image"]')
+            image = ogImage ? ogImage.getAttribute('content') : ''
             articleHtml = articleElement.innerHTML
             
             console.log('Loaded from pre-rendered HTML')
@@ -231,20 +237,38 @@ export default function MarkdownPage({ basePath, kind }) {
           }
         }
         
-        console.log('Content loaded:', { title, description, htmlLength: articleHtml.length })
+        console.log('Content loaded:', { title, description, image, htmlLength: articleHtml.length })
         
-        setMetaData({ title, description })
+        setMetaData({ title, description, image })
         
-        // Update document title
+        // Update document title - keep it under 60 characters for SEO
         if (title) {
-          document.title = `${title} | Kubernetes Community`
+          // Shorten title if too long (max 60 chars recommended)
+          const shortTitle = title.length > 50 ? title.substring(0, 47) + '...' : title
+          document.title = `${shortTitle} | K8s Community`
         }
         
         // Update meta description
         const metaDescElement = document.querySelector('meta[name="description"]')
         if (metaDescElement && description) {
-          metaDescElement.setAttribute('content', description)
+          // Ensure description is under 160 characters
+          const shortDesc = description.length > 160 ? description.substring(0, 157) + '...' : description
+          metaDescElement.setAttribute('content', shortDesc)
         }
+        
+        // Add meta keywords if missing
+        let metaKeywords = document.querySelector('meta[name="keywords"]')
+        if (!metaKeywords) {
+          metaKeywords = document.createElement('meta')
+          metaKeywords.name = 'keywords'
+          document.head.appendChild(metaKeywords)
+        }
+        const keywords = kind === 'blog' 
+          ? 'kubernetes, k8s, debugging kubernetes, kubernetes troubleshooting, kubernetes applications, kubectl, container orchestration'
+          : kind === 'learn'
+          ? 'kubernetes, k8s, learn kubernetes, kubernetes tutorial, kubernetes guide, container orchestration'
+          : 'kubernetes, k8s, kubernetes operations, kubernetes monitoring, kubernetes production, container orchestration'
+        metaKeywords.setAttribute('content', keywords)
         
         // Add Article structured data for better SEO
         if (typeof window !== 'undefined' && title) {
@@ -326,23 +350,86 @@ export default function MarkdownPage({ basePath, kind }) {
           breadcrumbScript.textContent = JSON.stringify(breadcrumbSchema)
           document.head.appendChild(breadcrumbScript)
           
-          // Update canonical URL (normalized to non-www)
-          const cleanUrl = getCanonicalUrl()
+          // Update canonical URL - match actual URL to fix SEO audit issue
+          const currentUrl = window.location.origin + window.location.pathname
           let canonical = document.querySelector('link[rel="canonical"]')
           if (!canonical) {
             canonical = document.createElement('link')
             canonical.rel = 'canonical'
             document.head.appendChild(canonical)
           }
-          canonical.href = cleanUrl
+          canonical.href = currentUrl
           
-          // Update Open Graph meta tags (also normalized)
-          const ogTitle = document.querySelector('meta[property="og:title"]')
-          const ogDesc = document.querySelector('meta[property="og:description"]')
-          const ogUrl = document.querySelector('meta[property="og:url"]')
-          if (ogTitle) ogTitle.setAttribute('content', `${title} | Kubernetes Community`)
-          if (ogDesc) ogDesc.setAttribute('content', description || title)
-          if (ogUrl) ogUrl.setAttribute('content', cleanUrl)
+          // Get image URL for OG and Twitter - use from frontmatter or fallback
+          let imageUrl
+          if (image && image.trim()) {
+            // If image path doesn't start with http, make it absolute
+            imageUrl = image.startsWith('http') 
+              ? image 
+              : `${window.location.origin}${image.startsWith('/') ? image : '/' + image}`
+          } else if (kind === 'blog') {
+            // Try to infer from slug
+            imageUrl = `${window.location.origin}/images/blog-${slug}.svg`
+          } else {
+            imageUrl = `${window.location.origin}/images/hero.svg`
+          }
+          
+          // Update or create Open Graph meta tags
+          const updateOrCreateMeta = (property, content) => {
+            let meta = document.querySelector(`meta[property="${property}"]`)
+            if (!meta) {
+              meta = document.createElement('meta')
+              meta.setAttribute('property', property)
+              document.head.appendChild(meta)
+            }
+            meta.setAttribute('content', content)
+          }
+          
+          // Shorten title for OG (max 60 chars)
+          const ogTitleText = title.length > 55 ? title.substring(0, 52) + '...' : title
+          updateOrCreateMeta('og:title', ogTitleText)
+          
+          // Shorten description for OG (max 200 chars)
+          const ogDescText = (description || title).length > 200 
+            ? (description || title).substring(0, 197) + '...' 
+            : (description || title)
+          updateOrCreateMeta('og:description', ogDescText)
+          updateOrCreateMeta('og:url', currentUrl)
+          updateOrCreateMeta('og:type', 'article')
+          updateOrCreateMeta('og:image', imageUrl)
+          updateOrCreateMeta('og:image:secure_url', imageUrl)
+          updateOrCreateMeta('og:image:width', '1200')
+          updateOrCreateMeta('og:image:height', '630')
+          updateOrCreateMeta('og:image:alt', title)
+          updateOrCreateMeta('og:site_name', 'Kubernetes Community')
+          
+          // Update or create Twitter Card meta tags
+          const updateOrCreateTwitterMeta = (name, content) => {
+            let meta = document.querySelector(`meta[name="${name}"]`)
+            if (!meta) {
+              meta = document.createElement('meta')
+              meta.setAttribute('name', name)
+              document.head.appendChild(meta)
+            }
+            meta.setAttribute('content', content)
+          }
+          
+          updateOrCreateTwitterMeta('twitter:card', 'summary_large_image')
+          updateOrCreateTwitterMeta('twitter:url', currentUrl)
+          
+          // Shorten title for Twitter (max 70 chars)
+          const twitterTitleText = title.length > 65 ? title.substring(0, 62) + '...' : title
+          updateOrCreateTwitterMeta('twitter:title', twitterTitleText)
+          
+          // Shorten description for Twitter (max 200 chars)
+          const twitterDescText = (description || title).length > 200 
+            ? (description || title).substring(0, 197) + '...' 
+            : (description || title)
+          updateOrCreateTwitterMeta('twitter:description', twitterDescText)
+          updateOrCreateTwitterMeta('twitter:image', imageUrl)
+          updateOrCreateTwitterMeta('twitter:image:alt', title)
+          updateOrCreateTwitterMeta('twitter:site', '@kubernetesio')
+          updateOrCreateTwitterMeta('twitter:creator', '@kubernetesio')
         }
         
         // Set the extracted HTML content
@@ -544,7 +631,12 @@ export default function MarkdownPage({ basePath, kind }) {
             {html && html.trim().length > 0 ? (
               <article 
                 className="markdown-content max-w-none" 
-                dangerouslySetInnerHTML={{ __html: html }}
+                dangerouslySetInnerHTML={{ 
+                  __html: html
+                    // Convert any H1 tags in the markdown to H2 to avoid multiple H1s
+                    .replace(/<h1([^>]*)>/gi, '<h2$1>')
+                    .replace(/<\/h1>/gi, '</h2>')
+                }}
               />
             ) : (
               <div className="text-red-600 p-4 border border-red-200 rounded-lg">
