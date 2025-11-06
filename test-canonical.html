@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Canonical URL</title>
+  <script>
+    // Test the getCanonicalUrl function logic
+    function getCanonicalUrl() {
+      try {
+        if (typeof window === 'undefined' || !window.location) {
+          return 'https://www.managekubernetes.com';
+        }
+        const pathname = window.location.pathname || '/';
+        const baseUrl = 'https://www.managekubernetes.com';
+        return baseUrl + pathname;
+      } catch (error) {
+        console.warn('Error getting canonical URL:', error);
+        return 'https://www.managekubernetes.com';
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', function() {
+      const canonical = document.querySelector('link[rel="canonical"]');
+      const testUrl = getCanonicalUrl();
+      
+      console.log('Current URL:', window.location.href);
+      console.log('Pathname:', window.location.pathname);
+      console.log('Expected Canonical:', testUrl);
+      
+      if (canonical) {
+        console.log('Current Canonical:', canonical.href);
+        console.log('Has www?', canonical.href.includes('://www.'));
+        
+        if (!canonical.href.includes('://www.')) {
+          console.error('❌ Canonical URL is missing www!');
+          console.log('Setting to:', testUrl);
+          canonical.setAttribute('href', testUrl);
+          canonical.href = testUrl;
+        } else {
+          console.log('✅ Canonical URL has www');
+        }
+      } else {
+        console.log('No canonical tag found, creating one...');
+        const link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = testUrl;
+        document.head.appendChild(link);
+        console.log('Created canonical:', testUrl);
+      }
+    });
+  </script>
+</head>
+<body>
+  <h1>Canonical URL Test</h1>
+  <p>Open browser console to see the test results.</p>
+  <p>Current URL: <span id="current-url"></span></p>
+  <p>Canonical URL: <span id="canonical-url"></span></p>
+  <script>
+    document.getElementById('current-url').textContent = window.location.href;
+    const canonical = document.querySelector('link[rel="canonical"]');
+    document.getElementById('canonical-url').textContent = canonical ? canonical.href : 'Not found';
+  </script>
+</body>
+</html>
+

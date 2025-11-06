@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canonical URL Test</title>
+  <link rel="canonical" href="https://www.managekubernetes.com/test" />
+  <script>
+    // Test the getCanonicalUrl function logic
+    function getCanonicalUrl() {
+      try {
+        if (typeof window === 'undefined' || !window.location) {
+          return 'https://www.managekubernetes.com';
+        }
+        const pathname = window.location.pathname || '/';
+        const baseUrl = 'https://www.managekubernetes.com';
+        return baseUrl + pathname;
+      } catch (error) {
+        console.warn('Error getting canonical URL:', error);
+        return 'https://www.managekubernetes.com';
+      }
+    }
+    
+    window.addEventListener('DOMContentLoaded', function() {
+      const results = document.getElementById('results');
+      const canonical = document.querySelector('link[rel="canonical"]');
+      const testUrl = getCanonicalUrl();
+      
+      let output = '<h2>Test Results:</h2>';
+      output += '<p><strong>Current URL:</strong> ' + window.location.href + '</p>';
+      output += '<p><strong>Pathname:</strong> ' + window.location.pathname + '</p>';
+      output += '<p><strong>Expected Canonical:</strong> ' + testUrl + '</p>';
+      
+      if (canonical) {
+        output += '<p><strong>Current Canonical:</strong> ' + canonical.href + '</p>';
+        const hasWww = canonical.href.includes('://www.');
+        output += '<p><strong>Has www?</strong> ' + (hasWww ? '✅ YES' : '❌ NO') + '</p>';
+        
+        if (!hasWww) {
+          output += '<p style="color: red;">❌ Canonical URL is missing www! Fixing...</p>';
+          canonical.setAttribute('href', testUrl);
+          canonical.href = testUrl;
+          output += '<p><strong>Fixed to:</strong> ' + canonical.href + '</p>';
+        } else {
+          output += '<p style="color: green;">✅ Canonical URL is correct!</p>';
+        }
+      } else {
+        output += '<p style="color: orange;">⚠️ No canonical tag found, creating one...</p>';
+        const link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = testUrl;
+        document.head.appendChild(link);
+        output += '<p><strong>Created canonical:</strong> ' + testUrl + '</p>';
+      }
+      
+      results.innerHTML = output;
+    });
+  </script>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+    h1 { color: #333; }
+    h2 { color: #666; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; }
+    p { margin: 10px 0; line-height: 1.6; }
+    strong { color: #4f46e5; }
+  </style>
+</head>
+<body>
+  <h1>Canonical URL Test Page</h1>
+  <p>This page tests if canonical URLs are being set correctly with www.</p>
+  <div id="results">Loading test results...</div>
+  <hr>
+  <h3>How to test your site:</h3>
+  <ol>
+    <li>Open browser DevTools (F12)</li>
+    <li>Go to Console tab</li>
+    <li>Run: <code>document.querySelector('link[rel="canonical"]')?.href</code></li>
+    <li>Should show: <code>https://www.managekubernetes.com/...</code></li>
+  </ol>
+</body>
+</html>
+

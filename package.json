@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.js",
     "preview": "vite preview",
-    "dev:html": "npm run build && vite preview"
+    "dev:html": "npm run build && vite preview",
+    "test:canonical": "node test-canonical.js",
+    "check:canonical": "node check-canonical.js",
+    "check:all-canonical": "node check-all-canonical.js"
   },
   "dependencies": {
     "react": "^18.3.1",

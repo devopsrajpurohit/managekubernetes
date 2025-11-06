@@ -19,6 +19,27 @@
     
     <!-- Canonical URL - Set initially, updated dynamically by JavaScript for each page -->
     <link rel="canonical" href="https://www.managekubernetes.com/" />
+    <script>
+      // Set canonical URL immediately before React loads to prevent override
+      (function() {
+        try {
+          var pathname = window.location.pathname;
+          var canonicalUrl = 'https://www.managekubernetes.com' + pathname;
+          var canonical = document.querySelector('link[rel="canonical"]');
+          if (canonical) {
+            canonical.setAttribute('href', canonicalUrl);
+            canonical.href = canonicalUrl;
+          } else {
+            canonical = document.createElement('link');
+            canonical.rel = 'canonical';
+            canonical.href = canonicalUrl;
+            document.head.appendChild(canonical);
+          }
+        } catch(e) {
+          console.warn('Error setting initial canonical URL:', e);
+        }
+      })();
+    </script>
     
     <!-- Sitemap -->
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
