@@ -34,7 +34,13 @@ export default function MarkdownPage({ basePath, kind }) {
         canonical.rel = 'canonical'
         document.head.appendChild(canonical)
       }
+      // Always set to normalized www URL
       canonical.href = cleanUrl
+      
+      // Verify it's set correctly (defensive check)
+      if (canonical.href && !canonical.href.includes('://www.')) {
+        canonical.href = cleanUrl
+      }
     }
   }, [slug, kind])
   
@@ -351,6 +357,7 @@ export default function MarkdownPage({ basePath, kind }) {
           document.head.appendChild(breadcrumbScript)
           
           // Update canonical URL - normalized to www
+          // Always use normalized www URL, even if pre-rendered HTML has it
           const cleanUrl = getCanonicalUrl()
           let canonical = document.querySelector('link[rel="canonical"]')
           if (!canonical) {
@@ -358,7 +365,13 @@ export default function MarkdownPage({ basePath, kind }) {
             canonical.rel = 'canonical'
             document.head.appendChild(canonical)
           }
+          // Force update to ensure www version is always used
           canonical.href = cleanUrl
+          
+          // Double-check: if somehow the URL doesn't have www, fix it
+          if (!canonical.href.includes('://www.')) {
+            canonical.href = cleanUrl
+          }
           
           // Get image URL for OG and Twitter - use from frontmatter or fallback
           // Use www version for consistency
