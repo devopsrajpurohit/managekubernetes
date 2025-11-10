@@ -381,6 +381,34 @@ function processMarkdownFiles() {
       let htmlContent = marked.parse(markdownContent)
       // Convert H1 tags to H2 to avoid duplicate H1s (template already has H1 with title)
       htmlContent = htmlContent.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+      
+      // Remove the first H2 if it matches the title (to avoid duplicate titles in content)
+      // Use a more robust approach: find first H2, extract its text, compare with title
+      const h2Match = htmlContent.match(/<h2[^>]*>(.*?)<\/h2>/i)
+      if (h2Match) {
+        // Extract text content from H2 (remove HTML tags, decode entities)
+        const h2Text = h2Match[1]
+          .replace(/<[^>]+>/g, '') // Remove HTML tags
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .trim()
+        const titleText = title.trim()
+        
+        // If the H2 text matches the title (case-insensitive), remove the H2
+        if (h2Text.toLowerCase() === titleText.toLowerCase()) {
+          // Remove the H2 tag and its content, optionally preceded by image paragraph
+          // Match: optional image paragraph, then the H2
+          const escapedTitle = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const removeRegex = new RegExp(`(<p>\\s*<img[^>]*>\\s*</p>\\s*)?<h2[^>]*>.*?${escapedTitle}.*?</h2>\\s*`, 'i')
+          htmlContent = htmlContent.replace(removeRegex, (match, imgPara) => {
+            // Keep image paragraph if it exists, but remove the H2
+            return imgPara || ''
+          })
+        }
+      }
       const url = normalizeUrl(`${baseUrl}${route}/${slug}`)
       const categoryName = route.includes('/blog') ? 'Blog' : route.includes('/learn') ? 'Day-1 Basics' : 'Day-2 Operations'
       

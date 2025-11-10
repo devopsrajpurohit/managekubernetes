@@ -4,6 +4,33 @@ import { ArrowLeft, Share2, Link as LinkIcon, Copy, Check, Twitter, Linkedin, Fa
 import { trackMarkdownView, trackEvent } from '../utils/analytics.js'
 import { getCanonicalUrl } from '../utils/urlUtils.js'
 
+// Helper function to remove duplicate title headings from HTML content
+function removeDuplicateTitleHeading(html, title) {
+  if (!html || !title) return html
+  
+  try {
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html')
+    const div = doc.body.firstElementChild
+    
+    // Find the first h2 element
+    const firstH2 = div.querySelector('h2')
+    if (firstH2) {
+      const h2Text = firstH2.textContent.trim()
+      const titleText = title.trim()
+      // If the H2 text matches the title (case-insensitive), remove it
+      if (h2Text.toLowerCase() === titleText.toLowerCase()) {
+        firstH2.remove()
+        return div.innerHTML
+      }
+    }
+  } catch (e) {
+    console.warn('Error removing duplicate title:', e)
+  }
+  
+  return html
+}
+
 export default function MarkdownPage({ basePath, kind }) {
   const { slug } = useParams()
   const navigate = useNavigate()
@@ -181,6 +208,8 @@ export default function MarkdownPage({ basePath, kind }) {
             articleHtml = marked.parse(content)
             // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
             articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+            // Remove duplicate title heading using DOM parsing
+            articleHtml = removeDuplicateTitleHeading(articleHtml, title)
           } else {
             title = slug
             description = slug
@@ -188,6 +217,8 @@ export default function MarkdownPage({ basePath, kind }) {
             articleHtml = marked.parse(responseText)
             // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
             articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+            // Remove duplicate title heading using DOM parsing
+            articleHtml = removeDuplicateTitleHeading(articleHtml, title)
           }
           console.log('Loaded from markdown (fallback)')
         } else {
@@ -234,6 +265,8 @@ export default function MarkdownPage({ basePath, kind }) {
               articleHtml = marked.parse(content)
               // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
               articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+              // Remove duplicate title heading using DOM parsing
+              articleHtml = removeDuplicateTitleHeading(articleHtml, title)
             } else {
               title = slug
               description = slug
@@ -241,6 +274,8 @@ export default function MarkdownPage({ basePath, kind }) {
               articleHtml = marked.parse(mdText)
               // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
               articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+              // Remove duplicate title heading using DOM parsing
+              articleHtml = removeDuplicateTitleHeading(articleHtml, title)
             }
             console.log('Loaded from markdown (fallback after detecting React HTML)')
           } else if (hasArticle) {
@@ -251,10 +286,12 @@ export default function MarkdownPage({ basePath, kind }) {
             description = metaDesc ? metaDesc.getAttribute('content') : ''
             const ogImage = doc.querySelector('meta[property="og:image"]')
             image = ogImage ? ogImage.getAttribute('content') : ''
-            // Extract HTML and ensure H1 tags are converted to H2 (template already has H1)
+            // Extract HTML and clean it up
             articleHtml = articleElement.innerHTML
-              .replace(/<h1([^>]*)>/gi, '<h2$1>')
-              .replace(/<\/h1>/gi, '</h2>')
+            // Convert any remaining H1 tags to H2
+            articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
+            // Remove duplicate title heading
+            articleHtml = removeDuplicateTitleHeading(articleHtml, title)
             
             console.log('Loaded from pre-rendered HTML')
           } else {
