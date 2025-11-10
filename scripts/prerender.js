@@ -174,8 +174,65 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
     }
     </script>
     <style>
-      body { font-family: system-ui, -apple-system, sans-serif; }
-      .markdown-content { line-height: 1.75; color: rgb(15 23 42); }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { 
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.5;
+        color: rgb(15 23 42);
+        background-color: #ffffff;
+        min-height: 100vh;
+      }
+      main {
+        min-height: 100vh;
+        background-color: #ffffff;
+      }
+      .container {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+        max-width: 72rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+      }
+      @media (min-width: 640px) {
+        .container { padding-left: 1.5rem; padding-right: 1.5rem; }
+      }
+      @media (min-width: 1024px) {
+        .container { padding-left: 2rem; padding-right: 2rem; }
+      }
+      nav {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: rgb(71 85 105);
+      }
+      nav a {
+        color: rgb(71 85 105);
+        text-decoration: none;
+      }
+      nav a:hover {
+        color: rgb(67 56 202);
+      }
+      nav span:last-child {
+        color: rgb(30 41 59);
+        font-weight: 500;
+      }
+      h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: rgb(15 23 42);
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+      }
+      .markdown-content { 
+        line-height: 1.75; 
+        color: rgb(15 23 42);
+        max-width: none;
+      }
       .markdown-content h1 { font-size: 2.25em; font-weight: 800; margin-top: 0; margin-bottom: 0.8888889em; }
       .markdown-content h2 { font-size: 1.5em; font-weight: 700; margin-top: 2em; margin-bottom: 1em; }
       .markdown-content h3 { font-size: 1.25em; font-weight: 600; margin-top: 1.6em; margin-bottom: 0.6em; }
@@ -185,47 +242,83 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
       .markdown-content pre { background-color: rgb(15 23 42); color: rgb(248 250 252); overflow-x: auto; padding: 1em; border-radius: 0.5rem; margin-top: 1.7142857em; margin-bottom: 1.7142857em; }
       .markdown-content pre code { background-color: transparent; color: inherit; padding: 0; }
       .markdown-content a { color: rgb(79 70 229); text-decoration: underline; font-weight: 500; }
+      .markdown-content a:hover { color: rgb(67 56 202); }
       .markdown-content img { display: none !important; }
+      footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgb(226 232 240);
+      }
+      .footer-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        font-size: 0.875rem;
+      }
+      @media (min-width: 768px) {
+        .footer-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+      .footer-section h3 {
+        font-weight: 600;
+        color: rgb(15 23 42);
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+      }
+      .footer-section ul {
+        list-style: none;
+        padding: 0;
+      }
+      .footer-section li {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .footer-section a {
+        color: rgb(71 85 105);
+        text-decoration: none;
+      }
+      .footer-section a:hover {
+        color: rgb(67 56 202);
+      }
     </style>
   </head>
   <body>
-    <main class="min-h-screen bg-white">
-      <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <nav class="mb-6 flex items-center gap-2 text-sm text-slate-600">
-          <a href="/" class="hover:text-indigo-700">Home</a>
+    <main>
+      <div class="container">
+        <nav>
+          <a href="/">Home</a>
           <span>/</span>
-          <span class="text-slate-800 font-medium">${title}</span>
+          <span>${safeTitle}</span>
         </nav>
-        <h1 class="text-4xl font-bold text-slate-900 mb-6">${safeTitle}</h1>
-        <article class="markdown-content max-w-none">${htmlContent}</article>
+        <h1>${safeTitle}</h1>
+        <article class="markdown-content">${htmlContent}</article>
         
         <!-- Footer with internal links for SEO -->
-        <footer class="mt-12 pt-8 border-t border-slate-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-            <div>
-              <h3 class="font-semibold text-slate-900 mb-3">Day-1 Basics</h3>
-              <ul class="space-y-2 text-slate-600">
-                <li><a href="/learn/what-is-kubernetes" class="hover:text-indigo-700">What is Kubernetes?</a></li>
-                <li><a href="/learn/core-components" class="hover:text-indigo-700">Core Components</a></li>
-                <li><a href="/learn/pods-nodes-services" class="hover:text-indigo-700">Pods & Services</a></li>
-                <li><a href="/learn/workloads" class="hover:text-indigo-700">Deployments</a></li>
+        <footer>
+          <div class="footer-grid">
+            <div class="footer-section">
+              <h3>Day-1 Basics</h3>
+              <ul>
+                <li><a href="/learn/what-is-kubernetes">What is Kubernetes?</a></li>
+                <li><a href="/learn/core-components">Core Components</a></li>
+                <li><a href="/learn/pods-nodes-services">Pods & Services</a></li>
+                <li><a href="/learn/workloads">Deployments</a></li>
               </ul>
             </div>
-            <div>
-              <h3 class="font-semibold text-slate-900 mb-3">Day-2 Operations</h3>
-              <ul class="space-y-2 text-slate-600">
-                <li><a href="/ops/check-cluster-health" class="hover:text-indigo-700">Check Cluster Health</a></li>
-                <li><a href="/ops/monitor-pods" class="hover:text-indigo-700">Monitor Pods</a></li>
-                <li><a href="/ops/probes" class="hover:text-indigo-700">Probes</a></li>
-                <li><a href="/ops/smart-alerts" class="hover:text-indigo-700">Smart Alerts</a></li>
+            <div class="footer-section">
+              <h3>Day-2 Operations</h3>
+              <ul>
+                <li><a href="/ops/check-cluster-health">Check Cluster Health</a></li>
+                <li><a href="/ops/monitor-pods">Monitor Pods</a></li>
+                <li><a href="/ops/probes">Probes</a></li>
+                <li><a href="/ops/smart-alerts">Smart Alerts</a></li>
               </ul>
             </div>
-            <div>
-              <h3 class="font-semibold text-slate-900 mb-3">Resources</h3>
-              <ul class="space-y-2 text-slate-600">
-                <li><a href="/" class="hover:text-indigo-700">Home</a></li>
-                <li><a href="/blog" class="hover:text-indigo-700">Blog</a></li>
-                <li><a href="/sitemap.xml" class="hover:text-indigo-700">Sitemap</a></li>
+            <div class="footer-section">
+              <h3>Resources</h3>
+              <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/blog">Blog</a></li>
+                <li><a href="/sitemap.xml">Sitemap</a></li>
               </ul>
             </div>
           </div>
@@ -235,7 +328,7 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
     <!-- Pre-rendered HTML - no React needed for crawlers -->
     <!-- For interactive features, the React app will hydrate if JavaScript is enabled -->
     <noscript>
-      <p class="text-center text-slate-500 text-sm mt-8">JavaScript is disabled. This is a pre-rendered static page.</p>
+      <p style="text-align: center; color: rgb(100 116 139); font-size: 0.875rem; margin-top: 2rem;">JavaScript is disabled. This is a pre-rendered static page.</p>
     </noscript>
   </body>
 </html>`
@@ -285,7 +378,9 @@ function processMarkdownFiles() {
       
       const title = data.title || slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
       const description = data.description || title
-      const htmlContent = marked.parse(markdownContent)
+      let htmlContent = marked.parse(markdownContent)
+      // Convert H1 tags to H2 to avoid duplicate H1s (template already has H1 with title)
+      htmlContent = htmlContent.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
       const url = normalizeUrl(`${baseUrl}${route}/${slug}`)
       const categoryName = route.includes('/blog') ? 'Blog' : route.includes('/learn') ? 'Day-1 Basics' : 'Day-2 Operations'
       

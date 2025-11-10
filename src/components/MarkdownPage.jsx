@@ -179,11 +179,15 @@ export default function MarkdownPage({ basePath, kind }) {
             description = data.description || title
             image = data.image || ''
             articleHtml = marked.parse(content)
+            // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
+            articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
           } else {
             title = slug
             description = slug
             image = ''
             articleHtml = marked.parse(responseText)
+            // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
+            articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
           }
           console.log('Loaded from markdown (fallback)')
         } else {
@@ -228,11 +232,15 @@ export default function MarkdownPage({ basePath, kind }) {
               description = data.description || title
               image = data.image || ''
               articleHtml = marked.parse(content)
+              // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
+              articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
             } else {
               title = slug
               description = slug
               image = ''
               articleHtml = marked.parse(mdText)
+              // Convert H1 tags to H2 to avoid duplicate H1s (component adds H1 with title)
+              articleHtml = articleHtml.replace(/<h1([^>]*)>/gi, '<h2$1>').replace(/<\/h1>/gi, '</h2>')
             }
             console.log('Loaded from markdown (fallback after detecting React HTML)')
           } else if (hasArticle) {
@@ -243,7 +251,10 @@ export default function MarkdownPage({ basePath, kind }) {
             description = metaDesc ? metaDesc.getAttribute('content') : ''
             const ogImage = doc.querySelector('meta[property="og:image"]')
             image = ogImage ? ogImage.getAttribute('content') : ''
+            // Extract HTML and ensure H1 tags are converted to H2 (template already has H1)
             articleHtml = articleElement.innerHTML
+              .replace(/<h1([^>]*)>/gi, '<h2$1>')
+              .replace(/<\/h1>/gi, '</h2>')
             
             console.log('Loaded from pre-rendered HTML')
           } else {

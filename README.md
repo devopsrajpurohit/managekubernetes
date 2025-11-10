@@ -23,6 +23,102 @@ npm run dev
    - Social shares
    - Link copies
 
+## Canonical URL Generation
+
+The site implements a robust canonical URL system that ensures consistent, SEO-friendly URLs across all pages. Canonical URLs are always normalized to use the `www` subdomain and proper path formatting.
+
+### How Canonical URLs Are Generated
+
+Canonical URLs are generated and updated at multiple layers to ensure they're always correct, even for SEO crawlers that don't execute JavaScript:
+
+#### 1. **Pre-React Script (index.html)**
+A script runs immediately when the page loads, before React initializes:
+
+```javascript
+// Sets canonical URL based on current pathname
+// Normalizes: removes trailing slashes (except root)
+// Always uses: https://www.managekubernetes.com
+```
+
+**Key Features:**
+- Runs before React loads (important for SEO crawlers)
+- Normalizes pathnames (removes trailing slashes)
+- Always uses `www` subdomain
+- Watches for changes and fixes them automatically
+- Periodic safety checks every second
+
+#### 2. **React Component Updates**
+React components update canonical URLs on route changes:
+
+- **Landing Page** (`src/pages/Landing.jsx`): Sets canonical for homepage
+- **Blog Page** (`src/pages/Blog.jsx`): Explicitly sets `https://www.managekubernetes.com/blog`
+- **Markdown Pages** (`src/components/MarkdownPage.jsx`): Sets canonical for each blog/learn/ops page
+- **PageTracker** (`src/main.jsx`): Updates canonical on every route change
+
+#### 3. **Utility Function (src/utils/urlUtils.js)**
+The `getCanonicalUrl()` function is the single source of truth:
+
+```javascript
+export function getCanonicalUrl() {
+  // Gets current pathname
+  // Normalizes: removes trailing slashes (except root)
+  // Returns: https://www.managekubernetes.com + pathname
+  // Always includes www subdomain
+}
+```
+
+### Canonical URL Rules
+
+1. **Always Use www Subdomain**
+   - Base URL: `https://www.managekubernetes.com`
+   - Never uses non-www version
+   - Even if accessed via `managekubernetes.com`, canonical uses `www.managekubernetes.com`
+
+2. **Pathname Normalization**
+   - Root path (`/`) → `https://www.managekubernetes.com/`
+   - Blog path (`/blog`) → `https://www.managekubernetes.com/blog`
+   - Trailing slashes removed (except for root)
+   - Query parameters and hash fragments removed
+
+3. **Defensive Checks**
+   - Multiple verification layers
+   - MutationObserver watches for changes
+   - Periodic safety checks
+   - Console warnings if www is missing
+
+### Examples
+
+| Current URL | Canonical URL |
+|-------------|---------------|
+| `https://managekubernetes.com/` | `https://www.managekubernetes.com/` |
+| `https://managekubernetes.com/blog` | `https://www.managekubernetes.com/blog` |
+| `https://www.managekubernetes.com/blog/` | `https://www.managekubernetes.com/blog` |
+| `https://managekubernetes.com/learn/what-is-kubernetes` | `https://www.managekubernetes.com/learn/what-is-kubernetes` |
+| `https://www.managekubernetes.com/blog?page=2` | `https://www.managekubernetes.com/blog` |
+
+### Implementation Details
+
+**Files Involved:**
+- `index.html` - Pre-React script for initial canonical URL
+- `src/utils/urlUtils.js` - Core utility function
+- `src/main.jsx` - PageTracker component for route changes
+- `src/pages/Landing.jsx` - Landing page canonical URL
+- `src/pages/Blog.jsx` - Blog page canonical URL (explicitly set)
+- `src/components/MarkdownPage.jsx` - Markdown pages canonical URL
+
+**Special Cases:**
+- **Blog Page**: Explicitly sets canonical to `/blog` (not using pathname from URL)
+- **Homepage**: Uses `/` as canonical URL
+- **Markdown Pages**: Uses full pathname (e.g., `/learn/what-is-kubernetes`)
+
+### Why This Matters
+
+1. **SEO**: Search engines use canonical URLs to avoid duplicate content issues
+2. **Consistency**: All pages have a single, authoritative URL
+3. **Crawler-Friendly**: Works even if JavaScript is disabled
+4. **Performance**: Pre-React script sets canonical immediately
+5. **Reliability**: Multiple layers ensure canonical URL is always correct
+
 ## SEO & Backlink Features
 
 The site includes comprehensive SEO optimizations to improve backlink potential:
@@ -33,7 +129,7 @@ The site includes comprehensive SEO optimizations to improve backlink potential:
 - **Citation Tools** - MLA and APA citation formats provided
 - **Internal Linking** - Related articles section on each page
 - **Sitemap** - XML sitemap at `/sitemap.xml` for search engines
-- **Canonical URLs** - Proper canonical tags for each page
+- **Canonical URLs** - Proper canonical tags for each page (see Canonical URL Generation section above)
 - **Open Graph & Twitter Cards** - Enhanced social sharing previews
 
 ### Backlink Strategies:
