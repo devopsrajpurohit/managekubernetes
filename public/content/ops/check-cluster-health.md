@@ -1,6 +1,6 @@
 ---
 title: Check Cluster Health
-description: Read node conditions, component status, and kubelet health in minutes.
+description: Check Kubernetes cluster health quickly. Learn to read node conditions, component status, and kubelet health. Diagnose issues in minutes with kubectl commands.
 ---
 
 # Check Cluster Health

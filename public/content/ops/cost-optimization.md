@@ -1,6 +1,6 @@
 ---
 title: Performance & Cost Insights
-description: Right-size requests/limits, spot waste, and keep latency predictable.
+description: Optimize Kubernetes costs and performance. Learn to right-size resource requests and limits, identify waste, and maintain predictable latency in your K8s cluster.
 ---
 
 # Performance & Cost Insights

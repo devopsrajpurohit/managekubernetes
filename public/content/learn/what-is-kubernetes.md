@@ -1,6 +1,6 @@
 ---
 title: What is Kubernetes?
-description: Why teams use it, when not to, and what problems it solves.
+description: Discover what Kubernetes is and why teams use it. Learn when to use K8s, what problems it solves, and how container orchestration transforms DevOps.
 ---
 
 # What is Kubernetes?

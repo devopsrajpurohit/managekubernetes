@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting Kubernetes Pods in Error State
-description: Complete guide to diagnosing and fixing pods in Error state, including application crashes, configuration issues, and exit code handling.
+description: Fix Kubernetes pods in Error state. Diagnose application crashes, configuration problems, and exit code issues. Master kubectl troubleshooting commands for error recovery.
 date: 2024-12-21
 category: Troubleshooting
 image: /images/blog-error-state.svg

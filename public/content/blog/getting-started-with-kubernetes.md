@@ -1,6 +1,6 @@
 ---
 title: Getting Started with Kubernetes: A Complete Guide
-description: Learn the fundamentals of Kubernetes and how to deploy your first application on a Kubernetes cluster.
+description: Get started with Kubernetes. Learn K8s fundamentals, deploy your first application, and master basic kubectl commands. Start your container orchestration journey today.
 date: 2024-12-15
 category: Getting Started
 image: /images/blog-getting-started.svg

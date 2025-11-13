@@ -1,6 +1,6 @@
 ---
 title: Core Components
-description: API server, scheduler, controller manager, etcd — the control plane at a glance.
+description: Learn Kubernetes core components: API server, scheduler, controller manager, and etcd. Master the control plane architecture and understand how K8s manages your cluster.
 ---
 
 # Core Components

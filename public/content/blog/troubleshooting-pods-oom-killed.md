@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting Kubernetes Pods Killed by OOM (Out of Memory)
-description: Complete guide to diagnosing and fixing OOMKilled pods, including memory limit configuration, memory leaks, and resource optimization strategies.
+description: Fix Kubernetes OOMKilled pods. Diagnose out-of-memory errors, configure memory limits correctly, and optimize resource usage. Prevent pod terminations with proper memory management.
 date: 2024-12-19
 category: Troubleshooting
 image: /images/blog-oom-killed.svg

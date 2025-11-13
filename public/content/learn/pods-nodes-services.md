@@ -1,6 +1,6 @@
 ---
 title: Pods & Services
-description: How containers become pods, get traffic, and stay resilient.
+description: Master Kubernetes pods, nodes, and services. Learn how containers become pods, handle traffic, and maintain resilience in your K8s cluster.
 ---
 
 # Pods & Services

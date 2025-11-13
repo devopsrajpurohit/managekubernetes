@@ -1,6 +1,6 @@
 ---
 title: Deployments (the easy way)
-description: Rolling updates & rollbacks with one command — zero theory overload.
+description: Master Kubernetes deployments with rolling updates and rollbacks. Learn to manage workloads efficiently with practical kubectl commands and zero theory overload.
 ---
 
 # Deployments: The Easy Way

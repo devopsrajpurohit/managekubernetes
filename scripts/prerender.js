@@ -71,14 +71,14 @@ function generateHTML(title, description, htmlContent, url, categoryName = 'Blog
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${safeTitle} | Kubernetes Community</title>
+    <title>${safeTitle} | K8s Community</title>
     <meta name="description" content="${safeDescription}" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <!-- Google Search Console Verification -->
     <!-- Replace YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE with your actual verification code from Google Search Console -->
     <meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />
     <link rel="canonical" href="${url}" />
-    <meta property="og:title" content="${safeTitle} | Kubernetes Community" />
+    <meta property="og:title" content="${safeTitle} | K8s Community" />
     <meta property="og:description" content="${safeDescription}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:type" content="article" />

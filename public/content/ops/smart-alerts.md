@@ -1,6 +1,6 @@
 ---
 title: Smart Alerting & Notifications
-description: Turn signals into sensible alerts. Reduce noise, keep actionability.
+description: Create smart Kubernetes alerts that reduce noise. Learn to turn signals into actionable notifications and improve your K8s monitoring strategy.
 ---
 
 # Smart Alerting & Notifications

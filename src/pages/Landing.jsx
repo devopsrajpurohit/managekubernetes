@@ -295,6 +295,44 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="py-20 bg-white border-t border-slate-200">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4" data-otto-pixel="dynamic-seo">Understanding Kubernetes Architecture</h3>
+            <p className="text-slate-700 mb-4" data-otto-pixel="dynamic-seo">
+              The architecture of Kubernetes is fundamental to its operation, comprising various components that work together to manage containerized applications. Key elements include the API server, etcd, controller manager, scheduler, and worker nodes, each playing a crucial role in maintaining the desired state of applications.
+            </p>
+            <p className="text-slate-700 mb-8" data-otto-pixel="dynamic-seo">
+              For instance, the API server acts as the gateway for all the REST commands used to control the cluster, while etcd serves as a distributed key-value store that holds all cluster data. Understanding these components helps users grasp how Kubernetes orchestrates containers effectively in both development and production environments.
+            </p>
+
+            <h3 className="text-2xl font-bold text-slate-900 mb-4" data-otto-pixel="dynamic-seo">Getting Started with Kubernetes: Installation and Setup</h3>
+            <p className="text-slate-700 mb-4" data-otto-pixel="dynamic-seo">
+              Setting up Kubernetes can seem daunting, but with the right resources, users can easily install and configure their clusters. This section covers various installation methods, including Minikube for local development, kubeadm for production environments, and managed services like Google Kubernetes Engine (GKE).
+            </p>
+            <p className="text-slate-700 mb-8" data-otto-pixel="dynamic-seo">
+              For example, Minikube allows developers to run Kubernetes locally on their machines, providing a sandbox for learning and experimentation. In contrast, kubeadm simplifies the process of setting up a production-ready cluster, ensuring best practices are followed during installation.
+            </p>
+
+            <h3 className="text-2xl font-bold text-slate-900 mb-4" data-otto-pixel="dynamic-seo">Kubernetes Best Practices for Application Deployment</h3>
+            <p className="text-slate-700 mb-4" data-otto-pixel="dynamic-seo">
+              Deploying applications on Kubernetes requires adherence to best practices to ensure reliability and scalability. This section discusses strategies such as using health checks, setting resource limits, and employing rolling updates to minimize downtime during deployments.
+            </p>
+            <p className="text-slate-700 mb-8" data-otto-pixel="dynamic-seo">
+              For instance, implementing readiness and liveness probes allows Kubernetes to manage application health effectively, automatically restarting containers that fail to respond. Additionally, defining resource requests and limits helps optimize resource utilization across the cluster, enhancing overall performance.
+            </p>
+
+            <h3 className="text-2xl font-bold text-slate-900 mb-4" data-otto-pixel="dynamic-seo">Community Resources and Support for Kubernetes Learners</h3>
+            <p className="text-slate-700 mb-4" data-otto-pixel="dynamic-seo">
+              The Kubernetes community is a rich source of knowledge and support for learners at all levels. Users can access forums, chat groups, and official documentation to find answers to their questions and connect with other Kubernetes enthusiasts.
+            </p>
+            <p className="text-slate-700" data-otto-pixel="dynamic-seo">
+              For example, the Kubernetes Slack channel offers real-time support and discussion opportunities, while the official documentation provides comprehensive guides and tutorials. Engaging with the community not only aids learning but also helps users stay updated on the latest developments and best practices in Kubernetes.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section id="community" className="py-20 bg-slate-50 border-t border-slate-200">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">

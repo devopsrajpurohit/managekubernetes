@@ -106,7 +106,7 @@ export default function Blog() {
     // Update meta description - optimized to 150-160 chars
     const metaDesc = document.querySelector('meta[name="description"]')
     if (metaDesc) {
-      metaDesc.setAttribute('content', 'Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.')
+      metaDesc.setAttribute('content', 'Kubernetes tutorials: Master container orchestration with expert guides, troubleshooting tips, and best practices. Improve your Kubernetes operations today.')
     }
     try {
       // Update canonical URL - normalized to www
@@ -157,7 +157,7 @@ export default function Blog() {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Kubernetes Blog | K8s Tutorials, Guides & Best Practices",
-        "description": "Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.",
+        "description": "Kubernetes tutorials: Master container orchestration with expert guides, troubleshooting tips, and best practices. Improve your Kubernetes operations today.",
         "url": cleanUrl,
         "datePublished": "2024-11-06T00:00:00Z",
         "dateModified": "2024-11-06T00:00:00Z",
@@ -216,7 +216,7 @@ export default function Blog() {
         meta.setAttribute('content', content)
       }
       
-      const ogDesc = 'Kubernetes blog with tutorials, troubleshooting guides, and best practices for K8s container orchestration, kubectl commands, and production operations.'
+      const ogDesc = 'Kubernetes tutorials: Master container orchestration with expert guides, troubleshooting tips, and best practices. Improve your Kubernetes operations today.'
       updateOrCreateMeta('og:description', ogDesc)
       updateOrCreateTwitterMeta('twitter:description', ogDesc)
     } catch (error) {

@@ -1,6 +1,6 @@
 ---
 title: Readiness & Liveness Probes
-description: Design endpoints & timeouts to avoid flapping and false restarts.
+description: Configure Kubernetes readiness and liveness probes correctly. Design endpoints and timeouts to prevent flapping and avoid false pod restarts.
 ---
 
 # Readiness & Liveness Probes

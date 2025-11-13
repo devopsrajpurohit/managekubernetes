@@ -1,6 +1,6 @@
 ---
 title: Debugging Kubernetes Applications: Common Issues and Solutions
-description: A comprehensive guide to debugging common issues in Kubernetes applications, with practical troubleshooting tips.
+description: Debug Kubernetes applications effectively. Master kubectl commands, log analysis, and troubleshooting techniques. Fix common K8s issues with step-by-step debugging strategies.
 date: 2024-12-05
 category: Troubleshooting
 image: /images/blog-debugging.svg

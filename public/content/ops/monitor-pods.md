@@ -1,6 +1,6 @@
 ---
 title: Monitor Pods & Resources
-description: CPU/memory, restarts, throttling — what to watch and why it matters.
+description: Monitor Kubernetes pods effectively. Track CPU, memory, restarts, and throttling. Learn what metrics matter and how to optimize your K8s resources.
 ---
 
 # Monitor Pods & Resources

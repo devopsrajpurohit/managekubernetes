@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting Basics
-description: Your first 6 commands: get, describe, logs, exec, events, top.
+description: Master Kubernetes troubleshooting basics. Learn the 6 essential kubectl commands: get, describe, logs, exec, events, and top. Diagnose K8s issues quickly and effectively.
 ---
 
 # Troubleshooting Basics
