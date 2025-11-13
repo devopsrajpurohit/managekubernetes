@@ -7,6 +7,15 @@ import { getCanonicalUrl } from '../utils/urlUtils.js'
 // Blog posts metadata - in production, this could be fetched from an API or generated from markdown files
 const blogPosts = [
   {
+    slug: 'ingress-nginx-retirement',
+    title: 'Ingress NGINX Retirement: How to Migrate to Kubernetes Gateway API and Explore Alternatives',
+    description: 'Complete guide to migrating from Ingress NGINX to Kubernetes Gateway API. Learn why Ingress NGINX is retiring, migration strategies, NGINX Gateway Fabric setup, and alternative implementations like Envoy Gateway, Cilium, Traefik, and Istio.',
+    date: '2024-12-23',
+    readTime: '15 min read',
+    category: 'Migration',
+    image: '/images/blog-ingress-nginx-retirement.webp'
+  },
+  {
     slug: 'troubleshooting-pods-evicted',
     title: 'Troubleshooting Kubernetes Pods in Evicted State',
     description: 'Complete guide to understanding and fixing evicted pods, including resource pressure, disk space issues, and node maintenance scenarios.',

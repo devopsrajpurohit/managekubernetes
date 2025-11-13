@@ -363,9 +363,13 @@
         overflow-x: auto;
       }
       
-      /* Hide all images in markdown content */
+      /* Show images in markdown content */
       .markdown-content img {
-        display: none !important;
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 1.5em 0;
+        border-radius: 0.5rem;
       }
       
       /* Responsive table handling */
